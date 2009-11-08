@@ -1,0 +1,28 @@
+
+=name           fastgit.vim
+
+=author         Cornelius
+
+=email          cornelius.howl@gmail.com
+
+=type           [ script type ]
+
+=version_from   [File]
+
+=vim_version    >= 7.2
+
+=dependency
+
+    [name] >= [version]
+
+    [name]
+        | autoload/libperl.vim | http://github.com/c9s/libperl.vim/raw/master/autoload/libperl.vim
+        | plugin/yours.vim | http://ohlalallala.com/yours.vim
+
+=script
+
+    # your script files here
+
+
+=repository git://....../
+
