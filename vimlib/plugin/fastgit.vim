@@ -72,7 +72,7 @@ fun! s:init_buffer()
 endf
 
 fun! s:trim_message_op(line)
-  return substitute( a:line , '^\!A\s\+' , '' , '')
+  return substitute( a:line , '^\![AD]\s\+' , '' , '')
 endf
 
 fun! s:parse_message(msgfile)
