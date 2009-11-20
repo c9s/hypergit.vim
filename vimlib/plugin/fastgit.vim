@@ -36,14 +36,12 @@ fun! s:git_sync_background()
     let g:fastgit_sync = 1
     let ret = system('git push ')
     let ret = substitute(ret,'[\n\s]\+'," ",'g')
-    redraw
-    echomsg ret
+    cal s:echo(ret)
     sleep 50m
 
     let ret = system('git pull')
     let ret = substitute(ret,'[\n\s]\+'," ",'g')
-    redraw
-    echomsg ret
+    cal s:echo(ret)
     sleep 50m
 
     unlet g:fastgit_sync
@@ -79,22 +77,27 @@ fun! s:trim_message_op(line)
   return substitute( a:line , '^\![AD]\s\+' , '' , '')
 endf
 
-fun! s:parse_message(msgfile)
+fun! s:filter_message_op(msgfile)
   if ! filereadable(a:msgfile)
     return
   endif
   let lines = readfile(a:msgfile)
+  let idx = 0
   for l in lines 
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
       cal system('git add ' . file )
       cal s:echo( file . ' added' )
+      let lines[ idx ] = ''
     elseif l =~ '^\!D\s\+'
       let file = s:trim_message_op(l)
-      cal system('git rm ' . file )   " XXX: detect fail
+      cal system('git rm ' . file )   " XXX: detect failure
       cal s:echo( file . ' deleted')
+      let lines[ idx ] = ''
     endif
+    let idx += 1
   endfor
+  cal writefile(lines,a:msgfile)
 endf
 
 fun! s:commit(msgfile)
@@ -104,7 +107,7 @@ fun! s:commit(msgfile)
     return
   endif
 
-  cal s:parse_message(a:msgfile)
+  cal s:filter_message_op(a:msgfile)
 
   echo "committing " 
   let ret = system( printf('git commit -a -F %s ', a:msgfile ) )
@@ -118,6 +121,8 @@ fun! s:single_commit(msgfile,file)
     echo 'skipped.'
     return
   endif
+
+  cal s:filter_message_op(a:msgfile)
 
   echo "committing " . a:file
   let ret = system( printf('git commit -F %s %s ', a:msgfile, a:file ) )
