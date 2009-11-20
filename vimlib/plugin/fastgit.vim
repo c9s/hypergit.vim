@@ -20,7 +20,7 @@ fun! s:echo(msg)
 endf
 
 fun! s:git_sync_background()
-  if exists('g:fastgit_sync')
+  if exists('g:fastgit_sync_lock')
     return
   endif
 
@@ -34,7 +34,7 @@ fun! s:git_sync_background()
   if isdirectory('.git')
 
     echo 'git: synchronizing... (background)'
-    let g:fastgit_sync = 1
+    let g:fastgit_sync_lock = 1
     let ret = system('git push ')
     let ret = substitute(ret,'[\n\s]\+'," ",'g')
     cal s:echo(ret)
@@ -45,7 +45,7 @@ fun! s:git_sync_background()
     cal s:echo(ret)
     sleep 50m
 
-    unlet g:fastgit_sync
+    unlet g:fastgit_sync_lock
   endif
 endf
 
