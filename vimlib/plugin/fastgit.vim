@@ -7,6 +7,10 @@
 " Version: 0.1
 "
 
+" Options
+let g:fastgit_sync = 1
+let g:fastgit_default_mapping = 1
+
 let s:git_sync_freq = 3   " per updatetime ( * 4sec by default )
 let s:git_sync_cnt = 0
 
@@ -16,7 +20,7 @@ fun! s:echo(msg)
 endf
 
 fun! s:git_sync_background()
-  if exists('g:git_sync')
+  if exists('g:fastgit_sync')
     return
   endif
 
@@ -29,7 +33,7 @@ fun! s:git_sync_background()
   if isdirectory('.git')
 
     echo 'git: synchronizing... (background)'
-    let g:git_sync = 1
+    let g:fastgit_sync = 1
     let ret = system('git push ')
     let ret = substitute(ret,'[\n\s]\+'," ",'g')
     redraw
@@ -42,7 +46,7 @@ fun! s:git_sync_background()
     echomsg ret
     sleep 50m
 
-    unlet g:git_sync
+    unlet g:fastgit_sync
   endif
 endf
 
@@ -121,10 +125,11 @@ fun! s:single_commit(msgfile,file)
   echo "committed"
 endf
 
+
 com! Gci :cal s:commit_single_file(expand('%'))
 com! Gcia :cal s:commit_all_file()
 
-if exists('g:git_sync')
+if exists('g:fastgit_sync')
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
 
