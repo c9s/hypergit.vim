@@ -53,8 +53,11 @@ fun! s:git_sync_background()
   endif
 
   let push_cmd = 'git push'
-  if exists('g:git_sync_background')
+  let pull_cmd = 'git pull'
+
+  if exists('g:fastgit_sync_bg')
     let push_cmd .= ' &'
+    let pull_cmd .= ' &'
   endif
 
   let g:fastgit_sync_lock = 1
@@ -63,10 +66,10 @@ fun! s:git_sync_background()
   cal s:echo(ret)
   sleep 30m
 
-  let ret = system('git pull')
+  let ret = system(pull_cmd)
   let ret = substitute(ret,'[\n ]\+'," ",'g')
   cal s:echo(ret)
-  sleep 50m
+  sleep 30m
 
   unlet g:fastgit_sync_lock
 endf
