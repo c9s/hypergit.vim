@@ -77,8 +77,8 @@ fun! s:parse_message(msgfile)
   endif
   let lines = readfile(a:msgfile)
   for l in lines 
-    if l =~ '^\!A '
-      let fileadd = substitute( l , '^\!A ' , '')
+    if l =~ '^\!A\s\+'
+      let fileadd = substitute( l , '^\!A\s\+' , '' , '')
       cal system('git add ' . fileadd )
       cal s:echo( fileadd . ' added' )
     endif
