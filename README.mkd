@@ -36,6 +36,20 @@ TODO
 INSTALLATION
 ============
 
+via VIM::Packager:
+
+    # to install VIM::Packager via CPAN
+    $ sudo cpan VIM::Packager
+
+    # once you have VIM::Packager you can run ... 
+    $ vim-packager build    # convert META into Makefile
+    $ make install
+
+    # if you dont want it
+    $ make uninstall
+
+via simple makefile:
+
     makefile -f Makefile.pure install
 
 CONFIGURATIONS
