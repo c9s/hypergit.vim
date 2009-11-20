@@ -4,6 +4,7 @@
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
+" Version: 0.1
 "
 
 let s:git_sync_freq = 3   " per updatetime ( * 4sec by default )
