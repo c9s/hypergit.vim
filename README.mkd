@@ -18,11 +18,14 @@ FEATURES
 * no more `git add|rm` command ! even something :GitRemoveFile. please dont!
     you can add files in your commit message
 
-      # commit message
-      - xxxx stuff fixed.
-      - added new configuration.
-      !A NEWFILE
-      !D USELESS_FILE
+        # commit message
+        - xxxx stuff fixed.
+        - added new configuration.
+        !A NEWFILE
+        !D USELESS_FILE
+
+    this will auto add/remove files. so you can also use file completion in
+    your commit message buffer
 
 TODO
 ====
