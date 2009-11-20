@@ -67,6 +67,11 @@ endf
 
 fun! s:commit(msgfile)
   redraw
+  if ! filereadable(a:msgfile)
+    echo 'skipped.'
+    return
+  endif
+
   echo "committing " 
   let ret = system( printf('git commit -a -F %s ', a:msgfile ) )
   echo ret
@@ -75,6 +80,11 @@ endf
 
 fun! s:single_commit(msgfile,file)
   redraw
+  if ! filereadable(a:msgfile)
+    echo 'skipped.'
+    return
+  endif
+
   echo "committing " . a:file
   let ret = system( printf('git commit -F %s %s ', a:msgfile, a:file ) )
   echo ret
