@@ -92,6 +92,8 @@ fun! s:commit(msgfile)
     return
   endif
 
+  cal s:parse_message(a:msgfile)
+
   echo "committing " 
   let ret = system( printf('git commit -a -F %s ', a:msgfile ) )
   echo ret
