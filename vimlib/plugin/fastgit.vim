@@ -9,6 +9,12 @@
 
 let s:git_sync_freq = 3   " per updatetime ( * 4sec by default )
 let s:git_sync_cnt = 0
+
+fun! s:echo(msg)
+  redraw
+  echomsg a:msg
+endf
+
 fun! s:git_sync_background()
   if exists('g:git_sync')
     return
@@ -63,6 +69,21 @@ fun! s:init_buffer()
   setlocal nu fdc=0
   setfiletype git-fast-commit
   setlocal syntax=git-fast-commit
+endf
+
+fun! s:parse_message(msgfile)
+  if ! filereadable(a:msgfile)
+    return
+  endif
+  let lines = readfile(a:msgfile)
+  for l in lines 
+    if l =~ '^!A '
+      let fileadd = substitute( l , '^!A' , '')
+      cal system('git add ' . fileadd )
+      redraw
+      echo fileadd . ' added'
+    endif
+  endfor
 endf
 
 fun! s:commit(msgfile)
