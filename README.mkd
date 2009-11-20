@@ -8,8 +8,8 @@ you can type commit message in a commit message buffer, after commit message
 file saved, it will commit with the message file.
 
 fastgit.vim also provides auto synchronization feature by using 'updatetime'
-option. when you have a coffee, it will do auto-pushing and auto-pulling for
-you in background.
+option. it can also do auto-pushing and auto-pulling for
+you in background while you have a coffee.
 
 FEATURES
 ========
