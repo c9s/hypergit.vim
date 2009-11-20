@@ -37,7 +37,6 @@ to enable git auto sync (push , pull in background) , add this to your `.vimrc`
 COMMANDS
 ========
 
-  * Gci   : commit current file
-  * Gcia  : commit all changes
-
+- Gci   : commit current file
+- Gca  : commit all changes
 

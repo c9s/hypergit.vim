@@ -125,16 +125,16 @@ fun! s:single_commit(msgfile,file)
   echo "committed"
 endf
 
-
 com! Gci :cal s:commit_single_file(expand('%'))
-com! Gcia :cal s:commit_all_file()
+com! Gca :cal s:commit_all_file()
 
 if exists('g:fastgit_sync')
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
 
 fun! s:fastgit_default_mapping()
-
+  nmap <leader>ci  :Gci<CR>
+  nmap <leader>ca  :Gca<CR>
 endf
 
 if exists('g:fastgit_default_mapping')
