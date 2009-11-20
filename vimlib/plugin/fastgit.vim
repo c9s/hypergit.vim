@@ -6,7 +6,7 @@
 " Web:    http://oulixe.us/
 "
 
-let s:git_sync_freq = 3
+let s:git_sync_freq = 3   " per updatetime ( * 4sec by default )
 let s:git_sync_cnt = 0
 fun! s:git_sync_background()
   if exists('g:git_sync')
@@ -39,6 +39,37 @@ fun! s:git_sync_background()
   endif
 endf
 autocmd CursorHold *.* nested cal s:git_sync_background()
+
+fun! s:commit_single_file(file)
+  let commit = tempname()
+  exec 'rightbelow 6split' . commit
+  cal s:init_buffer()
+  exec printf('autocmd BufWinLeave <buffer> :cal s:single_commit("%s","%s")',commit,a:file)
+  startinsert
+endf
+
+fun! s:init_buffer()
+  setlocal modifiable noswapfile bufhidden=hide nobuflisted nowrap cursorline
+  setlocal nu fdc=0
+  setfiletype git-fast-commit
+  setlocal syntax=git-fast-commit
+endf
+
+fun! s:commit(msgfile)
+  redraw
+  echo "committing " 
+  let ret = system( printf('git commit -a -F %s ', a:msgfile ) )
+  echo ret
+  echo "committed"
+endf
+
+fun! s:single_commit(msgfile,file)
+  redraw
+  echo "committing " . a:file
+  let ret = system( printf('git commit -F %s %s ', a:msgfile, a:file ) )
+  echo ret
+  echo "committed"
+endf
 
 
 
