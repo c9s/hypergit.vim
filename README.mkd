@@ -3,8 +3,8 @@
 
 FEATURES
 ========
-    * background syncing
-    * commit message buffer
+* background syncing
+* commit message buffer
 
 CONFIGURATIONS
 ==============
