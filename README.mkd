@@ -9,7 +9,7 @@ FEATURES
 CONFIGURATIONS
 ==============
 
-to enable git sync (push , pull in background) , add this to your `.vimrc`
+to enable git auto sync (push , pull in background) , add this to your `.vimrc`
 
     let g:git_sync = 1 
 
