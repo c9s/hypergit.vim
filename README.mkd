@@ -2,3 +2,12 @@
 FEATURES
 ========
     * background syncing
+    * commit message buffer
+
+COMMANDS
+========
+
+  * Gitci   : commit current file
+  * Gitcia  : commit all changes
+
+

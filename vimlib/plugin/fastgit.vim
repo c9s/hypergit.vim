@@ -48,6 +48,15 @@ fun! s:commit_single_file(file)
   startinsert
 endf
 
+fun! s:commit_all_file()
+  let commit = tempname()
+  exec 'rightbelow 6split' . commit
+  cal s:init_buffer()
+  exec printf('autocmd BufWinLeave <buffer> :cal s:commit("%s")',commit)
+  startinsert
+endf
+
+
 fun! s:init_buffer()
   setlocal modifiable noswapfile bufhidden=hide nobuflisted nowrap cursorline
   setlocal nu fdc=0
@@ -71,5 +80,5 @@ fun! s:single_commit(msgfile,file)
   echo "committed"
 endf
 
-
-
+com! Gitci :cal s:commit_single_file(expand('%'))
+com! Gitcia :cal s:commit_all_file()
