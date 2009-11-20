@@ -71,6 +71,10 @@ fun! s:init_buffer()
   setlocal syntax=git-fast-commit
 endf
 
+fun! s:trim_message_op(line)
+  return substitute( a:line , '^\!A\s\+' , '' , '')
+endf
+
 fun! s:parse_message(msgfile)
   if ! filereadable(a:msgfile)
     return
@@ -78,9 +82,13 @@ fun! s:parse_message(msgfile)
   let lines = readfile(a:msgfile)
   for l in lines 
     if l =~ '^\!A\s\+'
-      let fileadd = substitute( l , '^\!A\s\+' , '' , '')
-      cal system('git add ' . fileadd )
-      cal s:echo( fileadd . ' added' )
+      let file = s:trim_message_op(l)
+      cal system('git add ' . file )
+      cal s:echo( file . ' added' )
+    elseif l =~ '^\!D\s\+'
+      let file = s:trim_message_op(l)
+      cal system('git rm ' . file )   " XXX: detect fail
+      cal s:echo( file . ' deleted')
     endif
   endfor
 endf
