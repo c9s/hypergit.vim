@@ -1,4 +1,7 @@
 
+" Author: Cornelius
+
+
 VIMRUNTIME=~/.vim
 
 install:
