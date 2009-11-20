@@ -55,10 +55,10 @@ fun! s:git_sync_background()
   let push_cmd = 'git push '
   let pull_cmd = 'git pull '
 
-  if exists('g:default_remote')
+  if exists('g:fastgit_default_remote')
     " XXX: only when remtoe exists
-    let push_cmd .= g:default_remote
-    let pull_cmd .= g:default_remote
+    let push_cmd .= g:fastgit_default_remote
+    let pull_cmd .= g:fastgit_default_remote
   endif
 
   if exists('g:fastgit_sync_bg')

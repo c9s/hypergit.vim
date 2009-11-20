@@ -55,10 +55,13 @@ via simple makefile:
 CONFIGURATIONS
 ==============
 
-to enable git auto sync (push , pull in background) , add this to your `.vimrc`
+to enable git auto sync (push , pull in background) , add this to your
+`.vimrc`.
 
     let g:fastgit_sync = 1
     let g:fastgit_default_mapping = 1
+
+
 
 DEFAULT MAPPING
 ===============
