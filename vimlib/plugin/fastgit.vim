@@ -18,6 +18,7 @@ let g:loaded_fgit = 1
 
 " Options
 let g:fastgit_sync = 1
+let g:fastgit_sync_bg = 1
 let g:fastgit_default_mapping = 1
 
 let s:git_sync_freq = 0   " per updatetime ( 4sec by default )
@@ -44,15 +45,26 @@ fun! s:git_sync_background()
     return
   endif
 
-  echo 'git: synchronizing... (background)'
+  echon 'git: synchronizing... '
+  if exists('g:git_sync_background')
+    echo '(background)'
+  else
+    echo
+  endif
+
+  let push_cmd = 'git push'
+  if exists('g:git_sync_background')
+    let push_cmd .= ' &'
+  endif
+
   let g:fastgit_sync_lock = 1
-  let ret = system('git push ')
-  let ret = substitute(ret,'[\n\s]\+'," ",'g')
+  let ret = system(push_cmd)
+  let ret = substitute(ret,'[\n ]\+'," ",'g')
   cal s:echo(ret)
   sleep 30m
 
   let ret = system('git pull')
-  let ret = substitute(ret,'[\n\s]\+'," ",'g')
+  let ret = substitute(ret,'[\n ]\+'," ",'g')
   cal s:echo(ret)
   sleep 50m
 
