@@ -15,7 +15,14 @@ FEATURES
 ========
 * background syncing
 * commit message buffer
-* no more `git add` !
+* no more `git add|rm` command ! even something :GitRemoveFile. please dont!
+    you can add files in your commit message
+
+      # commit message
+      - xxxx stuff fixed.
+      - added new configuration.
+      !A NEWFILE
+      !D USELESS_FILE
 
 TODO
 ====
