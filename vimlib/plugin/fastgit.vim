@@ -52,8 +52,14 @@ fun! s:git_sync_background()
     echo
   endif
 
-  let push_cmd = 'git push'
-  let pull_cmd = 'git pull'
+  let push_cmd = 'git push '
+  let pull_cmd = 'git pull '
+
+  if exists('g:default_remote')
+    " XXX: only when remtoe exists
+    let push_cmd .= g:default_remote
+    let pull_cmd .= g:default_remote
+  endif
 
   if exists('g:fastgit_sync_bg')
     let push_cmd .= ' &'
