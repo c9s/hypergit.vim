@@ -7,6 +7,15 @@
 " Version: 0.1
 "
 
+" Plugin Guard
+if exists('g:loaded_fgit')
+  finish
+elseif v:version < 702
+  echoerr 'ahaha. your vim seems too old , please do upgrade. i found your vim is ' . v:version . '.'
+  finish
+endif
+let g:loaded_fgit = 1
+
 " Options
 let g:fastgit_sync = 1
 let g:fastgit_default_mapping = 1
