@@ -13,9 +13,10 @@ you in background.
 
 FEATURES
 ========
-* background syncing
-* commit message buffer
-* no more `git add|rm` command ! even something :GitRemoveFile. please dont!
+
+- background syncing
+- commit message buffer
+- no more `git add|rm` command ! even something :GitRemoveFile. please dont!
     you can add files in your commit message
 
         # commit message
