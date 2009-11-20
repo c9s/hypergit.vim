@@ -12,7 +12,7 @@ let g:fastgit_sync = 1
 let g:fastgit_default_mapping = 1
 
 let s:git_sync_freq = 2   " per updatetime ( * 4sec by default )
-let s:git_sync_cnt = 0
+let g:git_sync_cnt = 0
 
 fun! s:echo(msg)
   redraw
@@ -25,7 +25,7 @@ fun! s:git_sync_background()
   endif
 
   if s:git_sync_cnt < s:git_sync_freq
-    let s:git_sync_cnt += 1
+    let g:git_sync_cnt += 1
     return
   endif
   let s:git_sync_cnt = 0
@@ -133,10 +133,6 @@ endf
 com! Gci :cal s:commit_single_file(expand('%'))
 com! Gca :cal s:commit_all_file()
 
-if exists('g:fastgit_sync')
-  autocmd CursorHold *.* nested cal s:git_sync_background()
-endif
-
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :Gci<CR>
   nmap <leader>ca  :Gca<CR>
@@ -144,4 +140,7 @@ endf
 
 if exists('g:fastgit_default_mapping')
   cal s:fastgit_default_mapping()
+endif
+if exists('g:fastgit_sync')
+  autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
