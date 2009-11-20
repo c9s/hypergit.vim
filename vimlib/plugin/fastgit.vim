@@ -4,7 +4,7 @@
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
-" Version: 0.2
+" Version: 0.3
 "
 
 " Plugin Guard
