@@ -16,13 +16,12 @@ elseif v:version < 702
 endif
 let g:loaded_fgit = 1
 
-" Options
-let g:fastgit_sync = 1
-let g:fastgit_sync_bg = 1
-let g:fastgit_default_mapping = 1
 
-let s:git_sync_freq = 0   " per updatetime ( 4sec by default )
-let g:git_sync_cnt = 0
+fun! s:defopt(name,val)
+  if !exists(a:name)
+    let {a:name} = a:val
+  endif
+endf
 
 fun! s:echo(msg)
   redraw
@@ -176,3 +175,13 @@ endif
 if exists('g:fastgit_sync')
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
+
+
+
+
+" Options
+let g:fastgit_sync = 1
+let g:fastgit_sync_bg = 1
+let g:fastgit_default_mapping = 1
+let s:git_sync_freq = 0   " per updatetime ( 4sec by default )
+let g:git_sync_cnt = 0
