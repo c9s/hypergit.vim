@@ -31,22 +31,23 @@ fun! s:git_sync_background()
   endif
   let g:git_sync_cnt = 0
 
-  if isdirectory('.git')
-
-    echo 'git: synchronizing... (background)'
-    let g:fastgit_sync_lock = 1
-    let ret = system('git push ')
-    let ret = substitute(ret,'[\n\s]\+'," ",'g')
-    cal s:echo(ret)
-    sleep 50m
-
-    let ret = system('git pull')
-    let ret = substitute(ret,'[\n\s]\+'," ",'g')
-    cal s:echo(ret)
-    sleep 50m
-
-    unlet g:fastgit_sync_lock
+  if ! isdirectory('.git')
+    return
   endif
+
+  echo 'git: synchronizing... (background)'
+  let g:fastgit_sync_lock = 1
+  let ret = system('git push ')
+  let ret = substitute(ret,'[\n\s]\+'," ",'g')
+  cal s:echo(ret)
+  sleep 30m
+
+  let ret = system('git pull')
+  let ret = substitute(ret,'[\n\s]\+'," ",'g')
+  cal s:echo(ret)
+  sleep 50m
+
+  unlet g:fastgit_sync_lock
 endf
 
 
