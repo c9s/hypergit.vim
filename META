@@ -5,24 +5,15 @@
 
 =email          cornelius.howl@gmail.com
 
-=type           [ script type ]
+=type           plugin
 
-=version_from   [File]
+=version_from   vimlib/plugin/fastgit.vim
 
 =vim_version    >= 7.2
 
 =dependency
 
-    [name] >= [version]
-
-    [name]
-        | autoload/libperl.vim | http://github.com/c9s/libperl.vim/raw/master/autoload/libperl.vim
-        | plugin/yours.vim | http://ohlalallala.com/yours.vim
-
 =script
 
-    # your script files here
-
-
-=repository git://....../
+=repository http://github.com/c9s/fastgit.vim
 
