@@ -97,3 +97,6 @@ com! Gcia :cal s:commit_all_file()
 if exists('g:git_sync')
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
+
+
+
