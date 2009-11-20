@@ -1,13 +1,23 @@
 
+
+
 FEATURES
 ========
     * background syncing
     * commit message buffer
 
+CONFIGURATIONS
+==============
+
+to enable git sync (push , pull in background) , add this to your `.vimrc`
+
+    let g:git_sync = 1 
+
+
 COMMANDS
 ========
 
-  * Gitci   : commit current file
-  * Gitcia  : commit all changes
+  * Gci   : commit current file
+  * Gcia  : commit all changes
 
 

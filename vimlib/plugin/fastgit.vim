@@ -38,7 +38,7 @@ fun! s:git_sync_background()
     unlet g:git_sync
   endif
 endf
-autocmd CursorHold *.* nested cal s:git_sync_background()
+
 
 fun! s:commit_single_file(file)
   let commit = tempname()
@@ -80,5 +80,9 @@ fun! s:single_commit(msgfile,file)
   echo "committed"
 endf
 
-com! Gitci :cal s:commit_single_file(expand('%'))
-com! Gitcia :cal s:commit_all_file()
+com! Gci :cal s:commit_single_file(expand('%'))
+com! Gcia :cal s:commit_all_file()
+
+if exists('g:git_sync')
+  autocmd CursorHold *.* nested cal s:git_sync_background()
+endif
