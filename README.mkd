@@ -1,10 +1,25 @@
 
 
+INTRO
+=====
+fastgit.vim provide an interface for you to use git from vim, even faster from
+command-line.
+
+you can type commit message in commit message buffer, after commit message
+file saved, it will commit with the message file.
+
+fastgit.vim also provides auto synchronization feature by using 'updatetime'
+option. when you have a coffee, it will do auto-pushing and auto-pulling for
+you in background.
 
 FEATURES
 ========
 * background syncing
 * commit message buffer
+
+TODO
+====
+* stash toggle
 
 CONFIGURATIONS
 ==============

@@ -98,5 +98,10 @@ if exists('g:git_sync')
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
 
+fun! s:fastgit_default_mapping()
 
+endf
 
+if exists('g:fastgit_default_mapping')
+  cal s:fastgit_default_mapping()
+endif
