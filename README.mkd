@@ -21,6 +21,11 @@ TODO
 ====
 * stash toggle
 
+INSTALLATION
+============
+
+    makefile -f Makefile.pure install
+
 CONFIGURATIONS
 ==============
 
