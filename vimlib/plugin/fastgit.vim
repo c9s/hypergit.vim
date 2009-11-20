@@ -11,7 +11,7 @@
 let g:fastgit_sync = 1
 let g:fastgit_default_mapping = 1
 
-let s:git_sync_freq = 3   " per updatetime ( * 4sec by default )
+let s:git_sync_freq = 2   " per updatetime ( * 4sec by default )
 let s:git_sync_cnt = 0
 
 fun! s:echo(msg)
