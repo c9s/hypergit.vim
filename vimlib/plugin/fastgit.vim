@@ -24,11 +24,12 @@ fun! s:git_sync_background()
     return
   endif
 
-  if s:git_sync_cnt < s:git_sync_freq
+  " check counter
+  if g:git_sync_cnt < s:git_sync_freq
     let g:git_sync_cnt += 1
     return
   endif
-  let s:git_sync_cnt = 0
+  let g:git_sync_cnt = 0
 
   if isdirectory('.git')
 
