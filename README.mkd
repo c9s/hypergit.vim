@@ -71,8 +71,11 @@ setup default remote for git pull and push:
 DEFAULT MAPPING
 ===============
 
-- `<leader>ci` : commit current file
-- `<leader>ca` : commit all changes
+the default `<leader>` is '\' key, if you want to customize leader key, see
+`<leader>` option in vim documentation. 
+
+- `<leader>ci` : commit current file (\ci)
+- `<leader>ca` : commit all changes  (\ca)
 
 COMMANDS
 ========
