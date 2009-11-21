@@ -189,7 +189,6 @@ fun! s:fastgit_default_mapping()
   nmap <leader>ca  :Gca<CR>
 endf
 
-
 " Options
 let s:git_sync_freq = 0   " per updatetime ( 4sec by default )
 let g:git_sync_cnt = 0
@@ -203,6 +202,5 @@ if exists('g:fastgit_default_mapping')
 endif
 
 if exists('g:fastgit_sync')
-  cal s:echo('git auto sync enabled.')
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
