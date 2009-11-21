@@ -76,6 +76,7 @@ fun! s:git_sync_background()
   cal s:echo(ret)
   sleep 30m
 
+  cal s:echo('git: synchronized.')
   unlet g:fastgit_sync_lock
 endf
 
