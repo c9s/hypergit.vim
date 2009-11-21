@@ -134,10 +134,8 @@ fun! s:filter_message_op(msgfile)
 endf
 
 fun! s:commit(msgfile)
-  redraw
-  if ! filereadable(a:msgfile)
-    echo 'skipped.'
-    return
+  if ! s:can_commit(a:msgfile)
+    return 
   endif
 
   cal s:filter_message_op(a:msgfile)
@@ -148,11 +146,19 @@ fun! s:commit(msgfile)
   echo "committed"
 endf
 
-fun! s:single_commit(msgfile,file)
-  redraw
+fun! s:can_commit(msgfile)
   if ! filereadable(a:msgfile)
-    echo 'skipped.'
-    return
+    exec 'bw '.a:msgfile
+    cal s:echo('skipped.')
+    return 0
+  else 
+    return 1
+  endif
+endf
+
+fun! s:single_commit(msgfile,file)
+  if ! s:can_commit(a:msgfile)
+    return 
   endif
 
   cal s:filter_message_op(a:msgfile)
