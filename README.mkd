@@ -59,9 +59,14 @@ to enable git auto sync (push , pull in background) , add this to your
 `.vimrc`.
 
     let g:fastgit_sync = 1
+
+to enable default mapping:
+
     let g:fastgit_default_mapping = 1
 
+setup default remote for git pull and push:
 
+    let g:fastgit_default_remote = 'origin'
 
 DEFAULT MAPPING
 ===============

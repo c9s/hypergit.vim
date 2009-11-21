@@ -45,7 +45,7 @@ fun! s:git_sync_background()
   endif
 
   echon 'git: synchronizing... '
-  if exists('g:git_sync_background')
+  if g:fastgit_sync_bg
     echo '(background)'
   else
     echo
@@ -60,7 +60,7 @@ fun! s:git_sync_background()
     let pull_cmd .= g:fastgit_default_remote
   endif
 
-  if exists('g:fastgit_sync_bg')
+  if g:fastgit_sync_bg
     let push_cmd .= ' &'
     let pull_cmd .= ' &'
   endif
@@ -197,10 +197,10 @@ cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
 
-if exists('g:fastgit_default_mapping')
+if g:fastgit_default_mapping
   cal s:fastgit_default_mapping()
 endif
 
-if exists('g:fastgit_sync')
+if g:fastgit_sync
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
