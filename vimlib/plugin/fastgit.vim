@@ -169,8 +169,20 @@ fun! s:single_commit(msgfile,file)
   echo "committed"
 endf
 
-com! Gci :cal s:commit_single_file(expand('%'))
-com! Gca :cal s:commit_all_file()
+fun! s:skip_commit(file)
+  if &filetype != 'git-fast-commit'
+    return
+  endif
+  if filereadable(a:file)
+    cal delete(a:file)
+  endif
+  bw
+  cal s:echo('skipped')
+endf
+
+com! Gci    :cal s:commit_single_file(expand('%'))
+com! Gca    :cal s:commit_all_file()
+com! Gskip  :cal skip_commit(expand('%'))
 
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :Gci<CR>
@@ -189,6 +201,8 @@ cal s:defopt('g:fastgit_default_mapping',1)
 if exists('g:fastgit_default_mapping')
   cal s:fastgit_default_mapping()
 endif
+
 if exists('g:fastgit_sync')
+  cal s:echo('git auto sync enabled.')
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif
