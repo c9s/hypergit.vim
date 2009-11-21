@@ -28,6 +28,8 @@ fun! s:echo(msg)
   echomsg a:msg
 endf
 
+
+" XXX: only do push when there are commits to push.
 fun! s:git_sync_background()
   if exists('g:fastgit_sync_lock')
     return
