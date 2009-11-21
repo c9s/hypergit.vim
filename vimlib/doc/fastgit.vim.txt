@@ -1,11 +1,11 @@
 
-    *fastgit.vim.txt*  Plugin for .... 
+    *fastgit.vim.txt*  
 
 fastgit.vim                                       *fastgit.vim* 
 Last Change: 2009-11-08T16:08:27
 
-Version 0.0.0
-Copyright (C) yourname
+Version 0.2
+Copyright (C) Cornelius
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
@@ -51,8 +51,11 @@ USAGE                                                   *fastgit.vim-usage*
 ==============================================================================
 KEY MAPPINGS                                            *fastgit.vim-key-mappings*
 
-xx_key                                                               *xx_key*
-  key description here
+<leader>ci                                                     *<leader>ci*
+    commit current file
+
+<leader>ca                                                     *<leader>ca*
+    commit all changes
 
 ==============================================================================
 VARIABLES                                               *fastgit.vim-variables*
