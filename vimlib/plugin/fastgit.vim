@@ -30,6 +30,9 @@ endf
 
 
 " XXX: only do push when there are commits to push.
+
+" sync counter
+let g:git_sync_cnt = 0
 fun! s:git_sync_background()
   if exists('g:fastgit_sync_lock')
     return
@@ -183,9 +186,14 @@ fun! s:skip_commit(file)
   cal s:echo('skipped')
 endf
 
+fun! s:diff_window()
+
+endf
+
 com! Gci    :cal s:commit_single_file(expand('%'))
 com! Gca    :cal s:commit_all_file()
 com! Gskip  :cal skip_commit(expand('%'))
+com! Gdi    :cal s:diff_window()
 
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :Gci<CR>
@@ -193,8 +201,6 @@ fun! s:fastgit_default_mapping()
 endf
 
 " Options
-let g:git_sync_cnt = 0
-
 cal s:defopt('g:git_sync_freq',0)   " per updatetime ( 4sec by default )
 cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
