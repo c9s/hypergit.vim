@@ -102,6 +102,8 @@ fun! s:init_buffer()
   setlocal nu fdc=0
   setfiletype git-fast-commit
   setlocal syntax=git-fast-commit
+  syntax match GitAction '^\![AD] .*'
+  hi link GitAction Function
 endf
 
 fun! s:trim_message_op(line)
@@ -169,12 +171,6 @@ fun! s:fastgit_default_mapping()
   nmap <leader>ca  :Gca<CR>
 endf
 
-if exists('g:fastgit_default_mapping')
-  cal s:fastgit_default_mapping()
-endif
-if exists('g:fastgit_sync')
-  autocmd CursorHold *.* nested cal s:git_sync_background()
-endif
 
 " Options
 let s:git_sync_freq = 0   " per updatetime ( 4sec by default )
@@ -183,3 +179,10 @@ let g:git_sync_cnt = 0
 cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
+
+if exists('g:fastgit_default_mapping')
+  cal s:fastgit_default_mapping()
+endif
+if exists('g:fastgit_sync')
+  autocmd CursorHold *.* nested cal s:git_sync_background()
+endif
