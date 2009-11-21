@@ -89,7 +89,7 @@ endf
 fun! s:commit_single_file(file)
   let commit = tempname()
   exec 'rightbelow 6split' . commit
-  cal s:init_buffer()
+  cal s:init_commit_buffer()
   exec printf('autocmd BufWinLeave <buffer> :cal s:single_commit("%s","%s")',commit,a:file)
   startinsert
 endf
@@ -97,19 +97,29 @@ endf
 fun! s:commit_all_file()
   let commit = tempname()
   exec 'rightbelow 6split' . commit
-  cal s:init_buffer()
+  cal s:init_commit_buffer()
   exec printf('autocmd BufWinLeave <buffer> :cal s:commit("%s")',commit)
   startinsert
 endf
 
+fun! s:init_diff_buffer()
+  cal s:init_buffer()
+  
+endf
+
+" XXX: use built-in git syntax
+fun! s:init_commit_buffer()
+  cal s:init_buffer()
+  setlocal nu 
+  setlocal syntax=git-fast-commit
+  setfiletype git-fast-commit
+  syntax match GitAction '^\![AD] .*'
+  hi link GitAction Function
+endf
 
 fun! s:init_buffer()
   setlocal modifiable noswapfile bufhidden=hide nobuflisted nowrap cursorline
-  setlocal nu fdc=0
-  setfiletype git-fast-commit
-  setlocal syntax=git-fast-commit
-  syntax match GitAction '^\![AD] .*'
-  hi link GitAction Function
+  setlocal fdc=0
 endf
 
 fun! s:trim_message_op(line)
@@ -187,6 +197,8 @@ fun! s:skip_commit(file)
 endf
 
 fun! s:diff_window()
+  exec 'leftabove 10new'
+  cal s:init_diff_buffer()
 
 endf
 
