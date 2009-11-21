@@ -193,9 +193,9 @@ fun! s:fastgit_default_mapping()
 endf
 
 " Options
-let g:git_sync_freq = 0   " per updatetime ( 4sec by default )
 let g:git_sync_cnt = 0
 
+cal s:defopt('g:git_sync_freq',0)   " per updatetime ( 4sec by default )
 cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
