@@ -36,7 +36,7 @@ fun! s:git_sync_background()
   endif
 
   " check counter
-  if g:git_sync_cnt < s:git_sync_freq
+  if g:git_sync_cnt < g:git_sync_freq
     let g:git_sync_cnt += 1
     return
   endif
@@ -193,7 +193,7 @@ fun! s:fastgit_default_mapping()
 endf
 
 " Options
-let s:git_sync_freq = 0   " per updatetime ( 4sec by default )
+let g:git_sync_freq = 0   " per updatetime ( 4sec by default )
 let g:git_sync_cnt = 0
 
 cal s:defopt('g:fastgit_sync',1)
