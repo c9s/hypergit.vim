@@ -91,9 +91,19 @@ EXAMPLE
 =======
 `Gpush` command example:
 
+simply push:
+
     :Gpush
 
+to push in background:
+
+    :Gpush &
+
+to push to remote `origin`:
+
     :Gpush origin
+
+to push master branch to remote `origin`:
 
     :Gpush origin master
 
