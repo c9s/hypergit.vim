@@ -297,15 +297,15 @@ function! s:git_changes(...)
 	endfor
 
 endfunction
-com! -nargs=? GITChanges :call s:git_changes(<f-args>)
-
 
 com! Gci    :cal s:commit_single_file(expand('%'))
 com! Gca    :cal s:commit_all_file()
 com! Gskip  :cal s:skip_commit(expand('%'))
 com! Gdi    :cal s:diff_window()
+
 com! -nargs=? Gdiffthis :cal s:git_diff_this(<f-args>)
-com! -nargs=? Gdithis :cal s:git_diff_this(<f-args>)
+com! -nargs=? Gdithis   :cal s:git_diff_this(<f-args>)
+com! -nargs=? Gchanges  :cal s:git_changes(<f-args>)
 
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :Gci<CR>
