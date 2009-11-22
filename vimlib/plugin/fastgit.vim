@@ -292,6 +292,20 @@ fun! s:git_changes(...)
   endfor
 endf
 
+fun! s:git_push(...)
+  let cmd = [ "git","push" ]
+  if a:0 == 1
+    cal add(cmd,a:001)
+  endif
+  let cmd_output = system(join(cmd," "))
+  if v:shell_error 
+    echohl WarningMsg | echon cmd_output
+    return
+  endif
+  echo cmd_output
+endf
+
+com! Gpush  :cal s:git_push(<f-args>)
 com! Gci    :cal s:commit_single_file(expand('%'))
 com! Gca    :cal s:commit_all_file()
 com! Gskip  :cal s:skip_commit(expand('%'))
