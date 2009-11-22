@@ -7,6 +7,7 @@
 " Version: 0.5
 "
 
+
 " Plugin Guard
 if exists('g:loaded_fgit')
   finish
@@ -15,7 +16,6 @@ elseif v:version < 702
   finish
 endif
 let g:loaded_fgit = 1
-
 
 fun! s:defopt(name,val)
   if !exists(a:name)
@@ -204,7 +204,7 @@ endf
 
 com! Gci    :cal s:commit_single_file(expand('%'))
 com! Gca    :cal s:commit_all_file()
-com! Gskip  :cal skip_commit(expand('%'))
+com! Gskip  :cal s:skip_commit(expand('%'))
 com! Gdi    :cal s:diff_window()
 
 fun! s:fastgit_default_mapping()
