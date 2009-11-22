@@ -317,7 +317,7 @@ fun! s:get_author_name()
       else l =~ '\s\+name\s=' && found_user
         return matchstr( l , '\(name\s=\s\)\@<=\w\+' )
       endif
-    endf
+    endif
   endif
   return 
 endf
