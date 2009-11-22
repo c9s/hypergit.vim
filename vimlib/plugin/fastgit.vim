@@ -303,7 +303,8 @@ fun! s:git_push(...)
     echohl WarningMsg | echon cmd_output
     return
   endif
-  cal s:echo(cmd_output)
+  redraw
+  echohl MoreMsg cmd_output
 endf
 
 com! Gci    :cal s:commit_single_file(expand('%'))
