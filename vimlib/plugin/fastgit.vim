@@ -297,19 +297,20 @@ fun! s:git_push(...)
   if a:0 == 1
     cal add(cmd,a:001)
   endif
+  cal s:echo("git pushing...")
   let cmd_output = system(join(cmd," "))
   if v:shell_error 
     echohl WarningMsg | echon cmd_output
     return
   endif
-  echo cmd_output
+  cal s:echo(cmd_output)
 endf
 
-com! Gpush  :cal s:git_push(<f-args>)
 com! Gci    :cal s:commit_single_file(expand('%'))
 com! Gca    :cal s:commit_all_file()
 com! Gskip  :cal s:skip_commit(expand('%'))
 com! Gdi    :cal s:diff_window()
+com! -nargs=? Gpush  :cal s:git_push(<f-args>)
 
 com! -nargs=? Gdiffthis :cal s:git_diff_this(<f-args>)
 com! -nargs=? Gdithis   :cal s:git_diff_this(<f-args>)
