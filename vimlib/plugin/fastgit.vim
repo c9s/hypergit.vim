@@ -295,9 +295,9 @@ endf
 fun! s:git_push(...)
   let cmd = [ "git","push" ]
   if a:0 == 1
-    cal add(cmd,a:001)
+    cal add(cmd,a:1)
   endif
-  cal s:echo("git pushing...")
+  cal s:echo("git: pushing (Ctrl-c to stop)")
   let cmd_output = system(join(cmd," "))
   if v:shell_error 
     echohl WarningMsg | echon cmd_output
