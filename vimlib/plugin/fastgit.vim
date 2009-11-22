@@ -1,4 +1,5 @@
-
+" vim:et:sw=2:
+"
 " Fastgit
 "
 " Author: Cornelius
@@ -338,8 +339,7 @@ fun! s:git_pull(...)
 endf
 
 fun! g:get_current_branch()
-    return substitute(system("git branch -a | grep '^*'|awk '{print $2}'"),
-                                                             \ "\n",'', '')
+  return substitute(system("git branch -a | grep '^*'|awk '{print $2}'"), "\n",'', 'g')
 endf
 
 fun! s:create_git_statusline()
