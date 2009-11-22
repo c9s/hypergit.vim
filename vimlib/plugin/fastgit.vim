@@ -358,7 +358,7 @@ fun! s:update_statusline(newstl)
   let &st = &st
 endf
 
-fun! g:toggle_statusline()
+fun! s:toggle_statusline()
     if exists("s:old_stl")
         let s:stl =  s:old_stl
         unlet s:old_stl
@@ -368,8 +368,7 @@ fun! g:toggle_statusline()
     endif
     call s:update_statusline(s:stl)
 endf
-com! Gstl :cal g:toggle_statusline()
-" call g:toggle_statusline()
+" call s:toggle_statusline()
 " Function end
 
 fun! s:exec_cmd(cmd)
@@ -388,6 +387,7 @@ com! Gca            :cal s:commit_all_file()
 com! Gccommitall    :cal s:commit_all_file()
 com! Gskip          :cal s:skip_commit(expand('%'))
 com! Gdi            :cal s:diff_window()
+com! Gstl           :cal s:toggle_statusline()
 
 com! -nargs=? Gpush     :cal s:git_push(<f-args>)
 com! -nargs=? Gpull     :cal s:git_pull(<f-args>)
