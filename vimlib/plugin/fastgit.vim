@@ -326,6 +326,7 @@ com! Gskip  :cal s:skip_commit(expand('%'))
 com! Gdi    :cal s:diff_window()
 
 com! -nargs=? Gpush     :cal s:git_push(<f-args>)
+com! -nargs=? Gpull     :cal s:git_pull(<f-args>)
 com! -nargs=? Gdiffthis :cal s:git_diff_this(<f-args>)
 com! -nargs=? Gdithis   :cal s:git_diff_this(<f-args>)
 com! -nargs=? Gchanges  :cal s:git_changes(<f-args>)
