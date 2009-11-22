@@ -1,4 +1,7 @@
+# vim:fdm=expr:fdl=1:foldexpr=getline(v\:lnum)=~'^=='?'>1'\:getline(v\:lnum)[0]=~'[*x(]'?'>2'\:getline(v\:lnum)=~'^--'?'<2'\:'='
 
 * libnotify integration
 * zenity integration
 * sm (simple message) integration
+* auto checkout 
+    show a branch list to select.
