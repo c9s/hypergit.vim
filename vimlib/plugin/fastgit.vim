@@ -368,8 +368,6 @@ fun! s:toggle_statusline()
     endif
     call s:update_statusline(s:stl)
 endf
-" call s:toggle_statusline()
-" Function end
 
 fun! s:exec_cmd(cmd)
   let cmd_output = system(join(a:cmd," "))
@@ -411,9 +409,14 @@ cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( 4sec by default )
 cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
+cal s:defopt('g:fastgit_statusline' , 1)
 
 if g:fastgit_default_mapping
   cal s:fastgit_default_mapping()
+endif
+
+if g:fastgit_statusline 
+  cal s:toggle_statusline()
 endif
 
 if g:fastgit_sync
