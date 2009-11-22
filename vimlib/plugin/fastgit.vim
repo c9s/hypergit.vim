@@ -1,5 +1,5 @@
 
-" Fastgit 
+" Fastgit
 "
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
@@ -104,13 +104,13 @@ endf
 
 fun! s:init_diff_buffer()
   cal s:init_buffer()
-  
+
 endf
 
 " XXX: use built-in git syntax
 fun! s:init_commit_buffer()
   cal s:init_buffer()
-  setlocal nu 
+  setlocal nu
   setlocal syntax=git-fast-commit
   setfiletype git-fast-commit
   syntax match GitAction '^\![AD] .*'
@@ -132,7 +132,7 @@ fun! s:filter_message_op(msgfile)
   endif
   let lines = readfile(a:msgfile)
   let idx = 0
-  for l in lines 
+  for l in lines
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
       cal system( g:git_command . ' add ' . file )
@@ -151,12 +151,12 @@ endf
 
 fun! s:commit(msgfile)
   if ! s:can_commit(a:msgfile)
-    return 
+    return
   endif
 
   cal s:filter_message_op(a:msgfile)
 
-  echo "committing " 
+  echo "committing "
   let ret = system( printf('%s commit -a -F %s ', g:git_command , a:msgfile ) )
   echo ret
   echo "committed"
@@ -167,14 +167,14 @@ fun! s:can_commit(msgfile)
     exec 'bw '.a:msgfile
     cal s:echo('skipped.')
     return 0
-  else 
+  else
     return 1
   endif
 endf
 
 fun! s:single_commit(msgfile,file)
   if ! s:can_commit(a:msgfile)
-    return 
+    return
   endif
 
   cal s:filter_message_op(a:msgfile)
@@ -301,7 +301,7 @@ fun! s:git_push(...)
   cal s:exec_cmd( cmd )
 endf
 
-fun! s:get_author_cnt()
+fun! g:get_author_cnt()
   let cmd_ret = system('git log | grep Author | perl -pe ''s{Author:\s+(\w+).*$}{$1}'' | uniq -c')
 endf
 
@@ -314,9 +314,41 @@ fun! s:git_pull(...)
   cal s:exec_cmd( cmd )
 endf
 
+fun! g:get_current_branch()
+    return substitute(system("git branch -a | grep '^*'|awk '{print $2}'"),
+                                                             \ "\n",'', '')
+endf
+
+fun! s:create_git_statusline()
+    let l:stl = ''.
+\"%F%m%r%h %w".
+\"line: %l/%L:%c"
+    return l:stl
+endf
+
+fun! s:update_statusline(newstl)
+    let s:setcmd = 'set stl ='.escape(a:newstl, ' \')
+    exec s:setcmd
+    let &st = &st
+endf
+
+fun! g:toggle_statusline()
+    if exists("s:old_stl")
+        let s:stl =  s:old_stl
+        unlet s:old_stl
+    else
+        let s:old_stl = &stl
+        let s:stl =  s:create_git_statusline()
+    endif
+    call s:update_statusline(s:stl)
+endf
+
+"call g:toggle_statusline()
+" Function end
+
 fun! s:exec_cmd(cmd)
   let cmd_output = system(join(a:cmd," "))
-  if v:shell_error 
+  if v:shell_error
     echohl WarningMsg | echon cmd_output
     return
   endif
