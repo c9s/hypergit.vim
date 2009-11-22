@@ -343,9 +343,9 @@ fun! g:get_current_branch()
 endf
 
 fun! s:create_git_statusline()
-    let l:stl = ''.
-\"%F%m%r%h %w".
-\"line: %l/%L:%c"
+    let g:br = g:get_current_branch()
+    sleep 1
+    let l:stl = " B:%r%{g:br}"
     return l:stl
 endf
 
@@ -365,8 +365,8 @@ fun! g:toggle_statusline()
     endif
     call s:update_statusline(s:stl)
 endf
-
-"call g:toggle_statusline()
+com! Gstl :cal g:toggle_statusline()
+" call g:toggle_statusline()
 " Function end
 
 fun! s:exec_cmd(cmd)
