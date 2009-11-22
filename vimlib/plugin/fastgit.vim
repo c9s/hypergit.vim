@@ -303,7 +303,13 @@ endf
 
 fun! s:get_author_cnt()
   let cmd_ret = system('git log | grep Author | perl -pe ''s{Author:\s+(\w+).*$}{$1}'' | uniq -c')
-  let authors = split(cmd_ret)
+  let authorlines = split(cmd_ret,"\n")
+  let authors = { }
+  for a in authorlines
+    let [ cnt , name ] = split( a , " " )
+    let authors[ name ] = cnt
+  endfor
+  return authors
 endf
 
 fun! s:get_author_name()
@@ -321,7 +327,6 @@ fun! s:get_author_name()
   endif
   return 
 endf
-echo s:get_author_name()
 
 fun! s:git_pull(...)
   let cmd = [ g:git_command ,"pull" ]
