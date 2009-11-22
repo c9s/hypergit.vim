@@ -200,11 +200,10 @@ fun! s:diff_window()
   exec 'leftabove 10new'
   cal s:init_diff_buffer()
 
-
-
 endf
 
-function! s:git_diff(...)
+
+function! s:git_diff_this(...)
     if a:0 == 1
         let rev = a:1
     else
@@ -231,7 +230,6 @@ function! s:git_diff(...)
     exe "set filetype=" . ftype
     set foldmethod=diff
     wincmd l
-
 endfunction
 
 
@@ -300,14 +298,14 @@ function! s:git_changes(...)
 
 endfunction
 com! -nargs=? GITChanges :call s:git_changes(<f-args>)
-com! -nargs=? GITDiff :call s:git_diff(<f-args>)
-
 
 
 com! Gci    :cal s:commit_single_file(expand('%'))
 com! Gca    :cal s:commit_all_file()
 com! Gskip  :cal s:skip_commit(expand('%'))
 com! Gdi    :cal s:diff_window()
+com! -nargs=? Gdiffthis :cal s:git_diff_this(<f-args>)
+com! -nargs=? Gdithis :cal s:git_diff_this(<f-args>)
 
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :Gci<CR>
