@@ -298,7 +298,20 @@ fun! s:git_push(...)
     cal add(cmd,a:1)
   endif
   cal s:echo("git: pushing (Ctrl-c to stop)")
-  let cmd_output = system(join(cmd," "))
+  cal s:exec_cmd( cmd )
+endf
+
+fun! s:git_pull(...)
+  let cmd = [ g:git_command ,"pull" ]
+  if a:0 == 1
+    cal add(cmd,a:1)
+  endif
+  cal s:echo("git: pulling (Ctrl-c to stop)")
+  cal s:exec_cmd( cmd )
+endf
+
+fun! s:exec_cmd(cmd)
+  let cmd_output = system(join(a:cmd," "))
   if v:shell_error 
     echohl WarningMsg | echon cmd_output
     return
@@ -320,6 +333,11 @@ com! -nargs=? Gchanges  :cal s:git_changes(<f-args>)
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :Gci<CR>
   nmap <leader>ca  :Gca<CR>
+
+  " git prefix mapping
+  nmap <leader>gpp  :Gpush<CR>
+  nmap <leader>gll  :Gpull<CR>
+  nmap <leader>gdi  :Gdiffthis<CR>
 endf
 
 " Options
