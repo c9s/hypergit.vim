@@ -56,8 +56,8 @@ fun! s:git_sync_background()
     echo
   endif
 
-  let push_cmd = 'git push '
-  let pull_cmd = 'git pull '
+  let push_cmd = g:git_command . ' push '
+  let pull_cmd = g:git_command . ' pull '
 
   if exists('g:fastgit_default_remote')
     " XXX: only when remtoe exists
@@ -135,12 +135,12 @@ fun! s:filter_message_op(msgfile)
   for l in lines 
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
-      cal system('git add ' . file )
+      cal system( g:git_command . ' add ' . file )
       cal s:echo( file . ' added' )
       let lines[ idx ] = ''
     elseif l =~ '^\!D\s\+'
       let file = s:trim_message_op(l)
-      cal system('git rm ' . file )   " XXX: detect failure
+      cal system( g:git_command . ' rm ' . file )   " XXX: detect failure
       cal s:echo( file . ' deleted')
       let lines[ idx ] = ''
     endif
@@ -157,7 +157,7 @@ fun! s:commit(msgfile)
   cal s:filter_message_op(a:msgfile)
 
   echo "committing " 
-  let ret = system( printf('git commit -a -F %s ', a:msgfile ) )
+  let ret = system( printf('%s commit -a -F %s ', g:git_command , a:msgfile ) )
   echo ret
   echo "committed"
 endf
@@ -180,7 +180,7 @@ fun! s:single_commit(msgfile,file)
   cal s:filter_message_op(a:msgfile)
 
   echo "committing " . a:file
-  let ret = system( printf('git commit -F %s %s ', a:msgfile, a:file ) )
+  let ret = system( printf('%s commit -F %s %s ', g:git_command , a:msgfile, a:file ) )
   echo ret
   echo "committed"
 endf
@@ -210,13 +210,13 @@ function! s:git_diff_this(...)
     let rev = 'HEAD'
   endif
   let ftype = &filetype
-  let prefix = system("git rev-parse --show-prefix")
+  let prefix = system( g:git_command . " rev-parse --show-prefix")
   let thisfile = substitute(expand("%"),getcwd(),'','')
   let gitfile = substitute(prefix,'\n$','','') . thisfile
 
   " Check out the revision to a temp file
   let tmpfile = tempname()
-  let cmd = "git show  " . rev . ":" . gitfile . " > " . tmpfile
+  let cmd =  g:git_command . " show  " . rev . ":" . gitfile . " > " . tmpfile
   let cmd_output = system(cmd)
   if v:shell_error && cmd_output != ""
     echohl WarningMsg | echon cmd_output
@@ -240,7 +240,7 @@ fun! s:git_changes(...)
 
   " Check if this file is managed by git, exit otherwise
 
-  let prefix = system("git rev-parse --show-prefix")
+  let prefix = system( g:git_command . " rev-parse --show-prefix")
   let thisfile = substitute(expand("%"),getcwd(),'','')
   let gitfile = substitute(prefix,'\n$','','') . thisfile
 
@@ -293,7 +293,7 @@ fun! s:git_changes(...)
 endf
 
 fun! s:git_push(...)
-  let cmd = [ "git","push" ]
+  let cmd = [ g:git_command ,"push" ]
   if a:0 == 1
     cal add(cmd,a:1)
   endif
@@ -323,6 +323,7 @@ fun! s:fastgit_default_mapping()
 endf
 
 " Options
+cal s:defopt('g:git_command','git')
 cal s:defopt('g:git_sync_freq',0)   " per updatetime ( 4sec by default )
 cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
