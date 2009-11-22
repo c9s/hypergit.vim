@@ -80,6 +80,22 @@ the default `<leader>` is '\' key, if you want to customize leader key, see
 COMMANDS
 ========
 
-- Gci   : commit current file
-- Gca  : commit all changes
+- Gci     : commit current file
+- Gca     : commit all changes
+- Gcommit : commit current file (alias)
+- Gcommitall : commit all changes (alias)
+- Gpush   : git push
+
+
+EXAMPLE
+=======
+`Gpush` command example:
+
+    :Gpush
+
+    :Gpush origin
+
+    :Gpush origin master
+
+
 

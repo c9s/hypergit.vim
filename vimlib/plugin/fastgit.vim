@@ -320,10 +320,12 @@ fun! s:exec_cmd(cmd)
   echo cmd_output
 endf
 
-com! Gci    :cal s:commit_single_file(expand('%'))
-com! Gca    :cal s:commit_all_file()
-com! Gskip  :cal s:skip_commit(expand('%'))
-com! Gdi    :cal s:diff_window()
+com! Gci            :cal s:commit_single_file(expand('%'))
+com! Gcommmit       :cal s:commit_single_file(expand('%'))
+com! Gca            :cal s:commit_all_file()
+com! Gccommitall    :cal s:commit_all_file()
+com! Gskip          :cal s:skip_commit(expand('%'))
+com! Gdi            :cal s:diff_window()
 
 com! -nargs=? Gpush     :cal s:git_push(<f-args>)
 com! -nargs=? Gpull     :cal s:git_pull(<f-args>)
