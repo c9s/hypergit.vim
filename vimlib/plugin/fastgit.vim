@@ -303,6 +303,15 @@ endf
 
 fun! s:get_author_cnt()
   let cmd_ret = system('git log | grep Author | perl -pe ''s{Author:\s+(\w+).*$}{$1}'' | uniq -c')
+  let authors = split(cmd_ret)
+endf
+
+fun! s:get_author_name()
+  let config = expand('~/.gitconfig')
+  if filereadable( config )
+    let lines = readfile( )
+
+  endif
 endf
 
 fun! s:git_pull(...)
