@@ -200,7 +200,109 @@ fun! s:diff_window()
   exec 'leftabove 10new'
   cal s:init_diff_buffer()
 
+
+
 endf
+
+function! s:git_diff(...)
+    if a:0 == 1
+        let rev = a:1
+    else
+        let rev = 'HEAD'
+    endif
+
+    let ftype = &filetype
+
+    let prefix = system("git rev-parse --show-prefix")
+    let thisfile = substitute(expand("%"),getcwd(),'','')
+    let gitfile = substitute(prefix,'\n$','','') . thisfile
+
+    " Check out the revision to a temp file
+    let tmpfile = tempname()
+    let cmd = "git show  " . rev . ":" . gitfile . " > " . tmpfile
+    let cmd_output = system(cmd)
+    if v:shell_error && cmd_output != ""
+        echohl WarningMsg | echon cmd_output
+        return
+    endif
+
+    " Begin diff
+    exe "vert diffsplit" . tmpfile
+    exe "set filetype=" . ftype
+    set foldmethod=diff
+    wincmd l
+
+endfunction
+
+
+
+
+function! s:git_changes(...)
+  
+  if a:0 == 1
+    let rev = a:1
+  else
+    let rev = 'HEAD'
+  endif
+
+	" Check if this file is managed by git, exit otherwise
+
+  let prefix = system("git rev-parse --show-prefix")
+  let thisfile = substitute(expand("%"),getcwd(),'','')
+  let gitfile = substitute(prefix,'\n$','','') . thisfile
+	
+	" Reset syntax highlighting
+	
+	syntax off
+
+	" Pipe the current buffer contents to a shell command calculating the diff
+	" in a friendly parsable format
+
+	let contents = join(getbufline("%", 1, "$"), "\n")
+	let diff = system("diff -u0 <(git show " . rev . ":" . gitfile . ") <(cat;echo)", contents)
+
+	" Parse the output of the diff command and hightlight changed, added and
+	" removed lines
+
+	for line in split(diff, '\n')
+		
+    let part = matchlist(line, '@@ -\([0-9]*\),*\([0-9]*\) +\([0-9]*\),*\([0-9]*\) @@')
+
+		if ! empty(part)
+			let old_from  = part[1]
+			let old_count = part[2] == '' ? 1 : part[2]
+			let new_from  = part[3]
+			let new_count = part[4] == '' ? 1 : part[4]
+
+			" Figure out if text was added, removed or changed.
+			
+			if old_count == 0
+				let from  = new_from
+				let to    = new_from + new_count - 1
+				let group = 'DiffAdd'
+			elseif new_count == 0
+				let from  = new_from
+				let to    = new_from + 1
+				let group = 'DiffDelete'
+			else
+				let from  = new_from
+				let to    = new_from + new_count - 1
+				let group = 'DiffChange'
+			endif
+
+			" Set the actual syntax highlight
+			
+			exec 'syntax region ' . group . ' start=".*\%' . from . 'l" end=".*\%' . to . 'l"'
+
+		endif
+
+	endfor
+
+endfunction
+com! -nargs=? GITChanges :call s:git_changes(<f-args>)
+com! -nargs=? GITDiff :call s:git_diff(<f-args>)
+
+
 
 com! Gci    :cal s:commit_single_file(expand('%'))
 com! Gca    :cal s:commit_all_file()
