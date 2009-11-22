@@ -309,9 +309,17 @@ endf
 fun! s:get_author_name()
   let config = expand('~/.gitconfig')
   if filereadable( config )
-    let lines = readfile( )
-
+    let lines = split(readfile( config ))
+    let found_user = 0
+    for l in lines 
+      if l =~ '[user]'
+        let found_user = 1
+      else l =~ '\s\+name\s=' && found_user
+        return matchstr( l , '\(name\s=\s\)\@<=\w\+' )
+      endif
+    endf
   endif
+  return 
 endf
 
 fun! s:git_pull(...)
