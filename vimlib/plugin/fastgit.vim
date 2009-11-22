@@ -312,7 +312,7 @@ fun! s:get_author_cnt()
   return authors
 endf
 
-fun! s:get_author_name()
+fun! s:get_author_names()
   let config = expand('~/.gitconfig')
   if filereadable( config )
     let lines = readfile( config )
