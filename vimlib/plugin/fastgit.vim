@@ -301,6 +301,10 @@ fun! s:git_push(...)
   cal s:exec_cmd( cmd )
 endf
 
+fun! s:get_author_cnt()
+  let cmd_ret = system('git log | grep Author | perl -pe ''s{Author:\s+(\w+).*$}{$1}'' | uniq -c')
+endf
+
 fun! s:git_pull(...)
   let cmd = [ g:git_command ,"pull" ]
   if a:0 == 1
