@@ -304,7 +304,7 @@ fun! s:git_push(...)
     return
   endif
   redraw
-  echohl MoreMsg cmd_output
+  echo cmd_output
 endf
 
 com! Gci    :cal s:commit_single_file(expand('%'))
