@@ -312,15 +312,16 @@ fun! s:get_author_name()
     let lines = split(readfile( config ))
     let found_user = 0
     for l in lines 
-      if l =~ '[user]'
+      if l =~ '\[user\]'
         let found_user = 1
-      else l =~ '\s\+name\s=' && found_user
+      elseif l =~ '\s\+name\s=' && found_user
         return matchstr( l , '\(name\s=\s\)\@<=\w\+' )
       endif
     endif
   endif
   return 
 endf
+echo s:get_author_name()
 
 fun! s:git_pull(...)
   let cmd = [ g:git_command ,"pull" ]
