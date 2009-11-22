@@ -342,17 +342,20 @@ fun! g:get_current_branch()
   return substitute(system("git branch -a | grep '^*'|awk '{print $2}'"), "\n",'', 'g')
 endf
 
+fun! s:update_branch_name()
+  let g:br = g:get_current_branch()
+endf
+
 fun! s:create_git_statusline()
-    let g:br = g:get_current_branch()
-    sleep 1
-    let l:stl = " B:%r%{g:br}"
-    return l:stl
+  cal s:update_branch_name()
+  let l:stl = " B:%r%{g:br}"
+  return l:stl
 endf
 
 fun! s:update_statusline(newstl)
-    let s:setcmd = 'set stl ='.escape(a:newstl, ' \')
-    exec s:setcmd
-    let &st = &st
+  let s:setcmd = 'set stl ='.escape(a:newstl, ' \')
+  exec s:setcmd
+  let &st = &st
 endf
 
 fun! g:toggle_statusline()
