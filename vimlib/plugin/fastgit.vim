@@ -336,9 +336,9 @@ fun! s:fastgit_default_mapping()
   nmap <leader>ca  :Gca<CR>
 
   " git prefix mapping
-  nmap <leader>gpp  :Gpush<CR>
-  nmap <leader>gll  :Gpull<CR>
-  nmap <leader>gdi  :Gdiffthis<CR>
+  nmap <leader>gp  :Gpush<CR>
+  nmap <leader>gl  :Gpull<CR>
+  nmap <leader>ggdi  :Gdiffthis<CR>
 endf
 
 " Options
