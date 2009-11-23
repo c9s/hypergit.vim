@@ -416,20 +416,22 @@ cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( 4sec by default )
 cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
-cal s:defopt('g:fastgit_statusline' , 1)
+cal s:defopt('g:fastgit_statusline' , 'f' )
 
 if g:fastgit_default_mapping
   cal s:fastgit_default_mapping()
 endif
 
-if g:fastgit_statusline 
+if g:fastgit_statusline == 'f'  " full
+  cal s:toggle_statusline()
+elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   let s:stl = &stl
-  if strlen(s:stl) < 50
+  if strlen(s:stl) < 70
     cal s:append_statusline(s:stl)
-  else
-    cal s:toggle_statusline()
   endif
+  unlet s:stl
 endif
+
 
 if g:fastgit_sync
   autocmd CursorHold *.* nested cal s:git_sync_background()
