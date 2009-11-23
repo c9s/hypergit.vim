@@ -348,8 +348,8 @@ endf
 
 fun! s:append_statusline(stl)
   cal s:update_branch_name()
-  let l:stl = a:stl . " (B:%r%{g:br}"
-  exec 'set stl='.escape(l:stl,' \')
+  let l:stl = a:stl . " %=(B:%{g:br})"
+  exec 'set stl='.escape(l:stl,'\ ')
 endf
 
 fun! s:create_git_statusline()
