@@ -346,6 +346,12 @@ fun! s:update_branch_name()
   let g:br = g:get_current_branch()
 endf
 
+fun! s:append_statusline(stl)
+  cal s:update_branch_name()
+  let l:stl = a:stl . " (B:%r%{g:br}"
+  exec 'set stl='.escape(l:stl,' \')
+endf
+
 fun! s:create_git_statusline()
   cal s:update_branch_name()
   let l:stl = " B:%r%{g:br}"
@@ -416,7 +422,12 @@ if g:fastgit_default_mapping
 endif
 
 if g:fastgit_statusline 
-  cal s:toggle_statusline()
+  let s:stl = &stl
+  if strlen(s:stl) < 50
+    cal s:append_statusline(s:stl)
+  else
+    cal s:toggle_statusline()
+  endif
 endif
 
 if g:fastgit_sync
