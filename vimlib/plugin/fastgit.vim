@@ -358,10 +358,9 @@ endf
 
 fun! s:create_statusline_str(opt)
   cal s:update_branch_name()
-  let l:stl = " B:%{g:br}"
-  return l:stl
+  return ' %n) %<%f %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",bom\":\"\")}] %-14.(%l,%c%v%) %p'
+        \. " (B:%{g:br}) "
 endf
-
 
 fun! s:toggle_statusline()
   if exists("s:old_stl")
