@@ -432,7 +432,6 @@ elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   unlet s:stl
 endif
 
-
 if g:fastgit_sync
   autocmd CursorHold *.* nested cal s:git_sync_background()
 endif

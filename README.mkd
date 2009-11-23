@@ -68,6 +68,15 @@ setup default remote for git pull and push:
 
     let g:fastgit_default_remote = 'origin'
 
+to use fastgit statusline:
+
+    let g:fastgit_statusline = 'f'
+
+to append git branch info to current statusline:
+
+    let g:fastgit_statusline = 'a'
+
+
 DEFAULT MAPPING
 ===============
 
