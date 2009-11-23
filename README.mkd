@@ -72,7 +72,7 @@ to use fastgit statusline:
 
     let g:fastgit_statusline = 'f'
 
-to append git branch info to current statusline:
+to append git branch info to current statusline (if you have enough space):
 
     let g:fastgit_statusline = 'a'
 
