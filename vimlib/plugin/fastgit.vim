@@ -346,33 +346,34 @@ fun! s:update_branch_name()
   let g:br = g:get_current_branch()
 endf
 
+fun! s:set_statusline(newstl)
+  exec 'set stl='.escape(a:newstl, ' \')
+endf
+
 fun! s:append_statusline(stl)
   cal s:update_branch_name()
   let l:stl = a:stl . " %=(B:%{g:br})"
-  exec 'set stl='.escape(l:stl,'\ ')
+  cal s:set_statusline(l:stl)
 endf
 
-fun! s:create_git_statusline()
+fun! s:create_statusline_str(opt)
   cal s:update_branch_name()
-  let l:stl = " B:%r%{g:br}"
+  let l:stl = " B:%{g:br}"
   return l:stl
 endf
 
-fun! s:update_statusline(newstl)
-  let s:setcmd = 'set stl ='.escape(a:newstl, ' \')
-  exec s:setcmd
-  let &st = &st
-endf
 
 fun! s:toggle_statusline()
-    if exists("s:old_stl")
-        let s:stl =  s:old_stl
-        unlet s:old_stl
-    else
-        let s:old_stl = &stl
-        let s:stl =  s:create_git_statusline()
-    endif
-    call s:update_statusline(s:stl)
+  if exists("s:old_stl")
+    " recover statusline
+    let s:stl =  s:old_stl
+    unlet s:old_stl
+  else
+    " save statusline
+    let s:old_stl = &stl
+    let s:stl =  s:create_statusline_str({ })
+  endif
+  cal s:set_statusline(s:stl)
 endf
 
 fun! s:exec_cmd(cmd)
