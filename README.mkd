@@ -88,7 +88,7 @@ the default `<leader>` is '\' key, if you want to customize leader key, see
 - `<leader>gp`   : git push
 - `<leader>gl`   : git pull
 - `<leader>ggdi` : git diff this file
-- `<leader>gb`   : git branch list toggle
+- `<leader>gb`   : toggle git branch list window
 
 COMMANDS
 ========
@@ -98,6 +98,7 @@ COMMANDS
 - Gcommit : commit current file (alias)
 - Gcommitall : commit all changes (alias)
 - Gpush   : git push
+- Gbranchtoggle : git branch list window toggle
 
 
 EXAMPLE
