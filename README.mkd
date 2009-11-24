@@ -80,7 +80,7 @@ to append git branch info to current statusline (if you have enough space):
 DEFAULT MAPPING
 ===============
 
-the default `<leader>` is '\' key, if you want to customize leader key, see
+the default `<leader>` is a `slash key`, if you want to customize leader key, see
 `<leader>` option in vim documentation. 
 
 - `<leader>ci`   : commit current file (\ci)
