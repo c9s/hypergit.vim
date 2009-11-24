@@ -83,8 +83,12 @@ DEFAULT MAPPING
 the default `<leader>` is '\' key, if you want to customize leader key, see
 `<leader>` option in vim documentation. 
 
-- `<leader>ci` : commit current file (\ci)
-- `<leader>ca` : commit all changes  (\ca)
+- `<leader>ci`   : commit current file (\ci)
+- `<leader>ca`   : commit all changes  (\ca)
+- `<leader>gp`   : git push
+- `<leader>gl`   : git pull
+- `<leader>ggdi` : git diff this file
+- `<leader>gb`   : git branch list toggle
 
 COMMANDS
 ========
