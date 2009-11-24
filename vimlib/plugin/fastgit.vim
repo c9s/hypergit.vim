@@ -33,6 +33,25 @@ fun! s:close_buffer()
   bw!
 endf
 
+" XXX:  if branch exists , we should jsut switch , not to create one
+fun! s:switch_branch(branch)
+  let opt = ''
+  if a:branch =~ 'remotes/'
+    let br = substitute( a:branch , 'remotes/' , '' , '' )
+    let local_br = matchstr( br , '[a-zA-Z0-9-]\+$' )
+    let opt .= ' -t ' . br . ' -b ' . local_br
+  else
+    let opt .= a:branch
+  endif
+  let cmd = 'git checkout ' . opt
+  echo cmd
+  let out = system( cmd )
+  echo out
+endf
+com! -nargs=1 SwitchBranch  :cal s:switch_branch(<f-args>)
+
+
+
 fun! s:open_branch_switch_buffer()
   6new
   cal s:init_buffer()
@@ -40,6 +59,11 @@ fun! s:open_branch_switch_buffer()
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
   let out = system('git branch -a')
   autocmd BufWinLeave <buffer>   :cal s:close_buffer()
+
+  let help = "HELP: o : checkout branch , p : push branch , l : pull branch "
+  cal setline(1,help)
+  cal setline(2,'--------------')
+  cal cursor(2,1)
 
   silent put=out
   file BranchList
@@ -49,6 +73,8 @@ fun! s:open_branch_switch_buffer()
   syn match RemoteBranch  "^\s\+remotes/.*$"
   syn match CurrentBranch "^\*\s.*$"
   syn match LocalBranch   "^\s\+\(remotes\)\@![a-zA-Z/_-]\+"
+
+  nmap <silent> <buffer> o    :exec 'SwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
 
   hi link RemoteBranch Function 
   hi LocalBranch   ctermfg=blue
@@ -423,14 +449,14 @@ fun! s:exec_cmd(cmd)
   echo cmd_output
 endf
 
-com! Gbranchtoggle  :cal s:branch_list_toggle()
-com! Gci            :cal s:commit_single_file(expand('%'))
-com! Gcommmit       :cal s:commit_single_file(expand('%'))
-com! Gca            :cal s:commit_all_file()
-com! Gccommitall    :cal s:commit_all_file()
-com! Gskip          :cal s:skip_commit(expand('%'))
-com! Gdi            :cal s:diff_window()
-com! Gstl           :cal s:toggle_statusline()
+com! Gbranchtoggle      :cal s:branch_list_toggle()
+com! Gci                :cal s:commit_single_file(expand('%'))
+com! Gcommmit           :cal s:commit_single_file(expand('%'))
+com! Gca                :cal s:commit_all_file()
+com! Gccommitall        :cal s:commit_all_file()
+com! Gskip              :cal s:skip_commit(expand('%'))
+com! Gdi                :cal s:diff_window()
+com! Gstl               :cal s:toggle_statusline()
 
 com! -nargs=? Gpush     :cal s:git_push(<f-args>)
 com! -nargs=? Gpull     :cal s:git_pull(<f-args>)
@@ -443,10 +469,10 @@ fun! s:fastgit_default_mapping()
   nmap <leader>ca  :Gca<CR>
 
   " git prefix mapping
-  nmap <leader>gp  :Gpush<CR>
-  nmap <leader>gl  :Gpull<CR>
-  nmap <leader>ggdi  :Gdiffthis<CR>
-  nmap <leader>gb  :Gbranchtoggle<CR>
+  nmap <leader>gp   :Gpush<CR>
+  nmap <leader>gl   :Gpull<CR>
+  nmap <leader>ggdi :Gdiffthis<CR>
+  nmap <leader>gb   :Gbranchtoggle<CR>
 endf
 
 " Options
