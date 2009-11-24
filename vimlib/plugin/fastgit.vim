@@ -29,6 +29,40 @@ fun! s:echo(msg)
   echomsg a:msg
 endf
 
+fun! s:close_buffer()
+  bw!
+endf
+
+fun! s:open_branch_switch_buffer()
+  6new
+  cal s:init_buffer()
+  setlocal noswapfile  buftype=nofile bufhidden=hide
+  setlocal nobuflisted nowrap cursorline nonumber fdc=0
+  let out = system('git branch -a')
+  autocmd BufWinLeave <buffer>   :cal s:close_buffer()
+
+  silent put=out
+  file BranchList
+
+  " init syntax
+  setfiletype gitbranchlist
+  syn match RemoteBranch  "^\s\+remotes/.*$"
+  syn match CurrentBranch "^\*\s.*$"
+  syn match LocalBranch   "^\s\+\(remotes\)\@![a-zA-Z/_-]\+"
+
+  hi link RemoteBranch Function 
+  hi LocalBranch   ctermfg=blue
+  hi CurrentBranch ctermfg=red
+endf
+
+fun! s:branch_list_toggle()
+  let b = bufnr('BranchList')
+  if b == -1 
+    cal s:open_branch_switch_buffer()
+  else 
+    exec 'silent '.b .'bw'
+  endif
+endf
 
 " XXX: only do push when there are commits to push.
 
@@ -346,6 +380,11 @@ fun! s:update_branch_name()
   let g:br = g:get_current_branch()
 endf
 
+fun! s:changed_lines_num()
+  let ret = system("git log -p | grep '^[+-]' | wc -l")
+  "return Int(ret)
+endf
+
 fun! s:set_statusline(newstl)
   exec 'set stl='.escape(a:newstl, ' \')
 endf
@@ -355,7 +394,6 @@ fun! s:append_statusline(stl)
   let l:stl = a:stl . " %=(B:%{g:br})"
   cal s:set_statusline(l:stl)
 endf
-
 fun! s:create_statusline_str(opt)
   cal s:update_branch_name()
   return ' %n) %<%f %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",bom\":\"\")}] %-14.(%l,%c%v%) %p'
@@ -385,6 +423,7 @@ fun! s:exec_cmd(cmd)
   echo cmd_output
 endf
 
+com! Gbranchtoggle  :cal s:branch_list_toggle()
 com! Gci            :cal s:commit_single_file(expand('%'))
 com! Gcommmit       :cal s:commit_single_file(expand('%'))
 com! Gca            :cal s:commit_all_file()
@@ -407,6 +446,7 @@ fun! s:fastgit_default_mapping()
   nmap <leader>gp  :Gpush<CR>
   nmap <leader>gl  :Gpull<CR>
   nmap <leader>ggdi  :Gdiffthis<CR>
+  nmap <leader>gb  :Gbranchtoggle<CR>
 endf
 
 " Options
