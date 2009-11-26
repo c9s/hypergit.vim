@@ -36,7 +36,11 @@ TODO
 INSTALLATION
 ============
 
-via VIM::Packager:
+via simple makefile:
+
+    makefile -f Makefile.pure install
+
+or you can also install via VIM::Packager:
 
     # to install VIM::Packager via CPAN
     $ sudo cpan VIM::Packager
@@ -48,9 +52,6 @@ via VIM::Packager:
     # if you dont want it
     $ make uninstall
 
-via simple makefile:
-
-    makefile -f Makefile.pure install
 
 CONFIGURATIONS
 ==============
