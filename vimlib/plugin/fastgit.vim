@@ -5,7 +5,7 @@
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
-" Version: 1.5
+" Version: 1.6
 "
 
 
