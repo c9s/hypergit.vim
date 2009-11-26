@@ -48,9 +48,10 @@ fun! s:switch_branch(branch)
   let out = system( cmd )
   echo out
 endf
+fun! s:refresh_branch_buffer()
+
+endf
 com! -nargs=1 SwitchBranch  :cal s:switch_branch(<f-args>)
-
-
 
 fun! s:open_branch_switch_buffer()
   6new
@@ -60,12 +61,13 @@ fun! s:open_branch_switch_buffer()
   let out = system('git branch -a')
   autocmd BufWinLeave <buffer>   :cal s:close_buffer()
 
-  let help = "HELP: o : checkout branch , p : push branch , l : pull branch "
-  cal setline(1,help)
-  cal setline(2,'--------------')
-  cal cursor(2,1)
+  " XXX: refactor this to refresh_branch_buffer function
+  let lines = ["HELP: o : checkout branch , p : push branch , l : pull branch "]
+  cal add(lines,'---------------------------------------')
+  cal extend(lines, split( out , "\n" ))
+  cal setline(1, lines )
+  cal search('^\*')
 
-  silent put=out
   file BranchList
 
   " init syntax
