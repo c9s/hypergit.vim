@@ -68,6 +68,7 @@ endf
 
 com! -nargs=1 GitSwitchBranch  :cal s:switch_branch(<f-args>)
 com! -nargs=1 GitMergeBranch   :cal s:merge_branch(<f-args>)
+
 fun! s:open_branch_switch_buffer()
   8new
   cal s:init_buffer()
@@ -87,7 +88,7 @@ fun! s:open_branch_switch_buffer()
   autocmd BufWinLeave <buffer>   :cal s:close_buffer()
 
   nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
-  nmap <silent> <buffer> m    :exec 'GitMergeBranch '  . substitute(getcwde('.'),'^\*','','')<CR>
+  nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
 
   " XXX: refactor this to refresh_branch_buffer function
   cal s:refresh_branch_buffer()
