@@ -69,28 +69,33 @@ endf
 com! -nargs=1 GitSwitchBranch  :cal s:switch_branch(<f-args>)
 com! -nargs=1 GitMergeBranch   :cal s:merge_branch(<f-args>)
 
+fun! s:open_stash_buffer()
+  8new
+  cal s:init_buffer()
+  setlocal noswapfile  buftype=nofile bufhidden=hide
+  setlocal nobuflisted nowrap cursorline nonumber fdc=0
+  file GitStashList
+  setfiletype gitstashlist
+
+endf
+
 fun! s:open_branch_switch_buffer()
   8new
   cal s:init_buffer()
   setlocal noswapfile  buftype=nofile bufhidden=hide
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
-  file BranchList
+  file GitBranchList
   " init syntax
   setfiletype gitbranchlist
   syn match RemoteBranch  "^\s\+remotes/.*$"
   syn match CurrentBranch "^\*\s.*$"
   syn match LocalBranch   "^\s\+\(remotes\)\@![a-zA-Z/_-]\+"
-
   hi link RemoteBranch Function 
   hi LocalBranch   ctermfg=blue
   hi CurrentBranch ctermfg=red
-
   autocmd BufWinLeave <buffer>   :cal s:close_buffer()
-
   nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
   nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
-
-  " XXX: refactor this to refresh_branch_buffer function
   cal s:refresh_branch_buffer()
 endf
 
