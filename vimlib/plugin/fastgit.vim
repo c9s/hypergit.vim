@@ -408,7 +408,7 @@ fun! g:get_current_branch()
 endf
 
 fun! s:update_branch_name()
-  let g:br = g:get_current_branch()
+  let g:git_br = g:get_current_branch()
 endf
 
 fun! s:changed_lines_num()
@@ -422,13 +422,25 @@ endf
 
 fun! s:append_statusline(stl)
   cal s:update_branch_name()
-  let l:stl = a:stl . " %=(B:%{g:br})"
+  let g:git_ch = s:count_changes_from_yesterday()
+  let l:stl = a:stl . " %=(B:%{g:git_br} C:%{g:git_ch})"
   cal s:set_statusline(l:stl)
 endf
+
+fun! s:count_changes_from_yesterday()
+  let ret = system('git log -p --since="yesterday" | grep -E "^[-+]" | wc -l') 
+  if strlen(ret) > 0 
+    return str2nr(ret)
+  else 
+    return 0
+  endif
+endf
+
 fun! s:create_statusline_str(opt)
   cal s:update_branch_name()
+  let g:git_ch = s:count_changes_from_yesterday()
   return ' %n) %<%f %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",bom\":\"\")}] %-14.(%l,%c%v%) %p'
-        \. " (B:%{g:br}) "
+        \. " %=(C:%{g:git_ch}) (B:%{g:git_br}) "
 endf
 
 fun! s:toggle_statusline()
