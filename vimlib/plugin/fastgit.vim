@@ -76,7 +76,17 @@ fun! s:open_stash_buffer()
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
   file GitStashList
   setfiletype gitstashlist
+  autocmd BufWinLeave <buffer>   :cal s:close_buffer()
+  "nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
+  "nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
+  cal s:show_stash_list()
+endf
 
+fun! s:show_stash_list()
+  let out = system('git stash list')
+  let lines = [""]
+  cal extend(lines, split( out , "\n" ))
+  cal setline(1, lines )
 endf
 
 fun! s:open_branch_switch_buffer()
