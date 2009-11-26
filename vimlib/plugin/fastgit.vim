@@ -52,16 +52,22 @@ fun! s:switch_branch(branch)
   cal s:refresh_branch_buffer()
 endf
 
+fun! s:merge_branch(branch)
+  let out = system('git merge ' . a:branch )
+  echo out
+endfun
+
 fun! s:refresh_branch_buffer()
   let out = system('git branch -a')
-  let lines = ["HELP: o : checkout branch , p : push branch , l : pull branch "]
+  let lines = ["HELP: o: checkout branch  p: push  l: pull  m: merge"]
   cal add(lines,'---------------------------------------')
   cal extend(lines, split( out , "\n" ))
   cal setline(1, lines )
   cal search('^\*')
 endf
 
-com! -nargs=1 SwitchBranch  :cal s:switch_branch(<f-args>)
+com! -nargs=1 GitSwitchBranch  :cal s:switch_branch(<f-args>)
+com! -nargs=1 GitMergeBranch   :cal s:merge_branch(<f-args>)
 fun! s:open_branch_switch_buffer()
   8new
   cal s:init_buffer()
@@ -80,7 +86,8 @@ fun! s:open_branch_switch_buffer()
 
   autocmd BufWinLeave <buffer>   :cal s:close_buffer()
 
-  nmap <silent> <buffer> o    :exec 'SwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
+  nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
+  nmap <silent> <buffer> m    :exec 'GitMergeBranch '  . substitute(getcwde('.'),'^\*','','')<CR>
 
   " XXX: refactor this to refresh_branch_buffer function
   cal s:refresh_branch_buffer()
