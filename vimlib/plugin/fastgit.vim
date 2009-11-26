@@ -60,10 +60,10 @@ fun! s:refresh_branch_buffer()
   cal setline(1, lines )
   cal search('^\*')
 endf
-com! -nargs=1 SwitchBranch  :cal s:switch_branch(<f-args>)
 
+com! -nargs=1 SwitchBranch  :cal s:switch_branch(<f-args>)
 fun! s:open_branch_switch_buffer()
-  6new
+  8new
   cal s:init_buffer()
   setlocal noswapfile  buftype=nofile bufhidden=hide
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
