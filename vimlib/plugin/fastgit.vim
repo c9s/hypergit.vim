@@ -47,9 +47,18 @@ fun! s:switch_branch(branch)
   echo cmd
   let out = system( cmd )
   echo out
-endf
-fun! s:refresh_branch_buffer()
 
+  silent 1,$delete _
+  cal s:refresh_branch_buffer()
+endf
+
+fun! s:refresh_branch_buffer()
+  let out = system('git branch -a')
+  let lines = ["HELP: o : checkout branch , p : push branch , l : pull branch "]
+  cal add(lines,'---------------------------------------')
+  cal extend(lines, split( out , "\n" ))
+  cal setline(1, lines )
+  cal search('^\*')
 endf
 com! -nargs=1 SwitchBranch  :cal s:switch_branch(<f-args>)
 
@@ -58,29 +67,23 @@ fun! s:open_branch_switch_buffer()
   cal s:init_buffer()
   setlocal noswapfile  buftype=nofile bufhidden=hide
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
-  let out = system('git branch -a')
-  autocmd BufWinLeave <buffer>   :cal s:close_buffer()
-
-  " XXX: refactor this to refresh_branch_buffer function
-  let lines = ["HELP: o : checkout branch , p : push branch , l : pull branch "]
-  cal add(lines,'---------------------------------------')
-  cal extend(lines, split( out , "\n" ))
-  cal setline(1, lines )
-  cal search('^\*')
-
   file BranchList
-
   " init syntax
   setfiletype gitbranchlist
   syn match RemoteBranch  "^\s\+remotes/.*$"
   syn match CurrentBranch "^\*\s.*$"
   syn match LocalBranch   "^\s\+\(remotes\)\@![a-zA-Z/_-]\+"
 
-  nmap <silent> <buffer> o    :exec 'SwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
-
   hi link RemoteBranch Function 
   hi LocalBranch   ctermfg=blue
   hi CurrentBranch ctermfg=red
+
+  autocmd BufWinLeave <buffer>   :cal s:close_buffer()
+
+  nmap <silent> <buffer> o    :exec 'SwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
+
+  " XXX: refactor this to refresh_branch_buffer function
+  cal s:refresh_branch_buffer()
 endf
 
 fun! s:branch_list_toggle()
