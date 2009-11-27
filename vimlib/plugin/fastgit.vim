@@ -461,7 +461,7 @@ endf
 
 fun! s:create_statusline_str(opt)
   cal s:update_branch_name()
-  let g:git_ch = s:count_changes_from_yesterday()
+  let g:git_ch = 0 " s:count_changes_from_yesterday()
   return ' %n) %<%f %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",bom\":\"\")}] %-14.(%l,%c%v%) %p'
         \. " %=(C:%{g:git_ch}) (B:%{g:git_br}) "
 endf
@@ -542,12 +542,9 @@ augroup GitSyncAG
   au CursorHold *.* nested cal s:git_sync_background()
 augroup END
 
-com! GitSyncEnable    :augroup GitSyncAG
 com! GitSyncDisable   :augroup! GitSyncAG
+com! GitSyncEnable    :augroup GitSyncAG
 
 if g:fastgit_sync
   :GitSyncEnable
 endif
-
-
-
