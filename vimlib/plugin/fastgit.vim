@@ -537,6 +537,17 @@ elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   unlet s:stl
 endif
 
+augroup GitSyncAG
+  au!
+  au CursorHold *.* nested cal s:git_sync_background()
+augroup END
+
+com! GitSyncEnable    :augroup GitSyncAG
+com! GitSyncDisable   :augroup! GitSyncAG
+
 if g:fastgit_sync
-  autocmd CursorHold *.* nested cal s:git_sync_background()
+  :GitSyncEnable
 endif
+
+
+
