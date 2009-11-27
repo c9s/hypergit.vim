@@ -123,4 +123,9 @@ to push master branch to remote `origin`:
     :Gpush origin master
 
 
+SCREENSHOT
+==========
+
+![](http://cloud.github.com/downloads/c9s/fastgit.vim/Screen_shot_2009-11-26_at_3.04.53_PM.png)
+
 
