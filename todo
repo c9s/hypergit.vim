@@ -12,3 +12,4 @@
 * karam format:
     [+++++         ] K40.00
 * Gpush , Gpull command completion
+* support wildchar when adding files.
