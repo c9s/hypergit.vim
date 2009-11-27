@@ -445,7 +445,7 @@ endf
 
 fun! s:append_statusline(stl)
   cal s:update_branch_name()
-  let g:git_ch = s:count_changes_from_yesterday()
+  let g:git_ch = 0 " s:count_changes_from_yesterday()
   let l:stl = a:stl . " %=(B:%{g:git_br} C:%{g:git_ch})"
   cal s:set_statusline(l:stl)
 endf
