@@ -253,10 +253,11 @@ fun! s:commit(msgfile)
 
   cal s:filter_message_op(a:msgfile)
 
-  cal s:echohl("committing ")
+  echohl GitMsg "committing "
   let ret = system( printf('%s commit -a -F %s ', g:git_command , a:msgfile ) )
-  cal s:echohl( ret )
-  cal s:echohl( "committed" )
+  echo ret
+  echo "committed"
+  echohl None
 endf
 
 fun! s:can_commit(msgfile)
