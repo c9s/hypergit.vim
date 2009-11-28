@@ -37,6 +37,11 @@ fun! s:init_plugin()
   hi GitMsg ctermbg=yellow ctermfg=black
 endf
 
+
+fun! s:echohl(msg)
+  echohl GitMsg | echo a:msg | echohl None
+endf
+
 " XXX:  if branch exists , we should jsut switch , not to create one
 fun! s:switch_branch(branch)
   let opt = ''
@@ -48,17 +53,16 @@ fun! s:switch_branch(branch)
     let opt .= a:branch
   endif
   let cmd = 'git checkout ' . opt
-  echo cmd
+  cal s:echohl( cmd )
   let out = system( cmd )
-  echo out
-
+  cal s:echohl( out )
   silent 1,$delete _
   cal s:refresh_branch_buffer()
 endf
 
 fun! s:merge_branch(branch)
   let out = system('git merge ' . a:branch )
-  echo out
+  cal s:echohl( out )
 endfun
 
 fun! s:refresh_branch_buffer()
@@ -229,12 +233,12 @@ fun! s:filter_message_op(msgfile)
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
       cal system( g:git_command . ' add ' . file )
-      cal s:echo( file . ' added' )
+      cal s:echohl( file . ' added' )
       let lines[ idx ] = ''
     elseif l =~ '^\!D\s\+'
       let file = s:trim_message_op(l)
       cal system( g:git_command . ' rm ' . file )   " XXX: detect failure
-      cal s:echo( file . ' deleted')
+      cal s:echohl( file . ' deleted')
       let lines[ idx ] = ''
     endif
     let idx += 1
@@ -249,10 +253,10 @@ fun! s:commit(msgfile)
 
   cal s:filter_message_op(a:msgfile)
 
-  echo "committing "
+  cal s:echohl("committing ")
   let ret = system( printf('%s commit -a -F %s ', g:git_command , a:msgfile ) )
-  echo ret
-  echo "committed"
+  cal s:echohl( ret )
+  cal s:echohl( "committed" )
 endf
 
 fun! s:can_commit(msgfile)
