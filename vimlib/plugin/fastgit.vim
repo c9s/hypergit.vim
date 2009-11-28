@@ -243,10 +243,42 @@ fun! s:filter_message_op(msgfile)
   cal writefile(lines,a:msgfile)
 endf
 
+
+fun! s:save_msg(file)
+  let l:id = 1
+  while filereadable( 'git-commit-' . l:id )
+    let l:id += 1
+  endwhile
+  let fname = 'git-commit-' . l:id
+  cal writefile( readfile(a:file ) , fname )
+  return fname
+endf
+
+fun! s:git_dir_found()
+  if isdirectory('.git')
+    return 1
+  else
+    echohl WarningMsg
+    echo "\I can not found your .git directory"
+    echo "Seems you are not under a git repository directory"
+    echo " Then please use ':cd [path]' command to change directory"
+    echo "or do you forget to initialize git repository"
+    echohl None
+    return 0
+  endif
+endf
+
 fun! s:commit(msgfile)
   if ! s:can_commit(a:msgfile)
     return
   endif
+
+  if ! s:git_dir_found()
+    let f = s:save_msg( a:msgfile )
+    echoerr "commit message saved to '". f ."'. "
+    return 
+  endif
+
   cal s:filter_message_op(a:msgfile)
   echohl GitMsg | echo "committing " | echohl None
   let ret = system( printf('%s commit -a -F %s ', g:git_command , a:msgfile ) )
@@ -267,6 +299,12 @@ endf
 fun! s:single_commit(msgfile,file)
   if ! s:can_commit(a:msgfile)
     return
+  endif
+  
+  if ! s:git_dir_found()
+    let f = s:save_msg( a:msgfile )
+    echohl WarningMsg | echo "commit message saved to '". f ."'. " | echohl None
+    return 
   endif
 
   cal s:filter_message_op(a:msgfile)
