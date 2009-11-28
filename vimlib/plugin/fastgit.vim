@@ -253,7 +253,8 @@ fun! s:commit(msgfile)
 
   cal s:filter_message_op(a:msgfile)
 
-  echohl GitMsg "committing "
+  echohl GitMsg 
+  echo "committing "
   let ret = system( printf('%s commit -a -F %s ', g:git_command , a:msgfile ) )
   echo ret
   echo "committed"
