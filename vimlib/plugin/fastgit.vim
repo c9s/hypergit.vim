@@ -33,6 +33,10 @@ fun! s:close_buffer()
   bw!
 endf
 
+fun! s:init_plugin()
+  hi GitMsg ctermbg=yellow ctermfg=black
+endf
+
 " XXX:  if branch exists , we should jsut switch , not to create one
 fun! s:switch_branch(branch)
   let opt = ''
@@ -486,7 +490,7 @@ fun! s:exec_cmd(cmd)
     return
   endif
   redraw
-  echo cmd_output
+  echohl GitMsg | echo cmd_output | echohl None
 endf
 
 com! Gbranchtoggle      :cal s:branch_list_toggle()
@@ -548,3 +552,5 @@ com! GitSyncEnable    :augroup GitSyncAG
 if g:fastgit_sync
   :GitSyncEnable
 endif
+
+cal s:init_plugin()
