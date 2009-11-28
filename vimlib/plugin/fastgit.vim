@@ -36,6 +36,7 @@ endf
 fun! s:init_plugin()
   hi GitCommandMsg ctermbg=yellow ctermfg=black
   hi GitMsg        ctermbg=yellow ctermfg=black
+  hi GitCommandOutput ctermbg=black ctermfg=darkyellow
 endf
 
 " XXX:  if branch exists , we should jsut switch , not to create one
@@ -488,7 +489,7 @@ fun! s:exec_cmd(cmd)
     return
   endif
   redraw
-  echohl GitMsg | echo cmd_output | echohl None
+  echohl GitCommandOutput | echo cmd_output | echohl None
 endf
 
 com! Gbranchtoggle      :cal s:branch_list_toggle()
