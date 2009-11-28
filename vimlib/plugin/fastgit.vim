@@ -34,12 +34,8 @@ fun! s:close_buffer()
 endf
 
 fun! s:init_plugin()
-  hi GitMsg ctermbg=yellow ctermfg=black
-endf
-
-
-fun! s:echohl(msg)
-  echohl GitMsg | echo a:msg | echohl None
+  hi GitCommandMsg ctermbg=yellow ctermfg=black
+  hi GitMsg        ctermbg=yellow ctermfg=black
 endf
 
 " XXX:  if branch exists , we should jsut switch , not to create one
@@ -53,16 +49,16 @@ fun! s:switch_branch(branch)
     let opt .= a:branch
   endif
   let cmd = 'git checkout ' . opt
-  cal s:echohl( cmd )
+  echohl GitCommandMsg | echo cmd | echohl None
   let out = system( cmd )
-  cal s:echohl( out )
+  echo out
   silent 1,$delete _
   cal s:refresh_branch_buffer()
 endf
 
 fun! s:merge_branch(branch)
   let out = system('git merge ' . a:branch )
-  cal s:echohl( out )
+  echo out
 endfun
 
 fun! s:refresh_branch_buffer()
@@ -233,12 +229,12 @@ fun! s:filter_message_op(msgfile)
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
       cal system( g:git_command . ' add ' . file )
-      cal s:echohl( file . ' added' )
+      echohl GitMsg | echo file . ' added' | echohl None
       let lines[ idx ] = ''
     elseif l =~ '^\!D\s\+'
       let file = s:trim_message_op(l)
       cal system( g:git_command . ' rm ' . file )   " XXX: detect failure
-      cal s:echohl( file . ' deleted')
+      echohl GitMsg | echo file . ' deleted' | echohl None
       let lines[ idx ] = ''
     endif
     let idx += 1
@@ -250,15 +246,11 @@ fun! s:commit(msgfile)
   if ! s:can_commit(a:msgfile)
     return
   endif
-
   cal s:filter_message_op(a:msgfile)
-
-  echohl GitMsg 
-  echo "committing "
+  echohl GitMsg | echo "committing " | echohl None
   let ret = system( printf('%s commit -a -F %s ', g:git_command , a:msgfile ) )
   echo ret
-  echo "committed"
-  echohl None
+  echohl GitMsg | echo "committed" | echohl None
 endf
 
 fun! s:can_commit(msgfile)
@@ -278,12 +270,10 @@ fun! s:single_commit(msgfile,file)
 
   cal s:filter_message_op(a:msgfile)
 
-  echohl GitMsg 
-  echo "committing " . a:file
+  echohl GitMsg | echo "committing " . a:file | echohl None
   let ret = system( printf('%s commit -F %s %s ', g:git_command , a:msgfile, a:file ) )
   echo ret
-  echo "committed"
-  echohl None
+  echohl GitMsg | echo "committed" | echohl None
 endf
 
 fun! s:skip_commit(file)
