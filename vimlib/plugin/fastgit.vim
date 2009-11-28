@@ -278,10 +278,12 @@ fun! s:single_commit(msgfile,file)
 
   cal s:filter_message_op(a:msgfile)
 
+  echohl GitMsg 
   echo "committing " . a:file
   let ret = system( printf('%s commit -F %s %s ', g:git_command , a:msgfile, a:file ) )
   echo ret
   echo "committed"
+  echohl None
 endf
 
 fun! s:skip_commit(file)
