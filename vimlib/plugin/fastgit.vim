@@ -251,6 +251,8 @@ fun! s:save_msg(file)
   endwhile
   let fname = 'git-commit-' . l:id
   cal writefile( readfile(a:file ) , fname )
+
+  echoerr "commit message saved to '". fname ."'. "
   return fname
 endf
 
@@ -274,9 +276,8 @@ fun! s:commit(msgfile)
   endif
 
   if ! s:git_dir_found()
-    let f = s:save_msg( a:msgfile )
-    echoerr "commit message saved to '". f ."'. "
-    return 
+    cal s:save_msg( a:msgfile )
+    return
   endif
 
   cal s:filter_message_op(a:msgfile)
@@ -302,8 +303,7 @@ fun! s:single_commit(msgfile,file)
   endif
   
   if ! s:git_dir_found()
-    let f = s:save_msg( a:msgfile )
-    echohl WarningMsg | echo "commit message saved to '". f ."'. " | echohl None
+    cal s:save_msg( a:msgfile )
     return 
   endif
 
