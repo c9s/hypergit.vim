@@ -257,17 +257,30 @@ fun! s:save_msg(file)
 endf
 
 fun! s:git_dir_found()
-  if isdirectory('.git')
-    return 1
-  else
-    echohl WarningMsg
-    echo "\I can not found your .git directory"
-    echo "Seems you are not under a git repository directory"
-    echo " Then please use ':cd [path]' command to change directory"
-    echo "or do you forget to initialize git repository"
-    echohl None
-    return 0
-  endif
+  let comps = split(expand('%:p:h'),'/')
+  let paths = []
+  let path = ''
+  while len(comps) > 0 
+    let p = remove(comps,0)
+    let path = join( [ path , p ] , '/' )
+    echo path
+    cal add(paths,path)
+  endwhile
+  cal reverse(paths)
+
+  for f in paths 
+    if isdirectory( f . '/.git') 
+      return 1
+    endif
+  endfor
+
+  echohl WarningMsg
+  echo "\I can not found your .git directory"
+  echo "Seems you are not under a git repository directory"
+  echo " Then please use ':cd [path]' command to change directory"
+  echo "or do you forget to initialize git repository"
+  echohl None
+  return 0
 endf
 
 fun! s:commit(msgfile)
