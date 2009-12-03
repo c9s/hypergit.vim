@@ -74,6 +74,13 @@ endf
 com! -nargs=1 GitSwitchBranch  :cal s:switch_branch(<f-args>)
 com! -nargs=1 GitMergeBranch   :cal s:merge_branch(<f-args>)
 
+"
+" Git Stash Command:
+"    git stash save
+"    git stash show -p stash@{0}
+"    git stash list
+"
+
 fun! s:open_stash_buffer()
   8new
   cal s:init_buffer()
