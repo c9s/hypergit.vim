@@ -192,7 +192,10 @@ fun! s:commit_all_file()
   let commit = tempname()
   exec 'rightbelow 6split' . commit
   cal s:init_commit_buffer()
+  let status = system('git status')
+  silent put=status
   exec printf('autocmd BufWinLeave <buffer> :cal s:commit("%s")',commit)
+  cal cursor(1,1)
   startinsert
 endf
 
