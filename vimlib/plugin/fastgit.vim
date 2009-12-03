@@ -215,8 +215,7 @@ endf
 fun! s:init_commit_buffer()
   cal s:init_buffer()
   setlocal nu
-  setlocal syntax=git-fast-commit
-  setfiletype git-fast-commit
+  setfiletype git-status
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
 endf
@@ -311,12 +310,20 @@ fun! s:commit(msgfile)
 endf
 
 fun! s:can_commit(msgfile)
-  if ! filereadable(a:msgfile)
-    exec 'bw '.a:msgfile
-    cal s:echo('skipped.')
-    return 0
+  " read file
+  " grep out comment line and empty lines
+  " see if there still text
+  if filereadable(a:msgfile)
+    let lines = readfile(a:msgfile)
+    for l in lines 
+      if l !~ '^#' && l !~ '^\s*$'
+        return 1
+      endif
+    endfor
   else
-    return 1
+    cal s:echo('skipped.')
+    exec 'bw '.a:msgfile
+    return 0
   endif
 endf
 
