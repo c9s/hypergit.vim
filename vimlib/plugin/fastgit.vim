@@ -257,7 +257,7 @@ fun! s:save_msg(file)
 endf
 
 fun! s:git_dir_found()
-  let comps = split(expand('%:p:h'),'/')
+  let comps = split(getcwd(),'/')
   let paths = []
   let path = ''
   while len(comps) > 0 
