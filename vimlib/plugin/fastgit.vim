@@ -34,8 +34,8 @@ fun! s:close_buffer()
 endf
 
 fun! s:init_plugin()
-  hi GitCommandMsg ctermbg=yellow ctermfg=black
-  hi GitMsg        ctermbg=yellow ctermfg=black
+  hi GitCommandMsg ctermbg=green ctermfg=black
+  hi GitMsg        ctermbg=green ctermfg=black
   hi GitCommandOutput ctermbg=black ctermfg=darkyellow
 endf
 
