@@ -321,7 +321,7 @@ fun! s:can_commit(msgfile)
     endfor
   else
     cal s:echo('skipped.')
-    exec 'bw '.a:msgfile
+    exec 'bw! '.a:msgfile
     return 0
   endif
 endf
