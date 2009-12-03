@@ -306,6 +306,7 @@ fun! s:commit(msgfile)
   let ret = system( printf('%s commit --cleanup=default -a -F %s ', g:git_command , a:msgfile ) )
   echo ret
   echohl GitMsg | echo "committed" | echohl None
+
 endf
 
 fun! s:can_commit(msgfile)
