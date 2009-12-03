@@ -303,7 +303,7 @@ fun! s:commit(msgfile)
 
   cal s:filter_message_op(a:msgfile)
   echohl GitMsg | echo "committing " | echohl None
-  let ret = system( printf('%s commit --cleanup=default -a -F %s ', g:git_command , a:msgfile ) )
+  let ret = system( printf('%s commit --cleanup=strip -a -F %s ', g:git_command , a:msgfile ) )
   echo ret
   echohl GitMsg | echo "committed" | echohl None
 
@@ -340,7 +340,7 @@ fun! s:single_commit(msgfile,file)
   cal s:filter_message_op(a:msgfile)
 
   echohl GitMsg | echo "committing " . a:file | echohl None
-  let ret = system( printf('%s commit --cleanup=default -F %s %s ', g:git_command , a:msgfile, a:file ) )
+  let ret = system( printf('%s commit --cleanup=strip -F %s %s ', g:git_command , a:msgfile, a:file ) )
   echo ret
   echohl GitMsg | echo "committed" | echohl None
 endf
