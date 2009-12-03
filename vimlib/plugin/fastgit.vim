@@ -184,16 +184,23 @@ fun! s:commit_single_file(file)
   let commit = tempname()
   exec 'rightbelow 6split' . commit
   cal s:init_commit_buffer()
+  cal s:append_status()
   exec printf('autocmd BufWinLeave <buffer> :cal s:single_commit("%s","%s")',commit,a:file)
   startinsert
+endf
+
+fun! s:append_status()
+  let status = split(system('git status'),"\n")
+  cal filter(status, 'v:val =~ "^#"')
+  cal append(line('$'),  status )
 endf
 
 fun! s:commit_all_file()
   let commit = tempname()
   exec 'rightbelow 6split' . commit
   cal s:init_commit_buffer()
-  let status = system('git status')
-  silent put=status
+  cal s:append_status()
+
   exec printf('autocmd BufWinLeave <buffer> :cal s:commit("%s")',commit)
   cal cursor(1,1)
   startinsert
@@ -260,7 +267,7 @@ fun! s:save_msg(file)
 endf
 
 fun! s:git_dir_found()
-  let comps = split(expand('%:p:h'),'/')
+  let comps = split(getcwd(),'/')
   let paths = []
   let path = ''
   while len(comps) > 0 
