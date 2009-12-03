@@ -616,8 +616,4 @@ augroup END
 com! GitSyncDisable   :augroup! GitSyncAG
 com! GitSyncEnable    :augroup GitSyncAG
 
-if g:fastgit_sync
-  :GitSyncEnable
-endif
-
 cal s:init_plugin()
