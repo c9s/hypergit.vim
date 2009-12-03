@@ -351,7 +351,7 @@ fun! s:skip_commit(file)
   if filereadable(a:file)
     cal delete(a:file)
   endif
-  bw
+  bw!
   cal s:echo('skipped')
 endf
 
