@@ -272,7 +272,6 @@ fun! s:git_dir_found()
   while len(comps) > 0 
     let p = remove(comps,0)
     let path = join( [ path , p ] , '/' )
-    echo path
     cal add(paths,path)
   endwhile
   cal reverse(paths)
