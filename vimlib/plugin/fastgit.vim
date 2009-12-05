@@ -80,15 +80,19 @@ com! -nargs=1 GitMergeBranch   :cal s:merge_branch(<f-args>)
 "    git stash show -p stash@{0}
 "    git stash list
 "
+fun! s:stash_list_toggle()
+
+endf
 
 fun! s:open_stash_buffer()
-  8new
+  10new
   cal s:init_buffer()
   setlocal noswapfile  buftype=nofile bufhidden=hide
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
   file GitStashList
   setfiletype gitstashlist
   autocmd BufWinLeave <buffer>   :cal s:close_buffer()
+
   "nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
   "nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
   cal s:show_stash_list()
@@ -96,9 +100,7 @@ endf
 
 fun! s:show_stash_list()
   let out = system('git stash list')
-  let lines = [""]
-  cal extend(lines, split( out , "\n" ))
-  cal setline(1, lines )
+  cal append(line('0'), split( out , "\n" ) )
 endf
 
 fun! s:open_branch_switch_buffer()
@@ -182,7 +184,11 @@ fun! s:git_sync_background()
   cal s:echo(ret)
   sleep 30m
 
-  cal s:echo('git: synchronized.')
+  if exists(':GrowlNotifyMsg') 
+    :GrowlNotifyMsg "Git: synchronized."
+  else
+    cal s:echo('git: synchronized.')
+  endif
   unlet g:fastgit_sync_lock
 endf
 
@@ -567,6 +573,7 @@ fun! s:exec_cmd(cmd)
   echohl GitCommandOutput | echo cmd_output | echohl None
 endf
 
+com! Gstashtoggle       :cal s:stash_list_toggle()
 com! Gbranchtoggle      :cal s:branch_list_toggle()
 com! Gci                :cal s:commit_single_file(expand('%'))
 com! Gcommmit           :cal s:commit_single_file(expand('%'))
