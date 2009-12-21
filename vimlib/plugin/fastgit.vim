@@ -603,7 +603,7 @@ endf
 " Options
 cal s:defopt('g:git_command','git')
 cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( 4sec by default )
-cal s:defopt('g:fastgit_sync',1)
+cal s:defopt('g:fastgit_sync',0)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
 cal s:defopt('g:fastgit_statusline' , 'f' )  " f,a
@@ -622,10 +622,12 @@ elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   unlet s:stl
 endif
 
-augroup GitSyncAG
-  au!
-  au CursorHold *.* nested cal s:git_sync_background()
-augroup END
+if g:fastgit_sync 
+  augroup GitSyncAG
+    au!
+    au CursorHold *.* nested cal s:git_sync_background()
+  augroup END
+endif
 
 com! GitSyncDisable   :augroup! GitSyncAG
 com! GitSyncEnable    :augroup GitSyncAG
