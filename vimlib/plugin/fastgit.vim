@@ -1,11 +1,11 @@
 " vim:et:sw=2:
 "
-" Fastgit
+" FastGit Plugin
 "
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
-" Version: 2.02
+" Version: 2.01
 "
 
 
@@ -34,8 +34,8 @@ fun! s:close_buffer()
 endf
 
 fun! s:init_plugin()
-  hi GitCommandMsg ctermbg=green ctermfg=black
-  hi GitMsg        ctermbg=green ctermfg=black
+  hi GitCommandMsg ctermbg=yellow ctermfg=black
+  hi GitMsg        ctermbg=yellow ctermfg=black
   hi GitCommandOutput ctermbg=black ctermfg=darkyellow
 endf
 
@@ -71,28 +71,15 @@ fun! s:refresh_branch_buffer()
   cal search('^\*')
 endf
 
-com! -nargs=1 GitSwitchBranch  :cal s:switch_branch(<f-args>)
-com! -nargs=1 GitMergeBranch   :cal s:merge_branch(<f-args>)
-
-"
-" Git Stash Command:
-"    git stash save
-"    git stash show -p stash@{0}
-"    git stash list
-"
-fun! s:stash_list_toggle()
-
-endf
 
 fun! s:open_stash_buffer()
-  10new
+  8new
   cal s:init_buffer()
   setlocal noswapfile  buftype=nofile bufhidden=hide
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
   file GitStashList
   setfiletype gitstashlist
   autocmd BufWinLeave <buffer>   :cal s:close_buffer()
-
   "nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
   "nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
   cal s:show_stash_list()
@@ -100,7 +87,9 @@ endf
 
 fun! s:show_stash_list()
   let out = system('git stash list')
-  cal append(line('0'), split( out , "\n" ) )
+  let lines = [""]
+  cal extend(lines, split( out , "\n" ))
+  cal setline(1, lines )
 endf
 
 fun! s:open_branch_switch_buffer()
@@ -184,11 +173,7 @@ fun! s:git_sync_background()
   cal s:echo(ret)
   sleep 30m
 
-  if exists(':GrowlNotifyMsg') 
-    :GrowlNotifyMsg "Git: synchronized."
-  else
-    cal s:echo('git: synchronized.')
-  endif
+  cal s:echo('git: synchronized.')
   unlet g:fastgit_sync_lock
 endf
 
@@ -573,21 +558,19 @@ fun! s:exec_cmd(cmd)
   echohl GitCommandOutput | echo cmd_output | echohl None
 endf
 
-com! Gstashtoggle       :cal s:stash_list_toggle()
-com! Gbranchtoggle      :cal s:branch_list_toggle()
-com! Gci                :cal s:commit_single_file(expand('%'))
-com! Gcommmit           :cal s:commit_single_file(expand('%'))
-com! Gca                :cal s:commit_all_file()
-com! Gccommitall        :cal s:commit_all_file()
-com! Gskip              :cal s:skip_commit(expand('%'))
-com! Gdi                :cal s:diff_window()
-com! Gstl               :cal s:toggle_statusline()
+com! GitBranchToggle          :cal s:branch_list_toggle()
+com! GitCommit                :cal s:commit_single_file(expand('%'))
+com! GitCommitAll             :cal s:commit_all_file()
+com! GitCommitSkip            :cal s:skip_commit(expand('%'))
+com! GitDiff                  :cal s:diff_window()
+com! GitStatusLine            :cal s:toggle_statusline()
+com! -nargs=1 GitSwitchBranch :cal s:switch_branch(<f-args>)
+com! -nargs=1 GitMergeBranch  :cal s:merge_branch(<f-args>)
 
-com! -nargs=? Gpush     :cal s:git_push(<f-args>)
-com! -nargs=? Gpull     :cal s:git_pull(<f-args>)
-com! -nargs=? Gdiffthis :cal s:git_diff_this(<f-args>)
-com! -nargs=? Gdithis   :cal s:git_diff_this(<f-args>)
-com! -nargs=? Gchanges  :cal s:git_changes(<f-args>)
+com! -nargs=? GitPush     :cal s:git_push(<f-args>)
+com! -nargs=? GitPull     :cal s:git_pull(<f-args>)
+com! -nargs=? GitDiffThis :cal s:git_diff_this(<f-args>)
+com! -nargs=? GitChanges  :cal s:git_changes(<f-args>)
 
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :Gci<CR>
@@ -603,7 +586,7 @@ endf
 " Options
 cal s:defopt('g:git_command','git')
 cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( 4sec by default )
-cal s:defopt('g:fastgit_sync',0)
+cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
 cal s:defopt('g:fastgit_statusline' , 'f' )  " f,a
@@ -622,14 +605,20 @@ elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   unlet s:stl
 endif
 
-if g:fastgit_sync 
+
+
+com! GitSyncDisable   :augroup! GitSyncAG
+com! GitSyncEnable    :cal s:git_sync_au()
+
+fun! s:git_sync_au()
   augroup GitSyncAG
     au!
     au CursorHold *.* nested cal s:git_sync_background()
   augroup END
-endif
+endf
 
-com! GitSyncDisable   :augroup! GitSyncAG
-com! GitSyncEnable    :augroup GitSyncAG
+if g:fastgit_sync
+  cal s:git_sync_au()
+endif
 
 cal s:init_plugin()
