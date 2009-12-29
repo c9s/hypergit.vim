@@ -558,12 +558,47 @@ fun! s:exec_cmd(cmd)
   echohl GitCommandOutput | echo cmd_output | echohl None
 endf
 
-com! GitBranchToggle          :cal s:branch_list_toggle()
+fun! s:remote_add(remote)
+  let uri = input("Git URI:",'')
+  if strlen(uri) > 3 
+    let ret = system( printf('git remote add %s %s',a:remote ,uri))
+    let ret = substitute( ret , "\n" , "" , 'g')
+    if v:shell_error
+      echohl WarningMsg | echo "Can't add remote '"  . a:remote . "': " . ret | echohl None
+    else
+      cal s:echo( "Remote " . a:remote . " Added" )
+    endif
+  endif
+endf
+
+fun! s:remote_del(remote)
+
+endf
+
+" completion functions
+fun! GitRemoteNameCompletion(lead,cmd,pos)
+  let names = split(system('git remote'),"\n")
+  cal filter( names , 'v:val =~ "^' .a:lead. '"'  )
+  return names
+endf
+
+fun! s:git_sync_au()
+  augroup GitSyncAG
+    au!
+    au CursorHold *.* nested cal s:git_sync_background()
+  augroup END
+endf
+
+com! GitBranchList            :cal s:branch_list_toggle()
 com! GitCommit                :cal s:commit_single_file(expand('%'))
 com! GitCommitAll             :cal s:commit_all_file()
 com! GitCommitSkip            :cal s:skip_commit(expand('%'))
 com! GitDiff                  :cal s:diff_window()
 com! GitStatusLine            :cal s:toggle_statusline()
+
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:remote_add( <f-args> )
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:remote_del( <f-args> )
+
 com! -nargs=1 GitSwitchBranch :cal s:switch_branch(<f-args>)
 com! -nargs=1 GitMergeBranch  :cal s:merge_branch(<f-args>)
 
@@ -572,15 +607,18 @@ com! -nargs=? GitPull     :cal s:git_pull(<f-args>)
 com! -nargs=? GitDiffThis :cal s:git_diff_this(<f-args>)
 com! -nargs=? GitChanges  :cal s:git_changes(<f-args>)
 
+com! GitSyncDisable       :augroup! GitSyncAG
+com! GitSyncEnable        :cal s:git_sync_au()
+
 fun! s:fastgit_default_mapping()
-  nmap <leader>ci  :Gci<CR>
-  nmap <leader>ca  :Gca<CR>
+  nmap <leader>ci  :GitCommit<CR>
+  nmap <leader>ca  :GitCommitAll<CR>
 
   " git prefix mapping
-  nmap <leader>gp   :Gpush<CR>
-  nmap <leader>gl   :Gpull<CR>
-  nmap <leader>ggdi :Gdiffthis<CR>
-  nmap <leader>gb   :Gbranchtoggle<CR>
+  nmap <leader>gp   :GitPush<CR>
+  nmap <leader>gl   :GitPull<CR>
+  nmap <leader>ggdi :GitDiffThis<CR>
+  nmap <leader>gb   :GitBranchList<CR>
 endf
 
 " Options
@@ -604,18 +642,6 @@ elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   endif
   unlet s:stl
 endif
-
-
-
-com! GitSyncDisable   :augroup! GitSyncAG
-com! GitSyncEnable    :cal s:git_sync_au()
-
-fun! s:git_sync_au()
-  augroup GitSyncAG
-    au!
-    au CursorHold *.* nested cal s:git_sync_background()
-  augroup END
-endf
 
 if g:fastgit_sync
   cal s:git_sync_au()
