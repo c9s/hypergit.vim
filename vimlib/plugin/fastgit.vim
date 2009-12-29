@@ -566,13 +566,19 @@ fun! s:remote_add(remote)
     if v:shell_error
       echohl WarningMsg | echo "Can't add remote '"  . a:remote . "': " . ret | echohl None
     else
-      cal s:echo( "Remote " . a:remote . " Added" )
+      cal s:echo( "Remote " . a:remote . " Added." )
     endif
   endif
 endf
 
 fun! s:remote_del(remote)
-
+  let ret = system( printf('git remote rm %s ',a:remote))
+  let ret = substitute( ret , "\n" , "" , 'g')
+  if v:shell_error
+    echohl WarningMsg | echo "Can't remove remote '"  . a:remote . "': " . ret | echohl None
+  else
+    cal s:echo( "Remote " . a:remote . " removed." )
+  endif
 endf
 
 " completion functions
