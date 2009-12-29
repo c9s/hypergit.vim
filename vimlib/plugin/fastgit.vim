@@ -450,14 +450,6 @@ fun! s:git_changes(...)
   endfor
 endf
 
-fun! s:git_push(...)
-  let cmd = [ g:git_command ,"push" ]
-  if a:0 == 1
-    cal add(cmd,a:1)
-  endif
-  cal s:echo("git: pushing (Ctrl-c to stop)")
-  cal s:exec_cmd( cmd )
-endf
 
 fun! g:get_author_cnt()
   let cmd_ret = system('git log | grep Author | perl -pe ''s{Author:\s+(\w+).*$}{$1}'' | uniq -c')
@@ -486,12 +478,25 @@ fun! s:get_author_names()
   return 
 endf
 
-fun! s:git_pull(...)
-  let cmd = [ g:git_command ,"pull" ]
+fun! s:git_push(...)
+  let cmd = [ g:git_command ,"push" ]
+  let remote = 'all'
   if a:0 == 1
     cal add(cmd,a:1)
+    let remote = '[' .  a:1 . ']'
   endif
-  cal s:echo("git: pulling (Ctrl-c to stop)")
+  cal s:echo("git: push => " . remote . " (Ctrl-c to stop)")
+  cal s:exec_cmd( cmd )
+endf
+
+fun! s:git_pull(...)
+  let cmd = [ g:git_command ,"pull" ]
+  let remote = 'all'
+  if a:0 == 1
+    cal add(cmd,a:1)
+    let remote = '[' . a:1 . ']'
+  endif
+  cal s:echo("git: pull <= " . remote . " (Ctrl-c to stop)")
   cal s:exec_cmd( cmd )
 endf
 
@@ -608,8 +613,9 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:r
 com! -nargs=1 GitSwitchBranch :cal s:switch_branch(<f-args>)
 com! -nargs=1 GitMergeBranch  :cal s:merge_branch(<f-args>)
 
-com! -nargs=? GitPush     :cal s:git_push(<f-args>)
-com! -nargs=? GitPull     :cal s:git_pull(<f-args>)
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:git_push(<f-args>)
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:git_pull(<f-args>)
+
 com! -nargs=? GitDiffThis :cal s:git_diff_this(<f-args>)
 com! -nargs=? GitChanges  :cal s:git_changes(<f-args>)
 
