@@ -344,6 +344,8 @@ fun! s:single_commit(msgfile,file)
 
   echohl GitMsg | echo "committing " . a:file | echohl None
   if g:fastgit_background_commit
+    " XXX: add a growl or libnotify hook here , so that we can know if a commit
+    " success or not.
     cal system( printf('%s commit --cleanup=strip -F %s %s &', g:git_command , a:msgfile, a:file ) )
     echohl GitMsg | echo "background committing." | echohl None
   else
