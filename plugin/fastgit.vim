@@ -75,7 +75,7 @@ endf
 fun! s:open_stash_buffer()
   8new
   cal s:init_buffer()
-  setlocal noswapfile  buftype=nofile bufhidden=hide
+  setlocal noswapfile  buftype=nofile bufhidden=wipe
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
   file GitStashList
   setfiletype gitstashlist
@@ -640,6 +640,7 @@ cal s:defopt('g:fastgit_sync',1)
 cal s:defopt('g:fastgit_sync_bg',1)
 cal s:defopt('g:fastgit_default_mapping',1)
 cal s:defopt('g:fastgit_statusline' , 'f' )  " f,a
+cal s:defopt('g:fastgit_background_commit',1)
 
 if g:fastgit_default_mapping
   cal s:fastgit_default_mapping()
