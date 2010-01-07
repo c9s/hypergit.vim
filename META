@@ -7,7 +7,7 @@
 
 =type           plugin
 
-=version_from   vimlib/plugin/fastgit.vim
+=version_from   plugin/fastgit.vim
 
 =vim_version    >= 7.2
 
