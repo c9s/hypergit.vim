@@ -301,9 +301,14 @@ fun! s:commit(msgfile)
 
   cal s:filter_message_op(a:msgfile)
   echohl GitMsg | echo "committing " | echohl None
-  let ret = system( printf('%s commit --cleanup=strip -a -F %s ', g:git_command , a:msgfile ) )
-  echo ret
-  echohl GitMsg | echo "committed" | echohl None
+
+  if g:fastgit_background_commit
+    cal system( printf('%s commit --cleanup=strip -a -F %s &', g:git_command , a:msgfile ) )
+  else
+    let ret = system( printf('%s commit --cleanup=strip -a -F %s ', g:git_command , a:msgfile ) )
+    echo ret
+    echohl GitMsg | echo "committed" | echohl None
+  endif
 
 endf
 
@@ -338,9 +343,14 @@ fun! s:single_commit(msgfile,file)
   cal s:filter_message_op(a:msgfile)
 
   echohl GitMsg | echo "committing " . a:file | echohl None
-  let ret = system( printf('%s commit --cleanup=strip -F %s %s ', g:git_command , a:msgfile, a:file ) )
-  echo ret
-  echohl GitMsg | echo "committed" | echohl None
+  if g:fastgit_background_commit
+    cal system( printf('%s commit --cleanup=strip -F %s %s &', g:git_command , a:msgfile, a:file ) )
+    echohl GitMsg | echo "background committing." | echohl None
+  else
+    let ret = system( printf('%s commit --cleanup=strip -F %s %s %s', g:git_command , a:msgfile, a:file , postargs ) )
+    echo ret
+    echohl GitMsg | echo "committed" | echohl None
+  endif
 endf
 
 fun! s:skip_commit(file)
