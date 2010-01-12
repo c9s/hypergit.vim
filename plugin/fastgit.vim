@@ -5,7 +5,7 @@
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
-" Version: 2.02
+" Version: 2.03
 
 " Plugin Guard
 if exists('g:loaded_fgit')
