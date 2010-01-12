@@ -6,8 +6,6 @@
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
 " Version: 2.02
-"
-
 
 " Plugin Guard
 if exists('g:loaded_fgit')
@@ -179,11 +177,16 @@ endf
 
 
 fun! s:commit_single_file(file)
+  let file = a:file
+  if strlen(file) == 0 
+    let file = expand('%')
+  endif
+
   let commit = tempname()
   exec 'rightbelow 6split' . commit
   cal s:init_commit_buffer()
   cal s:append_status()
-  exec printf('autocmd BufWinLeave <buffer> :cal s:single_commit("%s","%s")',commit,a:file)
+  exec printf('autocmd BufWinLeave <buffer> :cal s:single_commit("%s","%s")',commit,file)
   startinsert
 endf
 
@@ -612,12 +615,12 @@ fun! s:git_sync_au()
   augroup END
 endf
 
-com! GitBranchList            :cal s:branch_list_toggle()
-com! GitCommit                :cal s:commit_single_file(expand('%'))
-com! GitCommitAll             :cal s:commit_all_file()
-com! GitCommitSkip            :cal s:skip_commit(expand('%'))
-com! GitDiff                  :cal s:diff_window()
-com! GitStatusLine            :cal s:toggle_statusline()
+com! GitBranchList                     :cal s:branch_list_toggle()
+com! -nargs=? -complete=file GitCommit :cal s:commit_single_file(<q-args>)
+com! GitCommitAll                      :cal s:commit_all_file()
+com! GitCommitSkip                     :cal s:skip_commit(expand('%'))
+com! GitDiff                           :cal s:diff_window()
+com! GitStatusLine                     :cal s:toggle_statusline()
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:remote_add( <f-args> )
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:remote_del( <f-args> )
