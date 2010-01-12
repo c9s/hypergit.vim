@@ -218,7 +218,6 @@ fun! s:init_commit_buffer()
   setfiletype git-status
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
-  autocmd BufWinLeave <buffer> :cal s:close_buffer()
 endf
 
 fun! s:init_buffer()
