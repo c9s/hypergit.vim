@@ -66,6 +66,10 @@ fun! s:refresh_branch_buffer()
   cal search('^\*')
 endf
 
+fun! s:close_buffer()
+  bw!
+endf
+
 
 fun! s:open_stash_buffer()
   8new
@@ -214,6 +218,7 @@ fun! s:init_commit_buffer()
   setfiletype git-status
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
+  autocmd BufWinLeave <buffer> :cal s:close_buffer()
 endf
 
 fun! s:init_buffer()
