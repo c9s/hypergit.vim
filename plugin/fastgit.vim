@@ -27,9 +27,6 @@ fun! s:echo(msg)
   echomsg a:msg
 endf
 
-fun! s:close_buffer()
-  bw!
-endf
 
 fun! s:init_plugin()
   hi GitCommandMsg ctermbg=yellow ctermfg=black
@@ -77,7 +74,6 @@ fun! s:open_stash_buffer()
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
   file GitStashList
   setfiletype gitstashlist
-  autocmd BufWinLeave <buffer>   :cal s:close_buffer()
   "nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
   "nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
   cal s:show_stash_list()
@@ -93,7 +89,7 @@ endf
 fun! s:open_branch_switch_buffer()
   8new
   cal s:init_buffer()
-  setlocal noswapfile  buftype=nofile bufhidden=hide
+  setlocal noswapfile  buftype=nofile bufhidden=wipe
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
   file GitBranchList
   " init syntax
@@ -104,7 +100,6 @@ fun! s:open_branch_switch_buffer()
   hi link RemoteBranch Function 
   hi LocalBranch   ctermfg=blue
   hi CurrentBranch ctermfg=red
-  autocmd BufWinLeave <buffer>   :cal s:close_buffer()
   nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
   nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
   cal s:refresh_branch_buffer()
@@ -222,7 +217,7 @@ fun! s:init_commit_buffer()
 endf
 
 fun! s:init_buffer()
-  setlocal modifiable noswapfile bufhidden=hide nobuflisted nowrap cursorline
+  setlocal modifiable noswapfile bufhidden=wipe nobuflisted nowrap cursorline
   setlocal fdc=0
 endf
 
@@ -674,5 +669,4 @@ endif
 if g:fastgit_sync
   cal s:git_sync_au()
 endif
-
 cal s:init_plugin()
