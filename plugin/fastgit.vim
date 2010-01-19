@@ -395,6 +395,8 @@ function! s:git_diff_this(...)
     return
   endif
 
+  setlocal bufhidden=wipe
+
   " Begin diff
   exe "vert diffsplit" . tmpfile
   exe "set filetype=" . ftype
@@ -666,6 +668,10 @@ cal s:defopt('g:fastgit_statusline' , 'f' )  " f,a
 cal s:defopt('g:fastgit_background_commit',1)
 " ===========================================================
 " }}}
+
+
+
+
 
 if g:fastgit_default_mapping
   cal s:fastgit_default_mapping()
