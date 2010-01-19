@@ -656,9 +656,9 @@ endf
 
 " Options
 cal s:defopt('g:git_command','git')
-cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( 4sec by default )
-cal s:defopt('g:fastgit_sync',1)
-cal s:defopt('g:fastgit_sync_bg',1)
+cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( which is 4sec by default )
+cal s:defopt('g:fastgit_sync_auto',0)        " disabled by default.
+cal s:defopt('g:fastgit_sync_bg',1)     " background sync , which is recommanded if you enabled auto sync
 cal s:defopt('g:fastgit_default_mapping',1)
 cal s:defopt('g:fastgit_statusline' , 'f' )  " f,a
 cal s:defopt('g:fastgit_background_commit',1)
@@ -677,7 +677,7 @@ elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   unlet s:stl
 endif
 
-if g:fastgit_sync
+if g:fastgit_sync_auto
   cal s:git_sync_au()
 endif
 cal s:init_plugin()
