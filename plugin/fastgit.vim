@@ -90,7 +90,7 @@ fun! s:show_stash_list()
   cal setline(1, lines )
 endf
 
-fun! s:open_branch_switch_buffer()
+fun! s:OpenBranchBuffer()
   8new
   cal s:init_buffer()
   setlocal noswapfile  buftype=nofile bufhidden=wipe
@@ -109,19 +109,21 @@ fun! s:open_branch_switch_buffer()
   cal s:refresh_branch_buffer()
 endf
 
-fun! s:BranchBuffer()
+fun! s:BranchBufferToggle()
   let b = bufnr('GitBranch')
+  " can not found
   if b == -1 
-    cal s:open_branch_switch_buffer()
+    cal s:OpenBranchBuffer()
   else 
+    " found
     exec 'silent '.b .'bw'
   endif
 endf
 
-fun! s:RemoteBuffer()
+fun! s:RemoteBufferToggle()
   let b = bufnr('Remote')
   if b == -1 
-    cal s:open_branch_switch_buffer()
+    cal s:OpenBranchBuffer()
   else 
     exec 'silent '.b .'bw'
   endif
@@ -630,8 +632,8 @@ endf
 " Commands {{{
 " ===========================================================
 
-com! GitBranch                     :cal s:BranchBuffer()
-com! GitRemote                     :cal s:RemoteBuffer()
+com! GitBranch                     :cal s:BranchBufferToggle()
+com! GitRemote                     :cal s:RemoteBufferToggle()
 
 com! -nargs=? -complete=file GitCommit :cal s:commit_single_file(<q-args>)
 com! GitCommitAll                      :cal s:commit_all_file()
