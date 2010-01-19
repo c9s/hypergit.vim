@@ -662,6 +662,7 @@ endf
 " Options {{{
 " ===========================================================
 cal s:defopt('g:git_command','git')
+cal s:defopt('g:fastgit_abbr_cmd',1)
 cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( which is 4sec by default )
 cal s:defopt('g:fastgit_sync_auto',0)        " disabled by default.
 cal s:defopt('g:fastgit_sync_bg',1)     " background sync , which is recommanded if you enabled auto sync
