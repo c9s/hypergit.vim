@@ -619,7 +619,9 @@ endf
 " Commands {{{
 " ===========================================================
 
-com! GitBranchList                     :cal s:branch_list_toggle()
+com! GitBranch                     :cal s:branch_list_toggle()
+com! GitRemote                     :cal s:remote_list_toggle()
+
 com! -nargs=? -complete=file GitCommit :cal s:commit_single_file(<q-args>)
 com! GitCommitAll                      :cal s:commit_all_file()
 com! GitCommitSkip                     :cal s:skip_commit(expand('%'))
@@ -653,7 +655,7 @@ fun! s:fastgit_default_mapping()
   nmap <leader>gp   :GitPush<CR>
   nmap <leader>gl   :GitPull<CR>
   nmap <leader>ggdi :GitDiffThis<CR>
-  nmap <leader>gb   :GitBranchList<CR>
+  nmap <leader>gb   :GitBranch<CR>
 endf
 " ===========================================================
 " }}}
@@ -669,12 +671,17 @@ cal s:defopt('g:fastgit_background_commit',1)
 " ===========================================================
 " }}}
 
-
-
-
-
 if g:fastgit_default_mapping
   cal s:fastgit_default_mapping()
+endif
+
+if g:fastgit_abbr_cmd
+  cabbr ci GitCommit
+  cabbr ca GitCommitAll
+  cabbr push GitPush
+  cabbr pull GitPull
+  cabbr gitdiff GitDiffThis
+  cabbr gitbranch GitBranch
 endif
 
 if g:fastgit_statusline == 'f'  " full
