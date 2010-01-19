@@ -614,9 +614,8 @@ fun! s:git_sync_au()
   augroup END
 endf
 
-
 " Commands {{{
-" ========================================== 
+" ===========================================================
 
 com! GitBranchList                     :cal s:branch_list_toggle()
 com! -nargs=? -complete=file GitCommit :cal s:commit_single_file(<q-args>)
@@ -640,9 +639,10 @@ com! -nargs=? GitChanges  :cal s:git_changes(<f-args>)
 com! GitSyncDisable       :augroup! GitSyncAG
 com! GitSyncEnable        :cal s:git_sync_au()
 
-" ========================================== 
+" ===========================================================
 " }}}
-
+" Default Mappings {{{
+" ===========================================================
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :GitCommit<CR>
   nmap <leader>ca  :GitCommitAll<CR>
@@ -653,8 +653,10 @@ fun! s:fastgit_default_mapping()
   nmap <leader>ggdi :GitDiffThis<CR>
   nmap <leader>gb   :GitBranchList<CR>
 endf
-
-" Options
+" ===========================================================
+" }}}
+" Options {{{
+" ===========================================================
 cal s:defopt('g:git_command','git')
 cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( which is 4sec by default )
 cal s:defopt('g:fastgit_sync_auto',0)        " disabled by default.
@@ -662,6 +664,8 @@ cal s:defopt('g:fastgit_sync_bg',1)     " background sync , which is recommanded
 cal s:defopt('g:fastgit_default_mapping',1)
 cal s:defopt('g:fastgit_statusline' , 'f' )  " f,a
 cal s:defopt('g:fastgit_background_commit',1)
+" ===========================================================
+" }}}
 
 if g:fastgit_default_mapping
   cal s:fastgit_default_mapping()
