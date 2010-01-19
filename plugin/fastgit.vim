@@ -109,14 +109,25 @@ fun! s:open_branch_switch_buffer()
   cal s:refresh_branch_buffer()
 endf
 
-fun! s:branch_list_toggle()
-  let b = bufnr('BranchList')
+fun! s:BranchBuffer()
+  let b = bufnr('GitBranch')
   if b == -1 
     cal s:open_branch_switch_buffer()
   else 
     exec 'silent '.b .'bw'
   endif
 endf
+
+fun! s:RemoteBuffer()
+  let b = bufnr('Remote')
+  if b == -1 
+    cal s:open_branch_switch_buffer()
+  else 
+    exec 'silent '.b .'bw'
+  endif
+endf
+
+
 
 " XXX: only do push when there are commits to push.
 
@@ -619,8 +630,8 @@ endf
 " Commands {{{
 " ===========================================================
 
-com! GitBranch                     :cal s:branch_list_toggle()
-com! GitRemote                     :cal s:remote_list_toggle()
+com! GitBranch                     :cal s:BranchBuffer()
+com! GitRemote                     :cal s:RemoteBuffer()
 
 com! -nargs=? -complete=file GitCommit :cal s:commit_single_file(<q-args>)
 com! GitCommitAll                      :cal s:commit_all_file()
