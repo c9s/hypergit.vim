@@ -1,4 +1,4 @@
-" vim:et:sw=2:
+" vim:et:sw=2:fdm=marker:
 "
 " FastGit Plugin
 "
@@ -614,6 +614,10 @@ fun! s:git_sync_au()
   augroup END
 endf
 
+
+" Commands {{{
+" ========================================== 
+
 com! GitBranchList                     :cal s:branch_list_toggle()
 com! -nargs=? -complete=file GitCommit :cal s:commit_single_file(<q-args>)
 com! GitCommitAll                      :cal s:commit_all_file()
@@ -635,6 +639,9 @@ com! -nargs=? GitChanges  :cal s:git_changes(<f-args>)
 
 com! GitSyncDisable       :augroup! GitSyncAG
 com! GitSyncEnable        :cal s:git_sync_au()
+
+" ========================================== 
+" }}}
 
 fun! s:fastgit_default_mapping()
   nmap <leader>ci  :GitCommit<CR>
