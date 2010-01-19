@@ -94,17 +94,28 @@ the default `<leader>` is a `slash key`, if you want to customize leader key, se
 COMMANDS
 ========
 
-- Gci     : commit current file
-- Gca     : commit all changes
-- Gcommit : commit current file (alias)
-- Gcommitall : commit all changes (alias)
-- Gpush   : git push
-- Gbranchtoggle : git branch list window toggle
+- GitCommit    : commit current file
+- GitCommitAll : commit all changes
+- GitPush      : git push
+- GitPull      : git pull
+- GitBranch    : open git branch buffer
+- GitRemote    : open git remote buffer
 
+COMMAND ABBREVIATIONS
+=====================
+
+- gci         GitCommit
+- gca         GitCommitAll
+- gpush       GitPush
+- gpull       GitPull
+- gpp         GitPush
+- gll         GitPull
+- gitdiff     GitDiffThis
+- gitbranch   GitBranch
 
 EXAMPLE
 =======
-`Gpush` command example:
+`GitPush` command example:
 
 simply push:
 
