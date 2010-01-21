@@ -646,12 +646,16 @@ fun! s:git_sync_au()
   augroup END
 endf
 
-
 fun! s:count_karma()
   let list = split( system( 'git log --pretty=format:%an | sort | uniq -c' ) , "\n" )
+  let table = {  }
   for a in list 
-
+    let columns = split(a,'\s\+',0)
+    let cnt = remove(columns,0)
+    let author = join(columns,' ')
+    let table[  author  ] = cnt
   endfor
+  return table
 endf
 
 " Commands {{{
