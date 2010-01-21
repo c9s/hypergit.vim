@@ -123,6 +123,7 @@ fun! s:OpenRemoteBuffer()
   file GitRemote
   setfiletype gitremote
 
+
   cal s:RenderRemoteBuffer()
 endf
 
