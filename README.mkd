@@ -2,12 +2,12 @@
 
 INTRO
 =====
-fastgit.vim provides an interface for you to use git from vim.
+hypergit.vim provides an interface for you to use git from vim.
 
 you can type commit message in a commit message buffer, after commit message
 file saved, it will commit with the message file.
 
-fastgit.vim also provides auto synchronization feature by using 'updatetime'
+hypergit.vim also provides auto synchronization feature by using 'updatetime'
 option. it can also do auto-pushing and auto-pulling for
 you in background while you have a coffee.
 
@@ -63,19 +63,19 @@ to enable git auto sync (push , pull in background) , add this to your
 
 to enable default mapping:
 
-    let g:fastgit_default_mapping = 1
+    let g:hypergit_default_mapping = 1
 
 setup default remote for git pull and push:
 
-    let g:fastgit_default_remote = 'origin'
+    let g:hypergit_default_remote = 'origin'
 
-to use fastgit statusline:
+to use hypergit statusline:
 
-    let g:fastgit_statusline = 'f'
+    let g:hypergit_statusline = 'f'
 
 to append git branch info to current statusline (if you have enough space):
 
-    let g:fastgit_statusline = 'a'
+    let g:hypergit_statusline = 'a'
 
 
 DEFAULT MAPPING
@@ -137,6 +137,6 @@ to push master branch to remote `origin`:
 SCREENSHOT
 ==========
 
-![](http://cloud.github.com/downloads/c9s/fastgit.vim/Screen_shot_2009-11-26_at_3.04.53_PM.png)
+![](http://cloud.github.com/downloads/c9s/hypergit.vim/Screen_shot_2009-11-26_at_3.04.53_PM.png)
 
 

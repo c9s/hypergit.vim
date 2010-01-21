@@ -154,12 +154,12 @@ endf
 " sync counter
 let g:git_sync_cnt = 0
 fun! s:git_sync_background()
-  if exists('g:fastgit_sync_lock')
+  if exists('g:hypergit_sync_lock')
     return
   endif
 
   " check counter
-  if g:git_sync_cnt < g:fastgit_sync_freq
+  if g:git_sync_cnt < g:hypergit_sync_freq
     let g:git_sync_cnt += 1
     return
   endif
@@ -170,7 +170,7 @@ fun! s:git_sync_background()
   endif
 
   echon 'git: synchronizing... '
-  if g:fastgit_sync_bg
+  if g:hypergit_sync_bg
     echo '(background)'
   else
     echo
@@ -179,18 +179,18 @@ fun! s:git_sync_background()
   let push_cmd = g:git_command . ' push '
   let pull_cmd = g:git_command . ' pull '
 
-  if exists('g:fastgit_default_remote')
+  if exists('g:hypergit_default_remote')
     " XXX: only when remtoe exists
-    let push_cmd .= g:fastgit_default_remote
-    let pull_cmd .= g:fastgit_default_remote
+    let push_cmd .= g:hypergit_default_remote
+    let pull_cmd .= g:hypergit_default_remote
   endif
 
-  if g:fastgit_sync_bg
+  if g:hypergit_sync_bg
     let push_cmd .= ' &'
     let pull_cmd .= ' &'
   endif
 
-  let g:fastgit_sync_lock = 1
+  let g:hypergit_sync_lock = 1
   let ret = system(push_cmd)
   let ret = substitute(ret,'[\n ]\+'," ",'g')
   cal s:echo(ret)
@@ -202,7 +202,7 @@ fun! s:git_sync_background()
   sleep 30m
 
   cal s:echo('git: synchronized.')
-  unlet g:fastgit_sync_lock
+  unlet g:hypergit_sync_lock
 endf
 
 
@@ -335,7 +335,7 @@ fun! s:commit(msgfile)
   cal s:filter_message_op(a:msgfile)
   echohl GitMsg | echo "committing " | echohl None
 
-  if g:fastgit_background_commit
+  if g:hypergit_background_commit
     cal system( printf('%s commit --cleanup=strip -a -F %s &', g:git_command , a:msgfile ) )
   else
     let ret = system( printf('%s commit --cleanup=strip -a -F %s ', g:git_command , a:msgfile ) )
@@ -376,7 +376,7 @@ fun! s:single_commit(msgfile,file)
   cal s:filter_message_op(a:msgfile)
 
   echohl GitMsg | echo "committing " . a:file | echohl None
-  if g:fastgit_background_commit
+  if g:hypergit_background_commit
     " XXX: add a growl or libnotify hook here , so that we can know if a commit
     " success or not.
     cal system( printf('%s commit --cleanup=strip -F %s %s &', g:git_command , a:msgfile, a:file ) )
@@ -691,17 +691,17 @@ com! GitSyncEnable        :cal s:git_sync_au()
 " Options {{{
 " ===========================================================
 cal s:defopt('g:git_command','git')
-cal s:defopt('g:fastgit_abbr_cmd',1)
-cal s:defopt('g:fastgit_sync_freq',0)   " per updatetime ( which is 4sec by default )
-cal s:defopt('g:fastgit_sync_auto',0)        " disabled by default.
-cal s:defopt('g:fastgit_sync_bg',1)     " background sync , which is recommanded if you enabled auto sync
-cal s:defopt('g:fastgit_default_mapping',1)
-cal s:defopt('g:fastgit_statusline' , 'f' )  " f,a
-cal s:defopt('g:fastgit_background_commit',1)
+cal s:defopt('g:hypergit_abbr_cmd',1)
+cal s:defopt('g:hypergit_sync_freq',0)   " per updatetime ( which is 4sec by default )
+cal s:defopt('g:hypergit_sync_auto',0)        " disabled by default.
+cal s:defopt('g:hypergit_sync_bg',1)     " background sync , which is recommanded if you enabled auto sync
+cal s:defopt('g:hypergit_default_mapping',1)
+cal s:defopt('g:hypergit_statusline' , 'f' )  " f,a
+cal s:defopt('g:hypergit_background_commit',1)
 " ===========================================================
 " }}}
 
-if g:fastgit_default_mapping
+if g:hypergit_default_mapping
   nmap <leader>ci  :GitCommit<CR>
   nmap <leader>ca  :GitCommitAll<CR>
 
@@ -711,7 +711,7 @@ if g:fastgit_default_mapping
   nmap <leader>gb   :GitBranch<CR>
 endif
 
-if g:fastgit_abbr_cmd
+if g:hypergit_abbr_cmd
   cabbr gci GitCommit
   cabbr gca GitCommitAll
 
@@ -725,9 +725,9 @@ if g:fastgit_abbr_cmd
   cabbr gbr   GitBranch
 endif
 
-if g:fastgit_statusline == 'f'  " full
+if g:hypergit_statusline == 'f'  " full
   cal s:toggle_statusline()
-elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
+elseif g:hypergit_statusline == 'a'  " append git info if we have enough space.
   let s:stl = &stl
   if strlen(s:stl) < 70
     cal s:append_statusline(s:stl)
@@ -735,7 +735,7 @@ elseif g:fastgit_statusline == 'a'  " append git info if we have enough space.
   unlet s:stl
 endif
 
-if g:fastgit_sync_auto
+if g:hypergit_sync_auto
   cal s:git_sync_au()
 endif
 cal s:init_plugin()

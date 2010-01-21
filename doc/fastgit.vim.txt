@@ -1,7 +1,7 @@
 
-    *fastgit.vim.txt*  
+    *hypergit.vim.txt*  
 
-fastgit.vim                                       *fastgit.vim* 
+hypergit.vim                                       *hypergit.vim* 
 Last Change: 2009-11-08T16:08:27
 
 Version 0.2
@@ -27,29 +27,29 @@ License: MIT license  {{{
     permit persons to whom 
 }}}
 
-CONTENTS                                               *fastgit.vim-contents*
+CONTENTS                                               *hypergit.vim-contents*
 
-|fastgit.vim-description|   Description
-|fastgit.vim-usage|         Usage
-|fastgit.vim-key-mappings|  Key mappings
-|fastgit.vim-variables|     Variables
-|fastgit.vim-contact|       Contact
+|hypergit.vim-description|   Description
+|hypergit.vim-usage|         Usage
+|hypergit.vim-key-mappings|  Key mappings
+|hypergit.vim-variables|     Variables
+|hypergit.vim-contact|       Contact
 
 For Vim version 7.0 or later.
 This plugin only works if 'compatible' is not set.
 {Vi does not have any of these features.}
 
 ==============================================================================
-DESCRIPTION                                             *fastgit.vim-description*
+DESCRIPTION                                             *hypergit.vim-description*
 
-*fastgit.vim* is a plugin to provide way to ...
-
-==============================================================================
-USAGE                                                   *fastgit.vim-usage*
-
+*hypergit.vim* is a plugin to provide way to ...
 
 ==============================================================================
-KEY MAPPINGS                                            *fastgit.vim-key-mappings*
+USAGE                                                   *hypergit.vim-usage*
+
+
+==============================================================================
+KEY MAPPINGS                                            *hypergit.vim-key-mappings*
 
 <leader>ci                                                     *<leader>ci*
     commit current file
@@ -58,16 +58,16 @@ KEY MAPPINGS                                            *fastgit.vim-key-mapping
     commit all changes
 
 ==============================================================================
-VARIABLES                                               *fastgit.vim-variables*
+VARIABLES                                               *hypergit.vim-variables*
 
 g:xxx_variable
   Your variable here
 
 ==============================================================================
-CHANGELOG                                               *fastgit.vim-changelog*
+CHANGELOG                                               *hypergit.vim-changelog*
 
 ==============================================================================
-CONTACT                                                 *fastgit.vim-contact*
+CONTACT                                                 *hypergit.vim-contact*
 
 
 ==============================================================================

@@ -1,22 +1,22 @@
 
 
 
-fun! fastgit#buffer_new()
+fun! hypergit#buffer_new()
 
 endf
 
 
-fun! fastgit#buffer_close()
+fun! hypergit#buffer_close()
 
 endf
 
 
-fun! fastgit#buffer_clear()
+fun! hypergit#buffer_clear()
 
 endf
 
 
-fun! fastgit#buffer_help()
+fun! hypergit#buffer_help()
 
 endf
 

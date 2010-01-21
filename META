@@ -1,5 +1,5 @@
 
-=name           fastgit.vim
+=name           hypergit.vim
 
 =author         Cornelius
 
@@ -7,7 +7,7 @@
 
 =type           plugin
 
-=version_from   plugin/fastgit.vim
+=version_from   plugin/hypergit.vim
 
 =vim_version    >= 7.2
 
@@ -19,5 +19,5 @@
 
 =script
 
-=repository http://github.com/c9s/fastgit.vim
+=repository http://github.com/c9s/hypergit.vim
 

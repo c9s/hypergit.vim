@@ -5,7 +5,7 @@
 VIMRUNTIME=~/.vim
 
 install:
-		cp vimlib/plugin/fastgit.vim  $(VIMRUNTIME)/plugin/fastgit.vim
+		cp vimlib/plugin/hypergit.vim  $(VIMRUNTIME)/plugin/hypergit.vim
 
 link:
-		ln -s `pwd`/vimlib/plugin/fastgit.vim $(VIMRUNTIME)/plugin/fastgit.vim
+		ln -s `pwd`/vimlib/plugin/hypergit.vim $(VIMRUNTIME)/plugin/hypergit.vim
