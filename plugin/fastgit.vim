@@ -49,7 +49,7 @@ fun! s:switch_branch(branch)
   let out = system( cmd )
   echo out
   silent 1,$delete _
-  cal s:refresh_branch_buffer()
+  cal s:RenderBranchBuffer()
 endf
 
 fun! s:merge_branch(branch)
@@ -57,7 +57,7 @@ fun! s:merge_branch(branch)
   echo out
 endfun
 
-fun! s:refresh_branch_buffer()
+fun! s:RenderBranchBuffer()
   let out = system('git branch -a')
   let lines = ["HELP: o: checkout branch  p: push  l: pull  m: merge"]
   cal add(lines,'---------------------------------------')
@@ -91,13 +91,14 @@ fun! s:show_stash_list()
 endf
 
 fun! s:OpenBranchBuffer()
-  8new
+  12new
   cal s:init_buffer()
   setlocal noswapfile  buftype=nofile bufhidden=wipe
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
-  file GitBranchList
+
+  file GitBranch
   " init syntax
-  setfiletype gitbranchlist
+  setfiletype gitbranch
   syn match RemoteBranch  "^\s\+remotes/.*$"
   syn match CurrentBranch "^\*\s.*$"
   syn match LocalBranch   "^\s\+\(remotes\)\@![a-zA-Z/_-]\+"
@@ -106,7 +107,23 @@ fun! s:OpenBranchBuffer()
   hi CurrentBranch ctermfg=red
   nmap <silent> <buffer> o    :exec 'GitSwitchBranch ' . substitute(getline('.'),'^\*','','')<CR>
   nmap <silent> <buffer> m    :exec 'GitMergeBranch ' . substitute(getline('.'),'^\*','','')<CR>
-  cal s:refresh_branch_buffer()
+  cal s:RenderBranchBuffer()
+endf
+
+fun! s:RenderRemoteBuffer()
+  :r !git remote -v
+endf
+
+fun! s:OpenRemoteBuffer()
+  12new
+  cal s:init_buffer()
+  setlocal noswapfile  buftype=nofile bufhidden=wipe
+  setlocal nobuflisted nowrap cursorline nonumber fdc=0
+
+  file GitRemote
+  setfiletype gitremote
+
+  cal s:RenderRemoteBuffer()
 endf
 
 fun! s:BranchBufferToggle()
@@ -123,7 +140,7 @@ endf
 fun! s:RemoteBufferToggle()
   let b = bufnr('Remote')
   if b == -1 
-    cal s:OpenBranchBuffer()
+    cal s:OpenRemoteBuffer()
   else 
     exec 'silent '.b .'bw'
   endif
@@ -388,7 +405,7 @@ fun! s:diff_window()
 endf
 
 " XXX: refactor this
-function! s:git_diff_this(...)
+function! s:GitDiffThis(...)
   if a:0 == 1
     let rev = a:1
   else
@@ -417,7 +434,7 @@ function! s:git_diff_this(...)
   wincmd l
 endf
 
-fun! s:git_changes(...)
+fun! s:GitChanges(...)
 
   if a:0 == 1
     let rev = a:1
@@ -507,7 +524,7 @@ fun! s:get_author_names()
   return 
 endf
 
-fun! s:git_push(...)
+fun! s:GitPush(...)
   let cmd = [ g:git_command ,"push" ]
   let remote = 'all'
   if a:0 == 1
@@ -518,7 +535,7 @@ fun! s:git_push(...)
   cal s:exec_cmd( cmd )
 endf
 
-fun! s:git_pull(...)
+fun! s:GitPull(...)
   let cmd = [ g:git_command ,"pull" ]
   let remote = 'all'
   if a:0 == 1
@@ -592,7 +609,7 @@ fun! s:exec_cmd(cmd)
   echohl GitCommandOutput | echo cmd_output | echohl None
 endf
 
-fun! s:remote_add(remote)
+fun! s:RemoteAdd(remote)
   let uri = input("Git URI:",'')
   if strlen(uri) > 3 
     let ret = system( printf('git remote add %s %s',a:remote ,uri))
@@ -605,7 +622,7 @@ fun! s:remote_add(remote)
   endif
 endf
 
-fun! s:remote_del(remote)
+fun! s:RemoteDel(remote)
   let ret = system( printf('git remote rm %s ',a:remote))
   let ret = substitute( ret , "\n" , "" , 'g')
   if v:shell_error
@@ -629,6 +646,14 @@ fun! s:git_sync_au()
   augroup END
 endf
 
+
+fun! s:count_karma()
+  let list = split( system( 'git log --pretty=format:%an | sort | uniq -c' ) , "\n" )
+  for a in list 
+
+  endfor
+endf
+
 " Commands {{{
 " ===========================================================
 
@@ -641,35 +666,21 @@ com! GitCommitSkip                     :cal s:skip_commit(expand('%'))
 com! GitDiff                           :cal s:diff_window()
 com! GitStatusLine                     :cal s:toggle_statusline()
 
-com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:remote_add( <f-args> )
-com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:remote_del( <f-args> )
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:RemoteAdd( <f-args> )
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteDel( <f-args> )
 
 com! -nargs=1 GitSwitchBranch :cal s:switch_branch(<f-args>)
 com! -nargs=1 GitMergeBranch  :cal s:merge_branch(<f-args>)
 
-com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:git_push(<f-args>)
-com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:git_pull(<f-args>)
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:GitPull(<f-args>)
 
-com! -nargs=? GitDiffThis :cal s:git_diff_this(<f-args>)
-com! -nargs=? GitChanges  :cal s:git_changes(<f-args>)
+com! -nargs=? GitDiffThis :cal s:GitDiffThis(<f-args>)
+com! -nargs=? GitChanges  :cal s:GitChanges(<f-args>)
 
 com! GitSyncDisable       :augroup! GitSyncAG
 com! GitSyncEnable        :cal s:git_sync_au()
 
-" ===========================================================
-" }}}
-" Default Mappings {{{
-" ===========================================================
-fun! s:fastgit_default_mapping()
-  nmap <leader>ci  :GitCommit<CR>
-  nmap <leader>ca  :GitCommitAll<CR>
-
-  " git prefix mapping
-  nmap <leader>gp   :GitPush<CR>
-  nmap <leader>gl   :GitPull<CR>
-  nmap <leader>ggdi :GitDiffThis<CR>
-  nmap <leader>gb   :GitBranch<CR>
-endf
 " ===========================================================
 " }}}
 " Options {{{
@@ -686,16 +697,27 @@ cal s:defopt('g:fastgit_background_commit',1)
 " }}}
 
 if g:fastgit_default_mapping
-  cal s:fastgit_default_mapping()
+  nmap <leader>ci  :GitCommit<CR>
+  nmap <leader>ca  :GitCommitAll<CR>
+
+  nmap <leader>gp   :GitPush<CR>
+  nmap <leader>gl   :GitPull<CR>
+  nmap <leader>ggdi :GitDiffThis<CR>
+  nmap <leader>gb   :GitBranch<CR>
 endif
 
 if g:fastgit_abbr_cmd
-  cabbr ci GitCommit
-  cabbr ca GitCommitAll
-  cabbr push GitPush
-  cabbr pull GitPull
-  cabbr gitdiff GitDiffThis
-  cabbr gitbranch GitBranch
+  cabbr gci GitCommit
+  cabbr gca GitCommitAll
+
+  cabbr gpush GitPush
+  cabbr gpull GitPull
+
+  cabbr gpp GitPush
+  cabbr gll GitPull
+
+  cabbr gdiff GitDiffThis
+  cabbr gbr   GitBranch
 endif
 
 if g:fastgit_statusline == 'f'  " full
