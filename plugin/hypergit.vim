@@ -48,38 +48,47 @@ fun! s:initGitLogBuffer()
 
 endf
 
-fun! s:initGitCommitBuffer(target)
-  let msgfile = tempname()
-  cal hypergit#buffer#init(msgfile)
+fun! s:initGitCommitBuffer()
+  setfiletype gitcommit
   setlocal nu
-  setfiletype git-status
-
-  let b:commit_target = a:target
-
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
-
-  cal hypergit#commit#render_single(a:target)
-  cal g:help_register("brief"," s - (skip)",1)
 
   nmap <silent><buffer> s  :cal g:git_skip_commit()<CR>
   autocmd BufUnload <buffer> :cal g:git_do_commit()
 endf
 
+fun! s:initGitCommitHelp()
+  cal g:help_register("brief"," s - (skip)",1)
+endf
+
+fun! s:initGitCommitSingleBuffer(target)
+  let msgfile = tempname()
+  cal hypergit#buffer#init(msgfile)
+  cal s:initGitCommitBuffer()
+
+  let b:commit_target = a:target
+  cal hypergit#commit#render_single(a:target)
+
+  cal s:initGitCommitHelp()
+endf
+
 fun! s:initGitCommitAllBuffer()
   let msgfile = tempname()
   cal hypergit#buffer#init(msgfile)
-  setlocal nu
-  setfiletype git-status
-
-  syntax match GitAction '^\![AD] .*'
-  hi link GitAction Function
-
+  cal s:initGitCommitBuffer()
   cal hypergit#commit#render()
-  cal g:help_register("brief"," s - (skip)",1)
 
-  nmap <silent><buffer> s  :cal g:git_skip_commit()<CR>
-  autocmd BufUnload <buffer> :cal g:git_do_commit()
+  cal s:initGitCommitHelp()
+endf
+
+fun! s:initGitCommitAmendBuffer()
+  let msgfile = tempname()
+  cal hypergit#buffer#init(msgfile)
+  cal s:initGitCommitBuffer()
+  cal hypergit#commit#render_amend()
+
+  cal s:initGitCommitHelp()
 endf
 
 fun! s:filter_message_op(msgfile)
@@ -124,16 +133,14 @@ fun! g:git_do_commit()
   if exists('b:commit_target')
     echo "Target: " . b:commit_target
     echo system( printf('%s commit --cleanup=strip -F %s %s', g:git_bin , file, b:commit_target ) )
+  elseif exists('b:commit_amend')
+    echo system('%s commit --cleanup=strip --amend -F %s' , g:git_bin , file )
   else
     echo system( printf('%s commit --cleanup=strip -a -F %s', g:git_bin , file ) )
   endif
   echo "Done"
   echohl None
 endf
-
-
-
-
 
 fun! s:initGitRemoteBuffer()
   cal hypergit#buffer#init()
@@ -145,16 +152,9 @@ fun! s:initGitStashBuffer()
 
 endf
 
-fun! s:showHelp(text)
-
-endf
-
-fun! s:closeHelp()
-
-endf
-
-com! GitCommit       :cal s:initGitCommitBuffer(expand('%'))
+com! GitCommit       :cal s:initGitCommitSingleBuffer(expand('%'))
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
+com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
 
 nmap <leader>ci  :GitCommit<CR>
 nmap <leader>ca  :GitCommitAll<CR>
