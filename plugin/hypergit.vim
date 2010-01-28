@@ -15,7 +15,10 @@ elseif v:version < 702
   echoerr 'ahaha. your vim seems too old , please do upgrade. i found your vim is ' . v:version . '.'
   finish
 endif
+
 let g:loaded_hypergit = 1
+let g:git_bin = 'git'
+let g:hypergitBufferHeight = 8
 
 fun! s:defopt(name,val)
   if !exists(a:name)
@@ -28,7 +31,6 @@ fun! s:echo(msg)
   echomsg a:msg
 endf
 
-let g:hypergitBufferHeight = 8
 
 
 fun! s:initGitStatusBuffer()
@@ -58,8 +60,9 @@ fun! s:initGitCommitBuffer(target)
   hi link GitAction Function
 
   cal hypergit#commit#render_single(a:target)
-  cal g:help_register("brief","\\s - (skip)")
+  cal g:help_register("brief"," s - (skip)",1)
 
+  nmap <silent><buffer> s  :cal g:git_skip_commit()<CR>
   autocmd BufUnload <buffer> :cal g:git_do_commit()
 endf
 
@@ -73,8 +76,9 @@ fun! s:initGitCommitAllBuffer()
   hi link GitAction Function
 
   cal hypergit#commit#render()
-  cal g:help_register("brief","fulltext\nfulltext")
+  cal g:help_register("brief"," s - (skip)",1)
 
+  nmap <silent><buffer> s  :cal g:git_skip_commit()<CR>
   autocmd BufUnload <buffer> :cal g:git_do_commit()
 endf
 
@@ -101,10 +105,18 @@ fun! s:filter_message_op(msgfile)
   cal writefile(lines,a:msgfile)
 endf
 
-let g:git_bin = 'git'
+fun! g:git_skip_commit()
+  let file = expand('%')
+  cal delete(file)
+  bw!
+endf
 
 fun! g:git_do_commit()
   let file = expand('%')
+  if ! filereadable(file) 
+    echo "Skipped"
+    return
+  endif
   cal s:filter_message_op(file)
 
   echohl GitMsg 
@@ -118,9 +130,6 @@ fun! g:git_do_commit()
   echo "Done"
   echohl None
 endf
-
-
-
 
 
 
@@ -144,8 +153,8 @@ fun! s:closeHelp()
 
 endf
 
-com! GitCommitAll :cal s:initGitCommitBuffer(expand('%'))
-com! GitCommit    :cal s:initGitCommitAllBuffer()
+com! GitCommit       :cal s:initGitCommitBuffer(expand('%'))
+com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 
 nmap <leader>ci  :GitCommit<CR>
 nmap <leader>ca  :GitCommitAll<CR>
