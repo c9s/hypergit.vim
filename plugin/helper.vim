@@ -34,8 +34,6 @@ fun! s:help_show_brief()
 endf
 
 fun! s:help_init_syntax()
-  syn match BufferHelp +^#\s.*$+
-  hi link BufferHelp Comment
 endf
 
 fun! s:help_hide_brief()

@@ -49,13 +49,14 @@ fun! s:initGitLogBuffer()
 endf
 
 fun! s:initGitCommitBuffer()
-  setfiletype gitcommit
   setlocal nu
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
 
   nmap <silent><buffer> s  :cal g:git_skip_commit()<CR>
   autocmd BufUnload <buffer> :cal g:git_do_commit()
+
+  setfiletype gitcommit
 endf
 
 fun! s:initGitCommitHelp()
