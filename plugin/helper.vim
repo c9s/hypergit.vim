@@ -1,4 +1,3 @@
-
 " synopsis:
 "
 "   call register_help at begining,
@@ -27,12 +26,12 @@ endf
 fun! s:help_show_brief()
   let lines = split(b:help_brief,"\n")
   let b:help_brief_height = len(lines)
-  cal map(lines,"'\" ' . v:val")
+  cal map(lines,"'# ' . v:val")
   cal append( 0 , lines  )
 endf
 
 fun! s:help_init_syntax()
-  syn match BufferHelp +^"\s.*$+
+  syn match BufferHelp +^#\s.*$+
   hi link BufferHelp Comment
 endf
 
@@ -46,7 +45,7 @@ fun! s:help_show_fulltext()
   cal s:help_hide_brief()
 
   let lines = split(b:help_fulltext,"\n")
-  cal map(lines,"'\" ' . v:val")
+  cal map(lines,"'# ' . v:val")
 
   let b:help_fulltext_height = len(lines)
   cal append( 0 , lines  )
