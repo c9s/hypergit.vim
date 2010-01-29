@@ -153,14 +153,55 @@ endf
 
 fun! s:initGitStashBuffer()
   cal hypergit#buffer#init()
-
 endf
+
+
+
+" Git Menu {{{
+let g:git_cmds = {  }
+let g:git_cmds[ "* Reset (hard)" ] = "!git reset --hard" 
+let g:git_cmds[ "* Patch log" ]    = "!git log -p"
+
+fun! s:initGitMenuBuffer()
+  cal hypergit#buffer#init()
+
+  syn match MenuItem +^\*.*$+
+  syn match MenuSubItem +^\*\*.*$+
+
+  hi link MenuItem Function
+  hi link MenuSubItem Identity
+
+  " custom command should be available
+
+  for item in keys(g:git_cmds)
+    cal append( 0 , item )
+  endfor
+  nmap <buffer>  <Enter>   :cal <SID>ExecuteMenuItem()<CR>
+endf
+
+fun! s:ExecuteMenuItem()
+  let line = getline('.')
+  if exists( 'g:git_cmds[ line ]' )
+    let exe = g:git_cmds[ line ]
+    if type(exe) == 1
+      " string , will be an command or a function call
+      exec exe
+    elseif type(exe) == 2
+      " get function ref
+
+    endif
+  endif
+endf
+
+" }}}
 
 com! GitCommit       :cal s:initGitCommitSingleBuffer(expand('%'))
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
+com! GitMenu         :cal s:initGitMenuBuffer()
 
 nmap <leader>ci  :GitCommit<CR>
 nmap <leader>ca  :GitCommitAll<CR>
+nmap <leader>gg  :GitMenu<CR>
 
 "cal s:initGitCommitBuffer()
