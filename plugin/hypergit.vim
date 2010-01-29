@@ -1,4 +1,3 @@
-
 " vim:et:sw=2:fdm=marker:
 "
 " hypergit.vim
@@ -48,6 +47,7 @@ fun! s:initGitLogBuffer()
 
 endf
 
+" Commit Buffers {{{
 fun! s:initGitCommitBuffer()
   setlocal nu
   syntax match GitAction '^\![AD] .*'
@@ -138,6 +138,7 @@ fun! g:git_do_commit()
   echo "Done"
   echohl None
 endf
+" }}}
 
 fun! s:initGitRemoteBuffer()
   cal hypergit#buffer#init()
