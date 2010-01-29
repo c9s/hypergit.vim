@@ -68,6 +68,8 @@ fun! s:initGitCommitSingleBuffer(target)
   cal hypergit#commit#render_single(a:target)
 
   cal g:help_register("Git: commit " . a:target ," s - (skip)",1)
+  cal cursor(2,1)
+  startinsert
 endf
 
 fun! s:initGitCommitAllBuffer()
@@ -77,6 +79,8 @@ fun! s:initGitCommitAllBuffer()
   cal hypergit#commit#render()
 
   cal g:help_register("Git: commit --all"," s - (skip)",1)
+  cal cursor(2,1)
+  startinsert
 endf
 
 fun! s:initGitCommitAmendBuffer()
@@ -86,6 +90,8 @@ fun! s:initGitCommitAmendBuffer()
   cal hypergit#commit#render_amend()
 
   cal g:help_register("Git: commit --amend"," s - (skip)",1)
+  cal cursor(2,1)
+  startinsert
 endf
 
 fun! s:filter_message_op(msgfile)
