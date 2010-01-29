@@ -181,7 +181,24 @@ fun! s:initGitMenuBuffer()
 
   cal g:help_register("Git Menu"," <Enter> - (execute item)",1)
 
-  nmap <buffer>  <Enter>   :cal <SID>ExecuteMenuItem()<CR>
+  file GitMenu
+  nmap <silent><buffer>  <Enter>   :cal <SID>ExecuteMenuItem()<CR>
+
+  " reset cursor position
+  cal cursor(2,1)
+endf
+
+fun! s:GitMenuBufferToggle()
+  if bufnr("GitMenu") != -1
+    if bufnr('.') != bufnr("GitMenu")
+      let wnr = bufwinnr( bufnr("GitMenu") )
+      exe wnr - 1 . "wincmd w"
+    else
+      :bw!
+    endif
+  else
+    cal s:initGitMenuBuffer()
+  endif
 endf
 
 fun! s:ExecuteMenuItem()
@@ -204,7 +221,7 @@ endf
 com! GitCommit       :cal s:initGitCommitSingleBuffer(expand('%'))
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
-com! GitMenu         :cal s:initGitMenuBuffer()
+com! GitMenuToggle   :cal s:GitMenuBufferToggle()
 
 nmap <leader>ci  :GitCommit<CR>
 nmap <leader>ca  :GitCommitAll<CR>
