@@ -18,6 +18,7 @@ endif
 let g:loaded_hypergit = 1
 let g:git_bin = 'git'
 let g:hypergitBufferHeight = 8
+let g:hypergitBufferWidth = 35
 
 fun! s:defopt(name,val)
   if !exists(a:name)
@@ -163,7 +164,7 @@ let g:git_cmds[ "* Reset (hard)" ] = "!git reset --hard"
 let g:git_cmds[ "* Patch log" ]    = "!git log -p"
 
 fun! s:initGitMenuBuffer()
-  cal hypergit#buffer#init()
+  cal hypergit#buffer#init_v()
 
   syn match MenuItem +^\*.*$+
   syn match MenuSubItem +^\*\*.*$+
@@ -171,11 +172,15 @@ fun! s:initGitMenuBuffer()
   hi link MenuItem Function
   hi link MenuSubItem Identity
 
+
   " custom command should be available
 
   for item in keys(g:git_cmds)
     cal append( 0 , item )
   endfor
+
+  cal g:help_register("Git Menu"," <Enter> - (execute item)",1)
+
   nmap <buffer>  <Enter>   :cal <SID>ExecuteMenuItem()<CR>
 endf
 
@@ -183,6 +188,7 @@ fun! s:ExecuteMenuItem()
   let line = getline('.')
   if exists( 'g:git_cmds[ line ]' )
     let exe = g:git_cmds[ line ]
+
     if type(exe) == 1
       " string , will be an command or a function call
       exec exe
