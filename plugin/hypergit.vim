@@ -65,6 +65,8 @@ fun! s:initGitCommitSingleBuffer(target)
   cal hypergit#buffer#init(msgfile)
   cal s:initGitCommitBuffer()
 
+
+  " XXX: make sure a:target exists, and it's in git commit list.
   let b:commit_target = a:target
   cal hypergit#commit#render_single(a:target)
 
