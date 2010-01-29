@@ -59,10 +59,6 @@ fun! s:initGitCommitBuffer()
   setfiletype gitcommit
 endf
 
-fun! s:initGitCommitHelp()
-  cal g:help_register("brief"," s - (skip)",1)
-endf
-
 fun! s:initGitCommitSingleBuffer(target)
   let msgfile = tempname()
   cal hypergit#buffer#init(msgfile)
@@ -71,7 +67,7 @@ fun! s:initGitCommitSingleBuffer(target)
   let b:commit_target = a:target
   cal hypergit#commit#render_single(a:target)
 
-  cal s:initGitCommitHelp()
+  cal g:help_register("Git: commit " . a:target ," s - (skip)",1)
 endf
 
 fun! s:initGitCommitAllBuffer()
@@ -80,7 +76,7 @@ fun! s:initGitCommitAllBuffer()
   cal s:initGitCommitBuffer()
   cal hypergit#commit#render()
 
-  cal s:initGitCommitHelp()
+  cal g:help_register("Git: commit --all"," s - (skip)",1)
 endf
 
 fun! s:initGitCommitAmendBuffer()
@@ -89,7 +85,7 @@ fun! s:initGitCommitAmendBuffer()
   cal s:initGitCommitBuffer()
   cal hypergit#commit#render_amend()
 
-  cal s:initGitCommitHelp()
+  cal g:help_register("Git: commit --amend"," s - (skip)",1)
 endf
 
 fun! s:filter_message_op(msgfile)
