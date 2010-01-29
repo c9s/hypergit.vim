@@ -17,7 +17,7 @@ endif
 
 let g:loaded_hypergit = 1
 let g:git_bin = 'git'
-let g:hypergitBufferHeight = 8
+let g:hypergitBufferHeight = 15
 let g:hypergitBufferWidth = 35
 
 fun! s:defopt(name,val)
@@ -162,6 +162,10 @@ endf
 let g:git_cmds = {  }
 let g:git_cmds[ "* Reset (hard)" ] = "!git reset --hard" 
 let g:git_cmds[ "* Patch log" ]    = "!git log -p"
+let g:git_cmds[ "* Diff"      ]    = "!git diff"
+let g:git_cmds[ "* Show"      ]    = "!git show"
+let g:git_cmds[ "* List Branchs" ] = "!git branch -a"
+" let g:git_cmds[ "* Checkout"     ] = "!git checkout "
 
 fun! s:initGitMenuBuffer()
   cal hypergit#buffer#init_v()
