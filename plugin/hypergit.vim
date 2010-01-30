@@ -1,4 +1,4 @@
-" vim:et:sw=2:fdm=marker:
+" vim:et:sw=2:fdm=marker:fdl=0:
 "
 " hypergit.vim
 "
@@ -45,10 +45,18 @@ endf
 
 fun! s:initGitLogBuffer()
   cal hypergit#buffer#init()
+endf
+
+fun! s:initGitRemoteBuffer()
+  cal hypergit#buffer#init()
 
 endf
 
-" Commit Buffers {{{
+fun! s:initGitStashBuffer()
+  cal hypergit#buffer#init()
+endf
+
+" Commit Buffers 
 fun! s:initGitCommitBuffer()
   setlocal nu
   syntax match GitAction '^\![AD] .*'
@@ -147,27 +155,18 @@ fun! g:git_do_commit()
   echo "Done"
   echohl None
 endf
-" }}}
+" 
 
-fun! s:initGitRemoteBuffer()
-  cal hypergit#buffer#init()
-
-endf
-
-fun! s:initGitStashBuffer()
-  cal hypergit#buffer#init()
-endf
-
-
-
-" Git Menu {{{
+" Git Menu 
 let g:git_cmds = {  }
-let g:git_cmds[ "* Reset (hard)" ] = "!git reset --hard" 
-let g:git_cmds[ "* Patch log" ]    = "!git log -p"
-let g:git_cmds[ "* Diff"      ]    = "!git diff"
-let g:git_cmds[ "* Show"      ]    = "!git show"
-let g:git_cmds[ "* List Branchs" ] = "!git branch -a"
-" let g:git_cmds[ "* Checkout"     ] = "!git checkout "
+let g:git_cmds[ "* Reset (hard)" ] = "!clear && git reset --hard" 
+let g:git_cmds[ "* Push" ]         = "!clear && git push"
+let g:git_cmds[ "* Pull" ]         = "!clear && git pull"
+let g:git_cmds[ "* Patch log" ]    = "!clear && git log -p"
+let g:git_cmds[ "* Diff"      ]    = "!clear && git diff"
+let g:git_cmds[ "* Show"      ]    = "!clear && git show"
+let g:git_cmds[ "* List Branchs" ] = "!clear && git branch -a"
+" let g:git_cmds[ "* Checkout"     ] = "!clear && git checkout "
 
 fun! s:initGitMenuBuffer()
   cal hypergit#buffer#init_v()
@@ -222,7 +221,7 @@ fun! s:ExecuteMenuItem()
   endif
 endf
 
-" }}}
+" 
 
 com! GitCommit       :cal s:initGitCommitSingleBuffer(expand('%'))
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
@@ -232,5 +231,3 @@ com! GitMenuToggle   :cal s:GitMenuBufferToggle()
 nmap <leader>ci  :GitCommit<CR>
 nmap <leader>ca  :GitCommitAll<CR>
 nmap <leader>gg  :GitMenu<CR>
-
-"cal s:initGitCommitBuffer()
