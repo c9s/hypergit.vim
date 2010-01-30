@@ -160,8 +160,8 @@ endf
 " Git Menu 
 let g:git_cmds = {  }
 let g:git_cmds[ "* Reset (hard)" ] = "!clear && git reset --hard" 
-let g:git_cmds[ "* Push" ]         = "!clear && git push"
-let g:git_cmds[ "* Pull" ]         = "!clear && git pull"
+let g:git_cmds[ "* Push" ]         = "!clear && git push origin"
+let g:git_cmds[ "* Pull" ]         = "!clear && git pull origin"
 let g:git_cmds[ "* Patch log" ]    = "!clear && git log -p"
 let g:git_cmds[ "* Diff"      ]    = "!clear && git diff"
 let g:git_cmds[ "* Show"      ]    = "!clear && git show"
