@@ -122,10 +122,16 @@ fun! s:MenuBuffer.init_buffer()
 
   syn match MenuId +\[\d\+\]$+
   syn match MenuPre  "^[-+~|]\+"
-  syn match MenuLabel +\(^[-+~|]\+\)\@<=[a-zA-Z0-9-()._/ ]*+
+  syn match MenuLabelExecutable +\(^[-]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
+  syn match MenuLabelExpanded   +\(^[~]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
+  syn match MenuLabelCollapsed  +\(^[+]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
+
   hi MenuId ctermfg=black ctermbg=black
   hi MenuPre ctermfg=darkblue
-  hi MenuLabel ctermfg=yellow
+
+  hi MenuLabelExpanded ctermfg=blue
+  hi MenuLabelCollapsed ctermfg=yellow
+  hi MenuLabelExecutable ctermfg=white
 
   let b:_menu = self
 
@@ -325,10 +331,10 @@ fun! s:MenuItem.displayString()
     return op . indent . self.label . '[' . self.id . ']'
   elseif has_key(self,'parent')
     let indent = repeat('-', lev)
-    return '|' . indent . self.label . '[' . self.id . ']'
+    return '-' . indent . self.label . '[' . self.id . ']'
   else
     let indent = repeat('-', lev)
-    return '|' . indent . self.label . '[' . self.id . ']'
+    return '-' . indent . self.label . '[' . self.id . ']'
   endif
 endf
 
