@@ -394,6 +394,59 @@ endf
 
 
 " }}}
+" Git Commands {{{
+fun! s:GitPush(...)
+  let cmd = [ g:git_command ,"push" ]
+  let remote = 'all'
+  if a:0 == 1
+    cal add(cmd,a:1)
+    let remote = '[' .  a:1 . ']'
+  endif
+  cal s:echo("git: push => " . remote . " (Ctrl-c to stop)")
+  cal s:exec_cmd( cmd )
+endf
+
+fun! s:GitPull(...)
+  let cmd = [ g:git_command ,"pull" ]
+  let remote = 'all'
+  if a:0 == 1
+    cal add(cmd,a:1)
+    let remote = '[' . a:1 . ']'
+  endif
+  cal s:echo("git: pull <= " . remote . " (Ctrl-c to stop)")
+  cal s:exec_cmd( cmd )
+endf
+
+fun! s:RemoteAdd(remote)
+  let uri = input("Git URI:",'')
+  if strlen(uri) > 3 
+    let ret = system( printf('git remote add %s %s',a:remote ,uri))
+    let ret = substitute( ret , "\n" , "" , 'g')
+    if v:shell_error
+      echohl WarningMsg | echo "Can't add remote '"  . a:remote . "': " . ret | echohl None
+    else
+      cal s:echo( "Remote " . a:remote . " Added." )
+    endif
+  endif
+endf
+
+fun! s:RemoteRm(remote)
+  let ret = system( printf('git remote rm %s ',a:remote))
+  let ret = substitute( ret , "\n" , "" , 'g')
+  if v:shell_error
+    echohl WarningMsg | echo "Can't remove remote '"  . a:remote . "': " . ret | echohl None
+  else
+    cal s:echo( "Remote " . a:remote . " removed." )
+  endif
+endf
+
+fun! s:RemoteRename(remote)
+  let new_name = input("New Remote Name:","")
+  let ret = system( printf('git remote rename %s %s',a:remote,new_name))
+  echo ret
+endf
+
+" }}}
 
 fun! s:initGitStatusBuffer()
   cal hypergit#buffer#init()
@@ -622,12 +675,27 @@ fun! s:GitMenuBufferToggle()
   endif
 endf
 
+
+" Command Completion Functions {{{
+fun! GitRemoteNameCompletion(lead,cmd,pos)
+  let names = split(system('git remote'),"\n")
+  cal filter( names , 'v:val =~ "^' .a:lead. '"'  )
+  return names
+endf
+" }}}
+
 cal s:defopt('g:gitbuffer_default_position','topleft')
 
 com! -complete=file -nargs=1 GitCommit       :cal s:initGitCommitSingleBuffer(<q-args>)
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
 com! GitMenuToggle   :cal s:GitMenuBufferToggle()
+
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:GitPull(<f-args>)
+
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:RemoteAdd( <f-args> )
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm( <f-args> )
 
 nmap <silent> <leader>ci  :exec 'GitCommit ' . expand('%')<CR>
 nmap <silent> <leader>ca  :GitCommitAll<CR>
