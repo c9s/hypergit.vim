@@ -12,5 +12,6 @@ Key Mappings
 
 Screenshot
 ===========
-![](http://cloud.github.com/downloads/c9s/hypergit.vim/Screen_shot_2010-02-01_at_2.51.53_AM.png)
+
+    http://cloud.github.com/downloads/c9s/hypergit.vim/Screen_shot_2010-02-01_at_2.51.53_AM.png
 
