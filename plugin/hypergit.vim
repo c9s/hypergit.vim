@@ -665,7 +665,9 @@ fun! s:initGitMenuBuffer()
 
   " Initialize Help Syntax
   syntax match HelpComment +^#.*+
+  syntax match String      +".\{-}"+
   hi HelpComment ctermfg=blue
+  hi String      ctermfg=red
 
   " reset cursor position
   cal cursor(2,1)
