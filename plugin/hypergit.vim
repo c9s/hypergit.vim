@@ -523,19 +523,19 @@ fun! s:initGitMenuBuffer()
     \'label': 'Commit All',
     \'exec_cmd': 'GitCommitAll' }) )
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'diff' , 'exec_cmd': '!clear && git diff' , 'childs': [ { 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
+  cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear && git diff' , 'childs': [ { 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
 
   " XXX: get remote names
-  cal m.addItem(s:MenuItem.create({ 'label': 'push' , 'exec_cmd': '!clear && git push' , 
+  cal m.addItem(s:MenuItem.create({ 'label': 'Push' , 'exec_cmd': '!clear && git push' , 
     \ 'childs': [
-    \  { 'label': 'push to origin' , 'exec_cmd': '!clear && git push origin' },
-    \  { 'label': 'push to ..' , 'exec_cmd': '' }
+    \  { 'label': 'Push to origin' , 'exec_cmd': '!clear && git push origin' },
+    \  { 'label': 'Push to ..' , 'exec_cmd': '' }
     \] }))
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'pull' , 'exec_cmd': '!clear && git pull' , 
+  cal m.addItem(s:MenuItem.create({ 'label': 'Pull' , 'exec_cmd': '!clear && git pull' , 
     \ 'childs': [
-    \  { 'label': 'pull to origin' , 'exec_cmd': '!clear && git pull origin' },
-    \  { 'label': 'pull to ..' , 'exec_cmd': '' }
+    \  { 'label': 'Pull to origin' , 'exec_cmd': '!clear && git pull origin' },
+    \  { 'label': 'Pull to ..' , 'exec_cmd': '' }
     \] }))
 
   let menu_chkout= s:MenuItem.create({ 'label': 'checkout branch(local)' })
