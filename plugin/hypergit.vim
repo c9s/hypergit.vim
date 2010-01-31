@@ -505,15 +505,6 @@ endf
 " 
 
 " Git Menu 
-let g:git_cmds = [ ]
-"cal add(g:git_cmds, { 'label': 'reset (hard)' , 'cmd': '!clear && git reset --hard'  }
-"cal add(g:git_cmds, { 'label': 'push to origin' , 'cmd': '!clear && git push origin' }
-"cal add(g:git_cmds, { 'label': 'pull from origin', 'cmd': '!clear && git pull origin' }
-"cal add(g:git_cmds, { 'label': 'diff'            , 'cmd': '!clear && git diff' }
-"cal add(g:git_cmds, { 'label': 'log (patch)'           , 'cmd': '!clear && git log -p' }
-"cal add(g:git_cmds, { 'label': 'show'                  , 'cmd': '!clear && git show' }
-" let g:git_cmds[ "* List Branchs" ] = "!clear && git branch -a"
-" let g:git_cmds[ "* Checkout"     ] = "!clear && git checkout "
 
 
 fun! DrawGitMenuHelp()
