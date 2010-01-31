@@ -1,8 +1,13 @@
-" synopsis:
-"
+
+" vim:fdm=marker:fdl=0:
+" Class: Helper
+" Author: Cornelius  <cornelius.howl@gmail.com>
+" Description: 
+"    render help message for plugin.
+
+" Help Class {{{
 "   call register_help at begining,
 let s:Help = {}
-
 fun! s:Help.reg(brief,fulltext,show_brief)
   let b:help_brief = a:brief . ' | Press ? For Help.'
   let b:help_brief_height = 0
@@ -64,6 +69,8 @@ fun! s:Help.hide_fulltext()
     cal s:Help.show_brief()
   endif
 endf
+" }}}
+" Test Code {{{ 
 
 fun! s:Test()
 " test code:
@@ -71,5 +78,4 @@ fun! s:Test()
   cal s:Help.reg('orz','ORZ',1)
 endf
 " cal s:Test()
-
-
+" }}}

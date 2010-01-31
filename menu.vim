@@ -1,4 +1,3 @@
-
 " vim:fdm=marker:fdl=0:
 " Author: Cornelius <cornelius.howl@gmail.com>
 " Class:  MenuBuffer
@@ -7,21 +6,36 @@
 "         for you to create a tree menu in buffer easily 
 "          (especially in terminal)
 
-
 " MenuBuffer Class {{{
 let s:MenuBuffer = { 'buf_nr' : -1 , 'items': [  ] }
 
 fun! s:MenuBuffer.create(options)
-  let menu = copy(self)
-  cal extend(menu,a:options)
-  cal menu.init()
-  return menu
+  let menu_obj = copy(self)
+  cal extend(menu_obj,a:options)
+  cal menu_obj.init_buffer()
+  return menu_obj
 endf
 
-fun! s:MenuBuffer.init()
+fun! s:MenuBuffer.init_buffer()
   let win = self.findWindow(1)
   setfiletype MenuBuffer
-  setlocal buftype=nofile bufhidden=hide
+  setlocal buftype=nofile bufhidden=hide nonu nohls
+  setlocal fdc=0
+
+  syn match MenuId +\[\d\+\]$+
+  syn match MenuPre  "^[-+~|]\+"
+  syn match MenuLabel +\(^[-+~|]\+\)\@<=[a-zA-Z0-9_/ ]*+
+  hi MenuId ctermfg=black ctermbg=black
+  hi MenuPre ctermfg=darkblue
+  hi MenuLabel ctermfg=yellow
+
+  com! -buffer ToggleNode  :cal s:MenuBuffer.toggleCurrent()
+  com! -buffer ToggleNodeR  :cal s:MenuBuffer.toggleCurrentR()
+
+  "com! -buffer ExecuteNode :cal s:MenuBuffer.executeCurrent()
+  nmap <buffer> o :ToggleNode<CR>
+  nmap <buffer> O :ToggleNodeR<CR>
+  "nmap <buffer> <Enter>  :ExecuteNode<CR>
 endf
 
 fun! s:MenuBuffer.setBufNr(nr)
@@ -39,7 +53,7 @@ endf
 fun! s:MenuBuffer.findWindow(switch)
   let win = bufwinnr( self.buf_nr )
   if win != -1 && a:switch
-    exec win . 'wincmd w'
+    exec (win-1) . 'wincmd w'
   endif
   return win
 endf
@@ -49,6 +63,16 @@ fun! s:MenuBuffer.toggleCurrent()
   let item = self.findItem(id)
   if type(item) == 4
     cal item.toggle()
+  endif
+  cal self.render()
+endf
+
+" FIXME:
+fun! s:MenuBuffer.toggleCurrentR()
+  let id = self.getCurrentMenuId()
+  let item = self.findItem(id)
+  if type(item) == 4
+    cal item.toggleR()
   endif
   cal self.render()
 endf
@@ -64,7 +88,7 @@ fun! s:MenuBuffer.render()
     silent 1,$delete _
   endif
   let outstr=join(out,"\n")
-  0put=outstr
+  silent 0put=outstr
   cal setpos('.',cur)
 endf
 
@@ -75,7 +99,7 @@ fun! s:MenuBuffer.getCurrentLevel()
 endf
 
 fun! s:MenuBuffer.getCurrentMenuId()
-  let id = matchstr(getline('.'),'\([~+|-]\+\[\)\@<=\d\+')
+  let id = matchstr(getline('.'),'\(\[\)\@<=\d\+\(\)\@>')
   return str2nr(id)
 endf
 
@@ -90,6 +114,7 @@ fun! s:MenuBuffer.findItem(id)
   return -1
 endf
 " }}}
+" MenuItem Class {{{
 
 let s:MenuItem = {'id':0, 'expanded':0 }
 
@@ -153,13 +178,13 @@ fun! s:MenuItem.displayString()
       let op = '+'
     endif
     let indent = repeat('-', lev)
-    return op . indent . '[' . self.id . '] ' . self.label
+    return op . indent . self.label . '[' . self.id . ']'
   elseif has_key(self,'parent')
     let indent = repeat('-', lev)
-    return '|' . indent . '[' . self.id . '] ' . self.label
+    return '|' . indent . self.label . '[' . self.id . ']'
   else
     let indent = repeat('-', lev)
-    return '|' . indent . '[' . self.id . '] ' . self.label
+    return '|' . indent . self.label . '[' . self.id . ']'
   endif
 endf
 
@@ -168,6 +193,15 @@ fun! s:MenuItem.expandR()
   if has_key(self,'childs')
     for ch in self.childs
       cal ch.expandR()
+    endfor
+  endif
+endf
+
+fun! s:MenuItem.collapseR()
+  let self.expanded = 0
+  if has_key(self,'childs')
+    for ch in self.childs
+      cal ch.collapseR()
     endfor
   endif
 endf
@@ -188,6 +222,14 @@ fun! s:MenuItem.toggle()
   endif
 endf
 
+fun! s:MenuItem.toggleR()
+  if self.expanded == 1
+    cal self.collapseR()
+  else
+    cal self.expandR()
+  endif
+endf
+
 fun! s:MenuItem.render( )
   let printlines = [ self.displayString()  ]
   if has_key(self,'childs') && self.expanded 
@@ -198,6 +240,8 @@ fun! s:MenuItem.render( )
   return join(printlines,"\n")
 endf
 
+" }}}
+
 " =========== synopsis
 
 let p1 = s:MenuItem.create( { 'label': 'Father' }  )
@@ -206,7 +250,6 @@ let p2 = s:MenuItem.create( { 'label': 'Father2' } )
 let s1 = s:MenuItem.create( { 'label': 'Son' , 'parent': p1 } )
 let s1_1 = s1.createChild({ 'label': 'SonFromSon' } )
 let s1_2 = s1.createChild({ 'label': 'SonFromSon2' } )
-
 
 let p2_1 = p2.createChild({ 'label': 'Father2/Son' } )
 
@@ -228,9 +271,6 @@ cal p1.expand()
 vnew
 let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
 cal m.addItems([p1, p2])
-
 cal m.render()
 "echo m.findItem(3)
 
-com! ToggleNode  :cal s:MenuBuffer.toggleCurrent()
-nmap <buffer> o :ToggleNode<CR>

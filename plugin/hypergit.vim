@@ -32,6 +32,255 @@ fun! s:echo(msg)
 endf
 
 
+" Menu {{{
+
+" MenuBuffer Class {{{
+let s:MenuBuffer = { 'buf_nr' : -1 , 'items': [  ] }
+
+fun! s:MenuBuffer.create(options)
+  let menu_obj = copy(self)
+  cal extend(menu_obj,a:options)
+  cal menu_obj.init_buffer()
+  return menu_obj
+endf
+
+fun! s:MenuBuffer.init_buffer()
+  let win = self.findWindow(1)
+  setfiletype MenuBuffer
+  setlocal buftype=nofile bufhidden=hide nonu nohls
+  setlocal fdc=0
+
+  syn match MenuId +\[\d\+\]$+
+  syn match MenuPre  "^[-+~|]\+"
+  syn match MenuLabel +\(^[-+~|]\+\)\@<=[a-zA-Z0-9_/ ]*+
+  hi MenuId ctermfg=black ctermbg=black
+  hi MenuPre ctermfg=darkblue
+  hi MenuLabel ctermfg=yellow
+
+  com! -buffer ToggleNode  :cal s:MenuBuffer.toggleCurrent()
+  com! -buffer ToggleNodeR  :cal s:MenuBuffer.toggleCurrentR()
+
+  "com! -buffer ExecuteNode :cal s:MenuBuffer.executeCurrent()
+  nmap <buffer> o :ToggleNode<CR>
+  nmap <buffer> O :ToggleNodeR<CR>
+  "nmap <buffer> <Enter>  :ExecuteNode<CR>
+endf
+
+fun! s:MenuBuffer.setBufNr(nr)
+  let self.buf_nr = a:nr
+endf
+
+fun! s:MenuBuffer.addItem(item)
+  cal add(self.items,a:item)
+endf
+
+fun! s:MenuBuffer.addItems(items)
+  cal extend(self.items,a:items)
+endf
+
+fun! s:MenuBuffer.findWindow(switch)
+  let win = bufwinnr( self.buf_nr )
+  if win != -1 && a:switch
+    exec (win-1) . 'wincmd w'
+  endif
+  return win
+endf
+
+fun! s:MenuBuffer.toggleCurrent()
+  let id = self.getCurrentMenuId()
+  let item = self.findItem(id)
+  if type(item) == 4
+    cal item.toggle()
+  endif
+  cal self.render()
+endf
+
+" FIXME:
+fun! s:MenuBuffer.toggleCurrentR()
+  let id = self.getCurrentMenuId()
+  let item = self.findItem(id)
+  if type(item) == 4
+    cal item.toggleR()
+  endif
+  cal self.render()
+endf
+
+fun! s:MenuBuffer.render()
+  let cur = getpos('.')
+  let win = self.findWindow(1)
+  let out = [  ]
+  for item in self.items
+    cal add(out,item.render())
+  endfor
+  if line('$') > 1 
+    silent 1,$delete _
+  endif
+  let outstr=join(out,"\n")
+
+  if has_key(self,'before_render')
+    cal self.before_render()
+  endif
+
+  silent 0put=outstr
+  cal setpos('.',cur)
+
+  if has_key(self,'after_render')
+    cal self.after_render()
+  endif
+endf
+
+fun! s:MenuBuffer.getCurrentLevel()
+  let line = getline('.')
+  let idx = stridx(line,'[')
+  return idx - 1
+endf
+
+fun! s:MenuBuffer.getCurrentMenuId()
+  let id = matchstr(getline('.'),'\(\[\)\@<=\d\+\(\)\@>')
+  return str2nr(id)
+endf
+
+fun! s:MenuBuffer.findItem(id)
+  for item in self.items
+    let l:ret = item.findItem(a:id)
+    if type(l:ret) == 4
+      return l:ret
+    endif
+    unlet l:ret
+  endfor
+  return -1
+endf
+" }}}
+" MenuItem Class {{{
+
+let s:MenuItem = {'id':0, 'expanded':0 }
+
+" Factory method
+fun! s:MenuItem.create(options)
+  let self.id += 1
+  let item = copy(self)
+  cal extend(item,a:options)
+  if has_key(item,'parent')
+    if has_key(item.parent,'childs')
+      cal add(item.parent.childs,item)
+    else
+      let item.parent.childs = [ ]
+      cal add(item.parent.childs,item)
+    endif
+  endif
+  return item
+endf
+
+" Object method
+fun! s:MenuItem.createChild(options)
+  let child = s:MenuItem.create({ 'parent': self })
+  cal extend(child,a:options)
+  return child
+endf
+
+fun! s:MenuItem.findItem(id)
+  if self.id == a:id
+    return self
+  else 
+    if has_key(self,'childs')
+      for ch in self.childs 
+        let l:ret = ch.findItem(a:id)
+        if type(l:ret) == 4
+          return l:ret
+        endif
+        unlet l:ret
+      endfor
+    endif
+    return -1
+  endif
+endf
+
+fun! s:MenuItem.getLevel(lev)
+  let level = a:lev
+  if has_key(self,'parent')
+    let level +=1
+    return self.parent.getLevel(level)
+  else 
+    return level
+  endif
+endf
+
+fun! s:MenuItem.displayString()
+  let lev = self.getLevel(0)
+
+  if has_key(self,'childs')
+    if self.expanded 
+      let op = '~'
+    else
+      let op = '+'
+    endif
+    let indent = repeat('-', lev)
+    return op . indent . self.label . '[' . self.id . ']'
+  elseif has_key(self,'parent')
+    let indent = repeat('-', lev)
+    return '|' . indent . self.label . '[' . self.id . ']'
+  else
+    let indent = repeat('-', lev)
+    return '|' . indent . self.label . '[' . self.id . ']'
+  endif
+endf
+
+fun! s:MenuItem.expandR()
+  let self.expanded = 1
+  if has_key(self,'childs')
+    for ch in self.childs
+      cal ch.expandR()
+    endfor
+  endif
+endf
+
+fun! s:MenuItem.collapseR()
+  let self.expanded = 0
+  if has_key(self,'childs')
+    for ch in self.childs
+      cal ch.collapseR()
+    endfor
+  endif
+endf
+
+fun! s:MenuItem.expand()
+  let self.expanded = 1
+endf
+
+fun! s:MenuItem.collapse()
+  let self.expanded = 0
+endf
+
+fun! s:MenuItem.toggle()
+  if self.expanded == 1
+    cal self.collapse()
+  else
+    cal self.expand()
+  endif
+endf
+
+fun! s:MenuItem.toggleR()
+  if self.expanded == 1
+    cal self.collapseR()
+  else
+    cal self.expandR()
+  endif
+endf
+
+fun! s:MenuItem.render( )
+  let printlines = [ self.displayString()  ]
+  if has_key(self,'childs') && self.expanded 
+    for ch in self.childs 
+      cal add( printlines, ch.render() )
+    endfor
+  endif
+  return join(printlines,"\n")
+endf
+
+" }}}
+
+
+" }}}
 
 fun! s:initGitStatusBuffer()
   cal hypergit#buffer#init()
@@ -78,7 +327,7 @@ fun! s:initGitCommitSingleBuffer(target)
   let b:commit_target = a:target
   cal hypergit#commit#render_single(a:target)
 
-  cal g:help_register("Git: commit " . a:target ," s - (skip)",1)
+  cal s:Help.reg("Git: commit " . a:target ," s - (skip)",1)
   cal cursor(2,1)
   startinsert
 endf
@@ -89,7 +338,7 @@ fun! s:initGitCommitAllBuffer()
   cal s:initGitCommitBuffer()
   cal hypergit#commit#render()
 
-  cal g:help_register("Git: commit --all"," s - (skip)",1)
+  cal s:Help.reg("Git: commit --all"," s - (skip)",1)
   cal cursor(2,1)
   startinsert
 endf
@@ -100,7 +349,7 @@ fun! s:initGitCommitAmendBuffer()
   cal s:initGitCommitBuffer()
   cal hypergit#commit#render_amend()
 
-  cal g:help_register("Git: commit --amend"," s - (skip)",1)
+  cal s:Help.reg("Git: commit --amend"," s - (skip)",1)
   cal cursor(2,1)
   startinsert
 endf
@@ -158,42 +407,48 @@ endf
 " 
 
 " Git Menu 
-let g:git_cmds = {  }
-let g:git_cmds[ "* Reset (hard)" ] = "!clear && git reset --hard" 
-let g:git_cmds[ "* Push" ]         = "!clear && git push origin"
-let g:git_cmds[ "* Pull" ]         = "!clear && git pull origin"
-let g:git_cmds[ "* Patch log" ]    = "!clear && git log -p"
-let g:git_cmds[ "* Diff"      ]    = "!clear && git diff"
-let g:git_cmds[ "* Show"      ]    = "!clear && git show"
-let g:git_cmds[ "* List Branchs" ] = "!clear && git branch -a"
+let g:git_cmds = [ ]
+"cal add(g:git_cmds, { 'label': 'reset (hard)' , 'cmd': '!clear && git reset --hard'  }
+"cal add(g:git_cmds, { 'label': 'push to origin' , 'cmd': '!clear && git push origin' }
+"cal add(g:git_cmds, { 'label': 'pull from origin', 'cmd': '!clear && git pull origin' }
+"cal add(g:git_cmds, { 'label': 'diff'            , 'cmd': '!clear && git diff' }
+"cal add(g:git_cmds, { 'label': 'log (patch)'           , 'cmd': '!clear && git log -p' }
+"cal add(g:git_cmds, { 'label': 'show'                  , 'cmd': '!clear && git show' }
+
+" let g:git_cmds[ "* List Branchs" ] = "!clear && git branch -a"
 " let g:git_cmds[ "* Checkout"     ] = "!clear && git checkout "
+
+
+fun! s:drawGitMenuHelp()
+endf
 
 fun! s:initGitMenuBuffer()
   cal hypergit#buffer#init_v()
 
-  syn match MenuItem +^\*.*$+
-  syn match MenuSubItem +^\*\*.*$+
+  let p1 = s:MenuItem.create( { 'label': 'Father' }  )
+  let p2 = s:MenuItem.create( { 'label': 'Father2' } )
+  let s1 = s:MenuItem.create( { 'label': 'Son' , 'parent': p1 } )
+  let s1_1 = s1.createChild({ 'label': 'SonFromSon' } )
+  let s1_2 = s1.createChild({ 'label': 'SonFromSon2' } )
+  let p2_1 = p2.createChild({ 'label': 'Father2/Son' } )
 
-  hi link MenuItem Function
-  hi link MenuSubItem Identity
+  let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
+  cal m.addItems([p1, p2])
 
+  let m.after_render = function("s:drawGitMenuHelp")
+  cal m.render()
 
-  " custom command should be available
-
-  for item in keys(g:git_cmds)
-    cal append( 0 , item )
-  endfor
-
-  cal g:help_register("Git Menu"," <Enter> - (execute item)",1)
+  cal s:Help.reg("Git Menu"," <Enter> - (execute item)",1)
 
   file GitMenu
-  nmap <silent><buffer>  <Enter>   :cal <SID>ExecuteMenuItem()<CR>
-
   " reset cursor position
   cal cursor(2,1)
 endf
 
 fun! s:GitMenuBufferToggle()
+
+
+
   if bufnr("GitMenu") != -1
     if bufnr('.') != bufnr("GitMenu")
       let wnr = bufwinnr( bufnr("GitMenu") )
@@ -203,25 +458,11 @@ fun! s:GitMenuBufferToggle()
     endif
   else
     cal s:initGitMenuBuffer()
+
+
   endif
 endf
 
-fun! s:ExecuteMenuItem()
-  let line = getline('.')
-  if exists( 'g:git_cmds[ line ]' )
-    let exe = g:git_cmds[ line ]
-
-    if type(exe) == 1
-      " string , will be an command or a function call
-      exec exe
-    elseif type(exe) == 2
-      " get function ref
-
-    endif
-  endif
-endf
-
-" 
 
 com! GitCommit       :cal s:initGitCommitSingleBuffer(expand('%'))
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
