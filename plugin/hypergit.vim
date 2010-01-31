@@ -122,16 +122,12 @@ fun! s:MenuBuffer.init_buffer()
 
   syn match MenuId +\[\d\+\]$+
   syn match MenuPre  "^[-+~|]\+"
-  syn match MenuLabel +\(^[-+~|]\+\)\@<=[a-zA-Z0-9_/ ]*+
+  syn match MenuLabel +\(^[-+~|]\+\)\@<=[a-zA-Z0-9-()._/ ]*+
   hi MenuId ctermfg=black ctermbg=black
   hi MenuPre ctermfg=darkblue
   hi MenuLabel ctermfg=yellow
 
   let b:_menu = self
-
-  " XXX: whcih is not seperated explicit , FIXME
-  com! -buffer ToggleNode  :cal b:_menu.toggleCurrent()
-  com! -buffer ToggleNodeR  :cal b:_menu.toggleCurrentR()
 
   nnoremap <silent><buffer> o :cal b:_menu.toggleCurrent()<CR>
   nnoremap <silent><buffer> O :cal b:_menu.toggleCurrentR()<CR>
@@ -531,13 +527,25 @@ fun! s:initGitMenuBuffer()
     \  { 'label': 'pull to ..' , 'exec_cmd': '' }
     \] }))
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'remote' , 
-    \ 'childs': [
-    \  { 'label': 'add remote' , 'exec_cmd': '' },
-    \  { 'label': 'remove remote' , 'exec_cmd': '' },
-    \  { 'label': 'rename remote' , 'exec_cmd': '' },
-    \  { 'label': 'prune remote' , 'exec_cmd': '' }
-    \] }))
+  let menu_chkout= s:MenuItem.create({ 'label': 'checkout branch(local)' })
+  cal menu_chkout.createChild({ 'label': 'checkout ..' , 'exec_cmd': '' })
+  let local_branches = split(system('git branch | cut -c3-'),"\n")
+  for br in local_branches
+    cal menu_chkout.createChild({ 'label': 'checkout ' . br ,
+      \'exec_cmd': '!clear && git checkout ' . br })
+  endfor
+  cal m.addItem( menu_chkout )
+
+  "cal menu_chkout.createChild({ 'label': 'checkout ..' , 'exec_cmd': '' })
+
+
+"  cal m.addItem(s:MenuItem.create({ 'label': 'remote' , 
+"    \ 'childs': [
+"    \  { 'label': 'add remote' , 'exec_cmd': '' },
+"    \  { 'label': 'remove remote' , 'exec_cmd': '' },
+"    \  { 'label': 'rename remote' , 'exec_cmd': '' },
+"    \  { 'label': 'prune remote' , 'exec_cmd': '' }
+"    \] }))
 
   let m.after_render = function("DrawGitMenuHelp")
   cal m.render()
