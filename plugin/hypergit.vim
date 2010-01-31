@@ -606,17 +606,25 @@ fun! s:initGitMenuBuffer()
 
   cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear && git show' } ))
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'Push (all)' , 'exec_cmd': '!clear && git push' , 
-    \ 'childs': [
-    \  { 'label': 'Push to origin' , 'exec_cmd': '!clear && git push origin' },
-    \  { 'label': 'Push to ..' , 'exec_cmd': '' }
-    \] }))
+  " Push {{{
+  let push_menu = m.addItem(s:MenuItem.create({ 'label': 'Push (all)' , 'exec_cmd': '!clear && git push' , 
+    \ 'childs': [ { 'label': 'Push to ..' , 'exec_cmd': '' } ] }))
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'Pull' , 'exec_cmd': '!clear && git pull' , 
-    \ 'childs': [
-    \  { 'label': 'Pull to origin' , 'exec_cmd': '!clear && git pull origin' },
-    \  { 'label': 'Pull to ..' , 'exec_cmd': '' }
-    \] }))
+  " XXX: refactor this
+  let remotes = split(system('git remote'),"\n")
+  for rm_name in remotes
+    cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exec_cmd': '!clear && git push ' . rm_name })
+  endfor
+  "}}}
+  " Pull {{{
+  let pull_menu = m.addItem(s:MenuItem.create({ 'label': 'Pull (all)' , 'exec_cmd': '!clear && git pull' , 
+    \ 'childs': [ { 'label': 'Pull from ..' , 'exec_cmd': '' } ] }))
+
+  let remotes = split(system('git remote'),"\n")
+  for rm_name in remotes
+    cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exec_cmd': '!clear && git pull ' . rm_name })
+  endfor
+  " }}}
 
   let menu_chkout= s:MenuItem.create({ 'label': 'Checkout Local Branch' })
   cal menu_chkout.createChild({ 'label': 'Checkout ..' , 'exec_cmd': '' })
