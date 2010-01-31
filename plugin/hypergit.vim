@@ -663,6 +663,10 @@ fun! s:initGitMenuBuffer()
 
   file GitMenu
 
+  " Initialize Help Syntax
+  syntax match HelpComment +^#.*+
+  hi HelpComment ctermfg=blue
+
   " reset cursor position
   cal cursor(2,1)
 endf
