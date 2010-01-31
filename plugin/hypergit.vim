@@ -108,6 +108,7 @@ let s:MenuBuffer = { 'buf_nr' : -1 , 'items': [  ] }
 
 fun! s:MenuBuffer.create(options)
   let menu_obj = copy(self)
+  let menu_obj.items = [ ]
   cal extend(menu_obj,a:options)
   cal menu_obj.init_buffer()
   return menu_obj
@@ -132,10 +133,9 @@ fun! s:MenuBuffer.init_buffer()
   com! -buffer ToggleNode  :cal b:_menu.toggleCurrent()
   com! -buffer ToggleNodeR  :cal b:_menu.toggleCurrentR()
 
-  "com! -buffer ExecuteNode :cal s:MenuBuffer.executeCurrent()
-  nmap <buffer> o :ToggleNode<CR>
-  nmap <buffer> O :ToggleNodeR<CR>
-  "nmap <buffer> <Enter>  :ExecuteNode<CR>
+  nnoremap <buffer> o :cal b:_menu.toggleCurrent()<CR>
+  nnoremap <buffer> O :cal b:_menu.toggleCurrentR()<CR>
+  nnoremap <buffer> <Enter>  :cal b:_menu.execCurrent()<CR>
 endf
 
 fun! s:MenuBuffer.setBufNr(nr)
@@ -156,6 +156,20 @@ fun! s:MenuBuffer.findWindow(switch)
     exec (win-1) . 'wincmd w'
   endif
   return win
+endf
+
+fun! s:MenuBuffer.execCurrent()
+  let id = self.getCurrentMenuId()
+  let item = self.findItem(id)
+  if type(item) == 4
+    if has_key(item,'exec_cmd')
+      exec item.exec_cmd
+    elseif has_key(item,'exec_func')
+      exec 'cal ' . item.exec_func . '()' 
+    else
+      echo "Can't execute!"
+    endif
+  endif
 endf
 
 fun! s:MenuBuffer.toggleCurrent()
@@ -194,11 +208,12 @@ fun! s:MenuBuffer.render()
   endif
 
   silent 0put=outstr
-  cal setpos('.',cur)
 
   if has_key(self,'after_render')
     cal self.after_render()
   endif
+
+  cal setpos('.',cur)
 endf
 
 fun! s:MenuBuffer.getCurrentLevel()
@@ -497,8 +512,7 @@ endf
 fun! s:initGitMenuBuffer()
   cal hypergit#buffer#init_v()
   cal s:Help.reg("Git Menu"," <Enter> - (execute item)",1)
-
-  let p1 = s:MenuItem.create( { 'label': 'Father' }  )
+  let p1 = s:MenuItem.create( { 'label': 'Father' , 'exec_cmd': '!clear && git diff' }  )
   let p2 = s:MenuItem.create( { 'label': 'Father2' } )
   let s1 = s:MenuItem.create( { 'label': 'Son' , 'parent': p1 } )
   let s1_1 = s1.createChild({ 'label': 'SonFromSon' } )
@@ -507,10 +521,12 @@ fun! s:initGitMenuBuffer()
 
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
   cal m.addItems([p1, p2])
+  "echo len( m.items )
   let m.after_render = function("DrawGitMenuHelp")
   cal m.render()
 
   file GitMenu
+
   " reset cursor position
   cal cursor(2,1)
 endf
@@ -519,8 +535,12 @@ fun! s:GitMenuBufferToggle()
   if bufnr("GitMenu") != -1
     if bufnr('.') != bufnr("GitMenu")
       let wnr = bufwinnr( bufnr("GitMenu") )
-      exe wnr - 1 . "wincmd w"
-      :bw!
+      if wnr != -1
+        exe (wnr-1) . "wincmd w"
+        :bw!
+      else
+        exec bufnr("GitMenu") . 'bw!'
+      endif
     else
       :bw!
     endif
