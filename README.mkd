@@ -3,6 +3,11 @@ HyperGit Vim Plugin
 ===================
 
 
+Installation
+============
+
+    $ make -f Makefile.pure install
+
 Key Mappings
 ============
 
