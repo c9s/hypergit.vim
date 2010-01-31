@@ -1,0 +1,16 @@
+
+HyperGit Vim Plugin
+===================
+
+
+Key Mappings
+============
+
+    <leader>ci   commit current file changes
+    <leader>ca   commit all changes
+    <leader>gg   toggle git plugin tree menu
+
+Screenshot
+===========
+![](http://cloud.github.com/downloads/c9s/hypergit.vim/Screen_shot_2010-02-01_at_2.51.53_AM.png)
+
