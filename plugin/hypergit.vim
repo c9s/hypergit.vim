@@ -31,6 +31,16 @@ fun! s:echo(msg)
   echomsg a:msg
 endf
 
+fun! s:exec_cmd(cmd)
+  let cmd_output = system(join(a:cmd," "))
+  if v:shell_error
+    echohl WarningMsg | echon cmd_output
+    return
+  endif
+  redraw
+  echohl GitCommandOutput | echo cmd_output | echohl None
+endf
+
 " Help {{{
 
 let s:Help = {}
@@ -397,6 +407,8 @@ endf
 
 " }}}
 " Git Commands {{{
+
+
 fun! s:GitPush(...)
   let cmd = [ g:git_bin ,"push" ]
   let remote = 'all'
