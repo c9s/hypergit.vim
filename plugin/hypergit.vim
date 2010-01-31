@@ -577,6 +577,8 @@ fun! s:initGitMenuBuffer()
 
   let menu_remotes= s:MenuItem.create({ 'label': 'Remotes' })
   cal menu_remotes.createChild({ 'label': 'Add ..' , 'exec_cmd': '' })
+  cal menu_remotes.createChild({ 'label': 'List' , 'exec_cmd': '!clear && git remote -v ' })
+
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
       cal menu_remotes.createChild( { 'label': rm_name , 'childs': [ 
@@ -586,18 +588,6 @@ fun! s:initGitMenuBuffer()
             \]} )
   endfor
   cal m.addItem( menu_remotes )
-
-
-
-  "cal menu_chkout.createChild({ 'label': 'checkout ..' , 'exec_cmd': '' })
-
-"  cal m.addItem(s:MenuItem.create({ 'label': 'remote' , 
-"    \ 'childs': [
-"    \  { 'label': 'add remote' , 'exec_cmd': '' },
-"    \  { 'label': 'remove remote' , 'exec_cmd': '' },
-"    \  { 'label': 'rename remote' , 'exec_cmd': '' },
-"    \  { 'label': 'prune remote' , 'exec_cmd': '' }
-"    \] }))
 
   let m.after_render = function("DrawGitMenuHelp")
   cal m.render()
