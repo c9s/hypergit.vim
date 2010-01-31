@@ -580,6 +580,6 @@ com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
 com! GitMenuToggle   :cal s:GitMenuBufferToggle()
 
-nmap <leader>ci  :GitCommit<CR>
-nmap <leader>ca  :GitCommitAll<CR>
-nmap <leader>gg  :GitMenu<CR>
+nmap <silent> <leader>ci  :GitCommit<CR>
+nmap <silent> <leader>ca  :GitCommitAll<CR>
+nmap <silent> <leader>gg  :GitMenu<CR>
