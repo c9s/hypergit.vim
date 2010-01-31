@@ -133,9 +133,9 @@ fun! s:MenuBuffer.init_buffer()
   com! -buffer ToggleNode  :cal b:_menu.toggleCurrent()
   com! -buffer ToggleNodeR  :cal b:_menu.toggleCurrentR()
 
-  nnoremap <buffer> o :cal b:_menu.toggleCurrent()<CR>
-  nnoremap <buffer> O :cal b:_menu.toggleCurrentR()<CR>
-  nnoremap <buffer> <Enter>  :cal b:_menu.execCurrent()<CR>
+  nnoremap <silent><buffer> o :cal b:_menu.toggleCurrent()<CR>
+  nnoremap <silent><buffer> O :cal b:_menu.toggleCurrentR()<CR>
+  nnoremap <silent><buffer> <Enter>  :cal b:_menu.execCurrent()<CR>
 endf
 
 fun! s:MenuBuffer.setBufNr(nr)
@@ -244,9 +244,17 @@ let s:MenuItem = {'id':0, 'expanded':0 }
 
 " Factory method
 fun! s:MenuItem.create(options)
+  let opt = a:options
   let self.id += 1
   let item = copy(self)
-  cal extend(item,a:options)
+
+  if has_key(opt,'childs')
+    let child_options = remove(opt,'childs' )
+  else
+    let child_options = [ ]
+  endif
+
+  cal extend(item,opt)
   if has_key(item,'parent')
     if has_key(item.parent,'childs')
       cal add(item.parent.childs,item)
@@ -255,6 +263,9 @@ fun! s:MenuItem.create(options)
       cal add(item.parent.childs,item)
     endif
   endif
+  for ch in child_options
+    cal item.createChild(ch)
+  endfor
   return item
 endf
 
@@ -512,16 +523,22 @@ endf
 fun! s:initGitMenuBuffer()
   cal hypergit#buffer#init_v()
   cal s:Help.reg("Git Menu"," <Enter> - (execute item)",1)
-  let p1 = s:MenuItem.create( { 'label': 'Father' , 'exec_cmd': '!clear && git diff' }  )
-  let p2 = s:MenuItem.create( { 'label': 'Father2' } )
-  let s1 = s:MenuItem.create( { 'label': 'Son' , 'parent': p1 } )
-  let s1_1 = s1.createChild({ 'label': 'SonFromSon' } )
-  let s1_2 = s1.createChild({ 'label': 'SonFromSon2' } )
-  let p2_1 = p2.createChild({ 'label': 'Father2/Son' } )
 
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
-  cal m.addItems([p1, p2])
-  "echo len( m.items )
+  cal m.addItem(s:MenuItem.create({ 'label': 'diff' , 'exec_cmd': '!clear && git diff' , 'childs': [ { 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
+
+  cal m.addItem(s:MenuItem.create({ 'label': 'push' , 'exec_cmd': '!clear && git push' , 
+    \ 'childs': [
+    \  { 'label': 'push to origin' , 'exec_cmd': '!clear && git push origin' },
+    \  { 'label': 'push to ..' , 'exec_cmd': '' }
+    \] }))
+
+  cal m.addItem(s:MenuItem.create({ 'label': 'pull' , 'exec_cmd': '!clear && git pull' , 
+    \ 'childs': [
+    \  { 'label': 'pull to origin' , 'exec_cmd': '!clear && git pull origin' },
+    \  { 'label': 'pull to ..' , 'exec_cmd': '' }
+    \] }))
+
   let m.after_render = function("DrawGitMenuHelp")
   cal m.render()
 
