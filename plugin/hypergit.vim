@@ -604,7 +604,7 @@ fun! s:initGitMenuBuffer()
 
   cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear && git show' } ))
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'Push' , 'exec_cmd': '!clear && git push' , 
+  cal m.addItem(s:MenuItem.create({ 'label': 'Push (all)' , 'exec_cmd': '!clear && git push' , 
     \ 'childs': [
     \  { 'label': 'Push to origin' , 'exec_cmd': '!clear && git push origin' },
     \  { 'label': 'Push to ..' , 'exec_cmd': '' }
