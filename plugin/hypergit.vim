@@ -398,7 +398,7 @@ endf
 " }}}
 " Git Commands {{{
 fun! s:GitPush(...)
-  let cmd = [ g:git_command ,"push" ]
+  let cmd = [ g:git_bin ,"push" ]
   let remote = 'all'
   if a:0 == 1
     cal add(cmd,a:1)
@@ -409,7 +409,7 @@ fun! s:GitPush(...)
 endf
 
 fun! s:GitPull(...)
-  let cmd = [ g:git_command ,"pull" ]
+  let cmd = [ g:git_bin ,"pull" ]
   let remote = 'all'
   if a:0 == 1
     cal add(cmd,a:1)
