@@ -527,6 +527,7 @@ fun! s:initGitMenuBuffer()
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
   cal m.addItem(s:MenuItem.create({ 'label': 'diff' , 'exec_cmd': '!clear && git diff' , 'childs': [ { 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
 
+  " XXX: get remote names
   cal m.addItem(s:MenuItem.create({ 'label': 'push' , 'exec_cmd': '!clear && git push' , 
     \ 'childs': [
     \  { 'label': 'push to origin' , 'exec_cmd': '!clear && git push origin' },
@@ -537,6 +538,14 @@ fun! s:initGitMenuBuffer()
     \ 'childs': [
     \  { 'label': 'pull to origin' , 'exec_cmd': '!clear && git pull origin' },
     \  { 'label': 'pull to ..' , 'exec_cmd': '' }
+    \] }))
+
+  cal m.addItem(s:MenuItem.create({ 'label': 'remote' , 
+    \ 'childs': [
+    \  { 'label': 'add remote' , 'exec_cmd': '' },
+    \  { 'label': 'remove remote' , 'exec_cmd': '' },
+    \  { 'label': 'rename remote' , 'exec_cmd': '' },
+    \  { 'label': 'prune remote' , 'exec_cmd': '' }
     \] }))
 
   let m.after_render = function("DrawGitMenuHelp")
