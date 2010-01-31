@@ -146,10 +146,12 @@ endf
 
 fun! s:MenuBuffer.addItem(item)
   cal add(self.items,a:item)
+  return a:item
 endf
 
 fun! s:MenuBuffer.addItems(items)
   cal extend(self.items,a:items)
+  return a:items
 endf
 
 fun! s:MenuBuffer.findWindow(switch)
