@@ -259,6 +259,7 @@ fun! s:MenuItem.create(options)
       cal add(item.parent.childs,item)
     endif
   endif
+
   for ch in child_options
     cal item.createChild(ch)
   endfor
@@ -267,8 +268,20 @@ endf
 
 " Object method
 fun! s:MenuItem.createChild(options)
+  let opt = a:options
   let child = s:MenuItem.create({ 'parent': self })
-  cal extend(child,a:options)
+
+  if has_key(opt,'childs')
+    let child_options = remove(opt,'childs' )
+  else
+    let child_options = [ ]
+  endif
+
+  cal extend(child,opt)
+
+  for ch in child_options
+    cal child.createChild(ch)
+  endfor
   return child
 endf
 
@@ -528,11 +541,10 @@ fun! s:initGitMenuBuffer()
     \'exec_cmd': 'GitCommitAll' }) )
 
   cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear && git diff' , 'childs': [
-          \{ 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
+          \{ 'label': 'Diff to ..' , 'exec_cmd': '' } ] }))
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear && git show' } )
+  cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear && git show' } ))
 
-  " XXX: get remote names
   cal m.addItem(s:MenuItem.create({ 'label': 'Push' , 'exec_cmd': '!clear && git push' , 
     \ 'childs': [
     \  { 'label': 'Push to origin' , 'exec_cmd': '!clear && git push origin' },
@@ -545,14 +557,35 @@ fun! s:initGitMenuBuffer()
     \  { 'label': 'Pull to ..' , 'exec_cmd': '' }
     \] }))
 
-  let menu_chkout= s:MenuItem.create({ 'label': 'checkout branch(local)' })
-  cal menu_chkout.createChild({ 'label': 'checkout ..' , 'exec_cmd': '' })
+  let menu_chkout= s:MenuItem.create({ 'label': 'Checkout Local Branch' })
+  cal menu_chkout.createChild({ 'label': 'Checkout ..' , 'exec_cmd': '' })
   let local_branches = split(system('git branch | cut -c3-'),"\n")
   for br in local_branches
-    cal menu_chkout.createChild({ 'label': 'checkout ' . br ,
+    cal menu_chkout.createChild({ 'label': 'Checkout ' . br ,
       \'exec_cmd': '!clear && git checkout ' . br })
   endfor
   cal m.addItem( menu_chkout )
+
+  let menu_chkout2= s:MenuItem.create({ 'label': 'Checkout Remote Branch' })
+  cal menu_chkout2.createChild({ 'label': 'Checkout ..' , 'exec_cmd': '' })
+  let remote_branches = split(system('git branch -r | cut -c3-'),"\n")
+  for br in remote_branches
+    cal menu_chkout2.createChild({ 'label': 'Checkout ' . br ,
+      \'exec_cmd': '!clear && git checkout -t ' . br })
+  endfor
+  cal m.addItem( menu_chkout2 )
+
+  let menu_remotes= s:MenuItem.create({ 'label': 'Remotes' })
+  cal menu_remotes.createChild({ 'label': 'Add ..' , 'exec_cmd': '' })
+  let remotes = split(system('git remote'),"\n")
+  for rm_name in remotes
+      cal menu_remotes.createChild( { 'label': rm_name , 'childs': [ 
+            \{ 'label': 'Remove' , 'exec_cmd': '!clear && git remote rm ' . rm_name },
+            \{ 'label': 'Rename' , 'exec_cmd': 'echo "Not ready yet!" ' },
+            \{ 'label': 'Prune' , 'exec_cmd': '!clear && git remote prune ' . rm_name }
+            \]} )
+  endfor
+  cal m.addItem( menu_remotes )
 
 
 
