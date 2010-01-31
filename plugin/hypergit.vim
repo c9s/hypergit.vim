@@ -527,7 +527,10 @@ fun! s:initGitMenuBuffer()
     \'label': 'Commit All',
     \'exec_cmd': 'GitCommitAll' }) )
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear && git diff' , 'childs': [ { 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
+  cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear && git diff' , 'childs': [
+          \{ 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
+
+  cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear && git show' } )
 
   " XXX: get remote names
   cal m.addItem(s:MenuItem.create({ 'label': 'Push' , 'exec_cmd': '!clear && git push' , 
