@@ -408,27 +408,29 @@ endf
 " }}}
 " Git Commands {{{
 
+fun! s:GitCurrentBranch()
+   let name = split(system("git branch | grep '^*' | cut -c3-"))
+   return name[0]
+endf
 
 fun! s:GitPush(...)
-  let cmd = [ g:git_bin ,"push" ]
-  let remote = 'all'
   if a:0 == 1
-    cal add(cmd,a:1)
-    let remote = '[' .  a:1 . ']'
+    let remote = a:1
+  else
+    let remote = input("Remote:","",'customlist,GitRemoteNameCompletion')
   endif
-  cal s:echo("git: push => " . remote . " (Ctrl-c to stop)")
-  cal s:exec_cmd( cmd )
+  let branch = input('Branch:', s:GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
+  exec printf('! clear && %s push %s %s',g:git_bin,remote,branch)
 endf
 
 fun! s:GitPull(...)
-  let cmd = [ g:git_bin ,"pull" ]
-  let remote = 'all'
   if a:0 == 1
-    cal add(cmd,a:1)
-    let remote = '[' . a:1 . ']'
+    let remote = a:1
+  else
+    let remote = input("Remote:","",'customlist,GitRemoteNameCompletion')
   endif
-  cal s:echo("git: pull <= " . remote . " (Ctrl-c to stop)")
-  cal s:exec_cmd( cmd )
+  let branch = input('Branch:', s:GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
+  exec printf('! clear && %s pull %s %s',g:git_bin,remote,branch)
 endf
 
 fun! s:RemoteAdd(remote)
@@ -464,7 +466,6 @@ endf
 
 fun! s:initGitStatusBuffer()
   cal hypergit#buffer#init()
-
 endf
 
 fun! s:initGitBranchBuffer()
@@ -707,6 +708,18 @@ endf
 " Command Completion Functions {{{
 fun! GitRemoteNameCompletion(lead,cmd,pos)
   let names = split(system('git remote'),"\n")
+  cal filter( names , 'v:val =~ "^' .a:lead. '"'  )
+  return names
+endf
+
+fun! GitLocalBranchCompletion(lead,cmd,pos)
+  let names = split(system('git branch | cut -c3-'),"\n")
+  cal filter( names , 'v:val =~ "^' .a:lead. '"'  )
+  return names
+endf
+
+fun! GitRemoteBranchCompletion(lead,cmd,pos)
+  let names = split(system('git branch -r | cut -c3-'),"\n")
   cal filter( names , 'v:val =~ "^' .a:lead. '"'  )
   return names
 endf
