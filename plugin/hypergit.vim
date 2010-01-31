@@ -511,7 +511,11 @@ fun! s:initGitMenuBuffer()
   let target_file = expand('%')
 
   cal hypergit#buffer#init_v()
-  cal s:Help.reg("Git Menu"," <Enter> - (execute item)",1)
+  cal s:Help.reg("Git Menu",join([
+        \" <Enter> - execute item",
+        \" o       - open node",
+        \" O       - open node recursively",
+        \],"\n"),1)
 
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
 
