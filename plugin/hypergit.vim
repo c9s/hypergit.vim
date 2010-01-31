@@ -508,10 +508,17 @@ fun! DrawGitMenuHelp()
 endf
 
 fun! s:initGitMenuBuffer()
+  let target_file = expand('%')
+
   cal hypergit#buffer#init_v()
   cal s:Help.reg("Git Menu"," <Enter> - (execute item)",1)
 
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
+
+  cal m.addItem( s:MenuItem.create({ 
+    \'label': 'commit ' . target_file , 
+    \'exec_cmd': 'GitCommit ' . target_file }) )
+
   cal m.addItem(s:MenuItem.create({ 'label': 'diff' , 'exec_cmd': '!clear && git diff' , 'childs': [ { 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
 
   " XXX: get remote names
@@ -536,8 +543,9 @@ fun! s:initGitMenuBuffer()
   endfor
   cal m.addItem( menu_chkout )
 
-  "cal menu_chkout.createChild({ 'label': 'checkout ..' , 'exec_cmd': '' })
 
+
+  "cal menu_chkout.createChild({ 'label': 'checkout ..' , 'exec_cmd': '' })
 
 "  cal m.addItem(s:MenuItem.create({ 'label': 'remote' , 
 "    \ 'childs': [
@@ -574,12 +582,13 @@ fun! s:GitMenuBufferToggle()
   endif
 endf
 
+cal s:defopt('g:gitbuffer_default_position','topleft')
 
-com! GitCommit       :cal s:initGitCommitSingleBuffer(expand('%'))
+com! -complete=file -nargs=1 GitCommit       :cal s:initGitCommitSingleBuffer(<q-args>)
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
 com! GitMenuToggle   :cal s:GitMenuBufferToggle()
 
-nmap <silent> <leader>ci  :GitCommit<CR>
+nmap <silent> <leader>ci  :exec 'GitCommit ' . expand('%')<CR>
 nmap <silent> <leader>ca  :GitCommitAll<CR>
 nmap <silent> <leader>gg  :GitMenu<CR>
