@@ -516,8 +516,12 @@ fun! s:initGitMenuBuffer()
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
 
   cal m.addItem( s:MenuItem.create({ 
-    \'label': printf('commit "%s"' , target_file ) ,
+    \'label': printf('Commit "%s"' , target_file ) ,
     \'exec_cmd': 'GitCommit ' . target_file }) )
+
+  cal m.addItem( s:MenuItem.create({ 
+    \'label': 'Commit All',
+    \'exec_cmd': 'GitCommitAll' }) )
 
   cal m.addItem(s:MenuItem.create({ 'label': 'diff' , 'exec_cmd': '!clear && git diff' , 'childs': [ { 'label': 'diff to ..' , 'exec_cmd': '' } ] }))
 
