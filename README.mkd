@@ -6,6 +6,8 @@ HyperGit Vim Plugin
 Installation
 ============
 
+    $ vimana i hypergit.vim
+
     $ make -f Makefile.pure install
 
 Key Mappings
