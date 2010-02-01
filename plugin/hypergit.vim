@@ -657,6 +657,14 @@ fun! s:initGitMenuBuffer()
   endfor
   cal m.addItem( menu_chkout2 )
 
+  " Log {{{
+  let menu_log= s:MenuItem.create({ 'label': 'Log' })
+  cal menu_log.createChild({ 'label': 'Log' , 'exec_cmd': '!clear && git log ' })
+  cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear && git log -p' })
+  cal m.addItem( menu_log )
+  " }}}
+
+  " Remote {{{
   let menu_remotes= s:MenuItem.create({ 'label': 'Remotes' })
   cal menu_remotes.createChild({ 'label': 'Add ..' , 'exec_cmd': '' })
   cal menu_remotes.createChild({ 'label': 'List' , 'exec_cmd': '!clear && git remote -v ' })
@@ -670,6 +678,7 @@ fun! s:initGitMenuBuffer()
             \]} )
   endfor
   cal m.addItem( menu_remotes )
+  " }}}
 
   let m.after_render = function("DrawGitMenuHelp")
   cal m.render()
