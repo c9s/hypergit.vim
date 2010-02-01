@@ -753,7 +753,7 @@ cal s:defopt('g:gitbuffer_default_position','topleft')
 com! -complete=file -nargs=1 GitCommit       :cal s:initGitCommitSingleBuffer(<q-args>)
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
-com! GitMenuToggle   :cal s:GitMenuBufferToggle()
+com! ToggleGitMenu   :cal s:GitMenuBufferToggle()
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:GitPull(<f-args>)
@@ -763,4 +763,4 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:R
 
 nmap <silent> <leader>ci  :exec 'GitCommit ' . expand('%')<CR>
 nmap <silent> <leader>ca  :GitCommitAll<CR>
-nmap <silent> <leader>gg  :GitMenu<CR>
+nmap <silent> <leader>g   :ToggleGitMenu<CR>
