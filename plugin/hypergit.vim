@@ -286,6 +286,10 @@ fun! s:MenuItem.create(options)
   return item
 endf
 
+fun! s:MenuItem.appendSeperator(text)
+  cal self.createChild({ 'label' : '--- ' . a:text . ' ---' })
+endf
+
 " Object method
 fun! s:MenuItem.createChild(options)
   let opt = a:options
@@ -607,19 +611,19 @@ fun! s:initGitMenuBuffer()
 
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
 
-
   if strlen(target_file) > 0
-    cal m.addItem( s:MenuItem.create({ 
-      \'label': printf('Commit "%s"' , target_file ) ,
-      \'exec_cmd': 'GitCommit ' . target_file }) )
+    let m_fs = s:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
 
-    cal m.addItem( s:MenuItem.create({ 
+    cal m_fs.createChild({ 
+        \'label': printf('Commit "%s"', target_file ) ,
+        \'exec_cmd': 'GitCommit ' . target_file })
+    cal m_fs.createChild({ 
       \'label': printf('Add "%s"' , target_file ) ,
-      \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) )
-
-    cal m.addItem( s:MenuItem.create({ 
+      \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) 
+    cal m_fs.createChild({ 
       \'label': printf('Diff "%s"' , target_file ) ,
-      \'exec_cmd': '!clear && git diff ' . target_file }) )
+      \'exec_cmd': '!clear && git diff ' . target_file }) 
+    cal m.addItem( m_fs )
   endif
 
   cal m.addItem( s:MenuItem.create({ 
