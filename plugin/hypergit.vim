@@ -620,7 +620,9 @@ fun! s:initGitMenuBuffer()
   cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear && git show' } ))
 
   " Push {{{
-  let push_menu = m.addItem(s:MenuItem.create({ 'label': 'Push (all)' , 'exec_cmd': '!clear && git push' , 
+  let push_menu = m.addItem(s:MenuItem.create({ 'label': 'Push (all)' ,
+    \ 'exec_cmd': '!clear && git push' , 
+    \ 'expanded': 1,
     \ 'childs': [ { 'label': 'Push to ..' , 'exec_cmd': '' } ] }))
 
   " XXX: refactor this
@@ -629,8 +631,11 @@ fun! s:initGitMenuBuffer()
     cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exec_cmd': '!clear && git push ' . rm_name })
   endfor
   "}}}
+
   " Pull {{{
-  let pull_menu = m.addItem(s:MenuItem.create({ 'label': 'Pull (all)' , 'exec_cmd': '!clear && git pull' , 
+  let pull_menu = m.addItem(s:MenuItem.create({ 'label': 'Pull (all)' , 
+    \ 'exec_cmd': '!clear && git pull' , 
+    \ 'expanded': 1,
     \ 'childs': [ { 'label': 'Pull from ..' , 'exec_cmd': '' } ] }))
 
   let remotes = split(system('git remote'),"\n")
@@ -658,7 +663,7 @@ fun! s:initGitMenuBuffer()
   cal m.addItem( menu_chkout2 )
 
   " Log {{{
-  let menu_log= s:MenuItem.create({ 'label': 'Log' })
+  let menu_log= s:MenuItem.create({ 'label': 'Log' , 'expanded': 1 })
   cal menu_log.createChild({ 'label': 'Log' , 'exec_cmd': '!clear && git log ' })
   cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear && git log -p' })
   cal m.addItem( menu_log )
