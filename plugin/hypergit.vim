@@ -111,7 +111,7 @@ fun! s:Help.hide_fulltext()
   endif
 endf
 " }}}
-" Menu {{{
+" TreeMenu {{{
 
 " MenuBuffer Class {{{
 let s:MenuBuffer = { 'buf_nr' : -1 , 'items': [  ] }
@@ -404,7 +404,6 @@ endf
 
 " }}}
 
-
 " }}}
 " Git Commands {{{
 
@@ -606,9 +605,15 @@ fun! s:initGitMenuBuffer()
 
   let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
 
-  cal m.addItem( s:MenuItem.create({ 
-    \'label': printf('Commit "%s"' , target_file ) ,
-    \'exec_cmd': 'GitCommit ' . target_file }) )
+
+  if strlen(target_file) > 0
+    cal m.addItem( s:MenuItem.create({ 
+      \'label': printf('Commit "%s"' , target_file ) ,
+      \'exec_cmd': 'GitCommit ' . target_file }) )
+    cal m.addItem( s:MenuItem.create({ 
+      \'label': printf('Add "%s"' , target_file ) ,
+      \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) )
+  endif
 
   cal m.addItem( s:MenuItem.create({ 
     \'label': 'Commit All',
@@ -717,7 +722,6 @@ fun! s:GitMenuBufferToggle()
     cal s:initGitMenuBuffer()
   endif
 endf
-
 
 " Command Completion Functions {{{
 fun! GitRemoteNameCompletion(lead,cmd,pos)
