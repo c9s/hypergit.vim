@@ -5,7 +5,7 @@
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
-" Version: 2.03
+" Version: 2.04
 
 
 if exists('g:loaded_hypergit')
@@ -610,9 +610,14 @@ fun! s:initGitMenuBuffer()
     cal m.addItem( s:MenuItem.create({ 
       \'label': printf('Commit "%s"' , target_file ) ,
       \'exec_cmd': 'GitCommit ' . target_file }) )
+
     cal m.addItem( s:MenuItem.create({ 
       \'label': printf('Add "%s"' , target_file ) ,
       \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) )
+
+    cal m.addItem( s:MenuItem.create({ 
+      \'label': printf('Diff "%s"' , target_file ) ,
+      \'exec_cmd': '!clear && git diff ' . target_file }) )
   endif
 
   cal m.addItem( s:MenuItem.create({ 
