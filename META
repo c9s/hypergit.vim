@@ -13,11 +13,7 @@
 
 =libpath .
 
-=script_id 2861
-
-=dependency
-
-=script
+=script_id      2954
 
 =repository http://github.com/c9s/hypergit.vim
 
