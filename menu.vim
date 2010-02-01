@@ -11,6 +11,7 @@ let s:MenuBuffer = { 'buf_nr' : -1 , 'items': [  ] }
 
 fun! s:MenuBuffer.create(options)
   let menu_obj = copy(self)
+  let menu_obj.items = [ ]
   cal extend(menu_obj,a:options)
   cal menu_obj.init_buffer()
   return menu_obj
@@ -24,18 +25,22 @@ fun! s:MenuBuffer.init_buffer()
 
   syn match MenuId +\[\d\+\]$+
   syn match MenuPre  "^[-+~|]\+"
-  syn match MenuLabel +\(^[-+~|]\+\)\@<=[a-zA-Z0-9_/ ]*+
+  syn match MenuLabelExecutable +\(^[-]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
+  syn match MenuLabelExpanded   +\(^[~]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
+  syn match MenuLabelCollapsed  +\(^[+]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
+
   hi MenuId ctermfg=black ctermbg=black
   hi MenuPre ctermfg=darkblue
-  hi MenuLabel ctermfg=yellow
 
-  com! -buffer ToggleNode  :cal s:MenuBuffer.toggleCurrent()
-  com! -buffer ToggleNodeR  :cal s:MenuBuffer.toggleCurrentR()
+  hi MenuLabelExpanded ctermfg=blue
+  hi MenuLabelCollapsed ctermfg=yellow
+  hi MenuLabelExecutable ctermfg=white
 
-  "com! -buffer ExecuteNode :cal s:MenuBuffer.executeCurrent()
-  nmap <buffer> o :ToggleNode<CR>
-  nmap <buffer> O :ToggleNodeR<CR>
-  "nmap <buffer> <Enter>  :ExecuteNode<CR>
+  let b:_menu = self
+
+  nnoremap <silent><buffer> o :cal b:_menu.toggleCurrent()<CR>
+  nnoremap <silent><buffer> O :cal b:_menu.toggleCurrentR()<CR>
+  nnoremap <silent><buffer> <Enter>  :cal b:_menu.execCurrent()<CR>
 endf
 
 fun! s:MenuBuffer.setBufNr(nr)
@@ -44,10 +49,12 @@ endf
 
 fun! s:MenuBuffer.addItem(item)
   cal add(self.items,a:item)
+  return a:item
 endf
 
 fun! s:MenuBuffer.addItems(items)
   cal extend(self.items,a:items)
+  return a:items
 endf
 
 fun! s:MenuBuffer.findWindow(switch)
@@ -56,6 +63,20 @@ fun! s:MenuBuffer.findWindow(switch)
     exec (win-1) . 'wincmd w'
   endif
   return win
+endf
+
+fun! s:MenuBuffer.execCurrent()
+  let id = self.getCurrentMenuId()
+  let item = self.findItem(id)
+  if type(item) == 4
+    if has_key(item,'exec_cmd')
+      exec item.exec_cmd
+    elseif has_key(item,'exec_func')
+      exec 'cal ' . item.exec_func . '()' 
+    else
+      echo "Can't execute!"
+    endif
+  endif
 endf
 
 fun! s:MenuBuffer.toggleCurrent()
@@ -88,7 +109,17 @@ fun! s:MenuBuffer.render()
     silent 1,$delete _
   endif
   let outstr=join(out,"\n")
+
+  if has_key(self,'before_render')
+    cal self.before_render()
+  endif
+
   silent 0put=outstr
+
+  if has_key(self,'after_render')
+    cal self.after_render()
+  endif
+
   cal setpos('.',cur)
 endf
 
@@ -120,9 +151,17 @@ let s:MenuItem = {'id':0, 'expanded':0 }
 
 " Factory method
 fun! s:MenuItem.create(options)
+  let opt = a:options
   let self.id += 1
   let item = copy(self)
-  cal extend(item,a:options)
+
+  if has_key(opt,'childs')
+    let child_options = remove(opt,'childs' )
+  else
+    let child_options = [ ]
+  endif
+
+  cal extend(item,opt)
   if has_key(item,'parent')
     if has_key(item.parent,'childs')
       cal add(item.parent.childs,item)
@@ -131,13 +170,29 @@ fun! s:MenuItem.create(options)
       cal add(item.parent.childs,item)
     endif
   endif
+
+  for ch in child_options
+    cal item.createChild(ch)
+  endfor
   return item
 endf
 
 " Object method
 fun! s:MenuItem.createChild(options)
+  let opt = a:options
   let child = s:MenuItem.create({ 'parent': self })
-  cal extend(child,a:options)
+
+  if has_key(opt,'childs')
+    let child_options = remove(opt,'childs' )
+  else
+    let child_options = [ ]
+  endif
+
+  cal extend(child,opt)
+
+  for ch in child_options
+    cal child.createChild(ch)
+  endfor
   return child
 endf
 
@@ -181,10 +236,10 @@ fun! s:MenuItem.displayString()
     return op . indent . self.label . '[' . self.id . ']'
   elseif has_key(self,'parent')
     let indent = repeat('-', lev)
-    return '|' . indent . self.label . '[' . self.id . ']'
+    return '-' . indent . self.label . '[' . self.id . ']'
   else
     let indent = repeat('-', lev)
-    return '|' . indent . self.label . '[' . self.id . ']'
+    return '-' . indent . self.label . '[' . self.id . ']'
   endif
 endf
 
@@ -243,7 +298,6 @@ endf
 " }}}
 
 " =========== synopsis
-
 let p1 = s:MenuItem.create( { 'label': 'Father' }  )
 let p2 = s:MenuItem.create( { 'label': 'Father2' } )
 
@@ -253,24 +307,10 @@ let s1_2 = s1.createChild({ 'label': 'SonFromSon2' } )
 
 let p2_1 = p2.createChild({ 'label': 'Father2/Son' } )
 
-"echo p1.label
-"echo s1.label
-
-"echo p1
-"echo s1
-"echo s1.getLevel(0)
-"echo p1.displayString()
-"echo s1.displayString()
-
 cal p1.expand()
-"cal p1.expandR()
-"cal p2.expandR()
-"echo p1.render()
-"echo p2.render()
+cal p1.expandR()
 
 vnew
 let m = s:MenuBuffer.create({ 'buf_nr': bufnr('.') })
 cal m.addItems([p1, p2])
 cal m.render()
-"echo m.findItem(3)
-
