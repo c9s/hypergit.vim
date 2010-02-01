@@ -129,6 +129,7 @@ fun! s:MenuBuffer.init_buffer()
   setfiletype MenuBuffer
   setlocal buftype=nofile bufhidden=hide nonu nohls
   setlocal fdc=0
+  setlocal cursorline
 
   syn match MenuId +\[\d\+\]$+
   syn match MenuPre  "^[-+~|]\+"
@@ -138,6 +139,7 @@ fun! s:MenuBuffer.init_buffer()
 
   hi MenuId ctermfg=black ctermbg=black
   hi MenuPre ctermfg=darkblue
+  hi CursorLine cterm=underline
 
   hi MenuLabelExpanded ctermfg=blue
   hi MenuLabelCollapsed ctermfg=yellow
