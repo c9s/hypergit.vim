@@ -418,6 +418,21 @@ fun! s:GitCurrentBranch()
    return name[0]
 endf
 
+fun! s:GitLog(...)
+  if a:0 == 1
+    let [since,until] = split(a:1)
+  else
+    "let commit = input("Commit:","",'customlist,GitRemoteNameCompletion')
+    let since = input("Since:","")
+    let until = input("Until:","")
+  endif
+  if strlen(since) && strlen(until)
+    exec printf('! clear && %s log %s..%s',g:git_bin,since,until)
+  else
+    echo "..."
+  endif
+endf
+
 fun! s:GitPush(...)
   if a:0 == 1
     let remote = a:1
@@ -613,7 +628,6 @@ fun! s:initGitMenuBuffer()
 
   if strlen(target_file) > 0
     let m_fs = s:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
-
     cal m_fs.createChild({ 
         \'label': printf('Commit "%s"', target_file ) ,
         \'exec_cmd': 'GitCommit ' . target_file })
@@ -682,6 +696,9 @@ fun! s:initGitMenuBuffer()
   let menu_log= s:MenuItem.create({ 'label': 'Log' , 'expanded': 1 })
   cal menu_log.createChild({ 'label': 'Log' , 'exec_cmd': '!clear && git log ' })
   cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear && git log -p' })
+  cal menu_log.createChild({ 
+      \'label': 'Log (patch) since..until' , 
+      \'exec_cmd': 'GitLog' })
   cal m.addItem( menu_log )
   " }}}
 
@@ -735,6 +752,20 @@ fun! s:GitMenuBufferToggle()
 endf
 
 " Command Completion Functions {{{
+fun! GitRevCompletion(lead,cmd,pos)
+  let parts = split(a:cmd)
+  if strlen(a:lead) > 0 && len(parts) > 2
+    let last_part = remove(parts,-1)
+  else
+    let last_part = 'HEAD'
+  endif
+  " XXX: just use HEAD for now
+  let last_part = 'HEAD'
+  let revs = split(system(printf('git rev-list --max-count=%d %s',50,last_part)))
+  cal filter( revs , 'v:val =~ "^' .a:lead. '"'  )
+  return revs
+endf
+
 fun! GitRemoteNameCompletion(lead,cmd,pos)
   let names = split(system('git remote'),"\n")
   cal filter( names , 'v:val =~ "^' .a:lead. '"'  )
@@ -763,6 +794,7 @@ com! ToggleGitMenu   :cal s:GitMenuBufferToggle()
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:GitPull(<f-args>)
+com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal s:GitLog(<f-args>)
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:RemoteAdd( <f-args> )
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm( <f-args> )
