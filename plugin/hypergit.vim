@@ -214,6 +214,8 @@ fun! s:MenuBuffer.render()
   for item in self.items
     cal add(out,item.render())
   endfor
+
+  setlocal modifiable
   if line('$') > 1 
     silent 1,$delete _
   endif
@@ -230,6 +232,7 @@ fun! s:MenuBuffer.render()
   endif
 
   cal setpos('.',cur)
+  setlocal nomodifiable
 endf
 
 fun! s:MenuBuffer.getCurrentLevel()
