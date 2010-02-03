@@ -729,8 +729,8 @@ fun! s:initGitMenuBuffer(bufn)
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
       cal menu_remotes.createChild( { 'label': rm_name , 'childs': [ 
-            \{ 'label': 'Rename' , 'exec_cmd': 'echo "Not ready yet!" ' },
-            \{ 'label': 'Prune' , 'exec_cmd':  'GitRemoteRename ' . rm_name },
+            \{ 'label': 'Rename' , 'exec_cmd': 'GitRemoteRename ' . rm_name  },
+            \{ 'label': 'Prune'  , 'exec_cmd':  '  ' },
             \{ 'label': 'Remove' , 'exec_cmd': 'GitRemoteDel ' . rm_name }
             \]} )
   endfor
