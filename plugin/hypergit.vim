@@ -177,8 +177,10 @@ fun! s:MenuBuffer.execCurrent()
   if type(item) == 4
     if has_key(item,'exec_cmd')
       exec item.exec_cmd
+      close
     elseif has_key(item,'exec_func')
       exec 'cal ' . item.exec_func . '()' 
+      close
     else
       echo "Can't execute!"
     endif
