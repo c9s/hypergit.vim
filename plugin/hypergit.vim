@@ -16,9 +16,6 @@ elseif v:version < 702
 endif
 
 let g:loaded_hypergit = 1
-let g:git_bin = 'git'
-let g:hypergitBufferHeight = 15
-let g:hypergitBufferWidth = 35
 
 fun! s:defopt(name,val)
   if !exists(a:name)
@@ -620,7 +617,7 @@ endf
 fun! s:initGitMenuBuffer()
   let target_file = expand('%')
 
-  cal hypergit#buffer#init_v()
+  cal hypergit#buffer#init('v')
   cal s:Help.reg("Git Menu",join([
         \" <Enter> - execute item",
         \" o       - open node",
@@ -737,6 +734,12 @@ fun! s:initGitMenuBuffer()
 endf
 
 fun! s:GitMenuBufferToggle()
+  if ! exists('t:HypergitMenuBuffer')
+
+  else
+
+  endif
+
   if bufnr("GitMenu") != -1
     if bufnr('.') != bufnr("GitMenu")
       let wnr = bufwinnr( bufnr("GitMenu") )
@@ -788,7 +791,10 @@ fun! GitRemoteBranchCompletion(lead,cmd,pos)
 endf
 " }}}
 
+cal s:defopt('g:git_bin','git')
 cal s:defopt('g:gitbuffer_default_position','topleft')
+cal s:defopt('g:hypergitBufferHeight' , 15 )
+cal s:defopt('g:hypergitBufferWidth' ,35 )
 
 com! -complete=file -nargs=1 GitCommit       :cal s:initGitCommitSingleBuffer(<q-args>)
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
