@@ -177,12 +177,12 @@ fun! s:MenuBuffer.execCurrent()
   if type(item) == 4
     if has_key(item,'exec_cmd')
       exec item.exec_cmd
-      if ! has_key(item,'not_close')
+      if item.close
         close
       endif
     elseif has_key(item,'exec_func')
       exec 'cal ' . item.exec_func . '()' 
-      if ! has_key(item,'not_close')
+      if item.close
         close
       endif
     else
@@ -262,7 +262,7 @@ endf
 " }}}
 " MenuItem Class {{{
 
-let s:MenuItem = {'id':0, 'expanded':0 }
+let s:MenuItem = {'id':0, 'expanded':0 , 'close':1 }
 
 " Factory method
 fun! s:MenuItem.create(options)
@@ -637,6 +637,7 @@ fun! s:initGitMenuBuffer(bufn)
     let m_fs = s:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
     cal m_fs.createChild({ 
         \'label': printf('Commit "%s"', target_file ) ,
+        \'close':1,
         \'exec_cmd': 'GitCommit ' . target_file })
     cal m_fs.createChild({ 
       \'label': printf('Add "%s"' , target_file ) ,
@@ -649,6 +650,7 @@ fun! s:initGitMenuBuffer(bufn)
 
   cal m.addItem( s:MenuItem.create({ 
     \'label': 'Commit All',
+    \'close': 1,
     \'exec_cmd': 'GitCommitAll' }) )
 
   cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear && git diff' , 'childs': [
