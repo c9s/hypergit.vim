@@ -637,7 +637,7 @@ fun! s:initGitMenuBuffer(bufn)
     let m_fs = s:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
     cal m_fs.createChild({ 
         \'label': printf('Commit "%s"', target_file ) ,
-        \'close':1,
+        \'close':0,
         \'exec_cmd': 'GitCommit ' . target_file })
     cal m_fs.createChild({ 
       \'label': printf('Add "%s"' , target_file ) ,
@@ -650,7 +650,7 @@ fun! s:initGitMenuBuffer(bufn)
 
   cal m.addItem( s:MenuItem.create({ 
     \'label': 'Commit All',
-    \'close': 1,
+    \'close': 0,
     \'exec_cmd': 'GitCommitAll' }) )
 
   cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear && git diff' , 'childs': [
