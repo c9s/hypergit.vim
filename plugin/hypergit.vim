@@ -459,23 +459,24 @@ fun! s:GitPull(...)
   exec printf('! clear && %s pull %s %s',g:git_bin,remote,branch)
 endf
 
-fun! s:RemoteAdd(remote)
+fun! s:RemoteAdd(...)
+  if a:0 == 1
+    let remote = input("Remote Name:","")
+  elseif a:0 == 2
+    let remote = a:1
+  endif
   let uri = input("Git URI:",'')
-  if strlen(uri) > 3 
-    let ret = system( printf('git remote add %s %s',a:remote ,uri))
-    let ret = substitute( ret , "\n" , "" , 'g')
-    if v:shell_error
-      echohl WarningMsg | echo "Can't add remote '"  . a:remote . "': " . ret | echohl None
-    else
-      cal s:echo( "Remote " . a:remote . " Added." )
-    endif
+  if strlen(uri) > 0
+    cal system( printf('git remote add %s %s',remote ,uri))
+    echo printf("Remote Added. %s => %s",remote,uri)
   endif
 endf
 
 fun! s:RemoteRename(remote)
   let newname = input("New Remote Name:",'')
   if strlen(newname) > 0
-    exec printf('!git remote rename %s %s',a:remote ,newname))
+    cal system(printf('git remote rename %s %s',a:remote ,newname))
+    echo printf("Remote renamed. %s => %s",a:remote,newname)
   endif
 endf
 
@@ -647,11 +648,11 @@ fun! s:initGitMenuBuffer(bufn)
         \'close':0,
         \'exec_cmd': 'GitCommit ' . target_file })
     cal m_fs.createChild({ 
-      \'label': printf('Add "%s"' , target_file ) ,
-      \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) 
+        \'label': printf('Add "%s"' , target_file ) ,
+        \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) 
     cal m_fs.createChild({ 
-      \'label': printf('Diff "%s"' , target_file ) ,
-      \'exec_cmd': '!clear && git diff ' . target_file }) 
+        \'label': printf('Diff "%s"' , target_file ) ,
+        \'exec_cmd': '!clear && git diff ' . target_file }) 
     cal m.addItem( m_fs )
   endif
 
@@ -720,15 +721,17 @@ fun! s:initGitMenuBuffer(bufn)
 
   " Remote {{{
   let menu_remotes= s:MenuItem.create({ 'label': 'Remotes' })
-  cal menu_remotes.createChild({ 'label': 'Add ..' , 'exec_cmd': '' })
+  cal menu_remotes.createChild({ 
+      \'label': 'Add ..' , 
+      \'exec_cmd': 'GitRemoteAdd' })
   cal menu_remotes.createChild({ 'label': 'List' , 'exec_cmd': '!clear && git remote -v ' })
 
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
       cal menu_remotes.createChild( { 'label': rm_name , 'childs': [ 
             \{ 'label': 'Rename' , 'exec_cmd': 'echo "Not ready yet!" ' },
-            \{ 'label': 'Prune' , 'exec_cmd': '!clear && git remote prune ' . rm_name },
-            \{ 'label': 'Remove' , 'exec_cmd': '!clear && git remote rm ' . rm_name }
+            \{ 'label': 'Prune' , 'exec_cmd':  'GitRemoteRename ' . rm_name },
+            \{ 'label': 'Remove' , 'exec_cmd': 'GitRemoteDel ' . rm_name }
             \]} )
   endfor
   cal m.addItem( menu_remotes )
@@ -836,7 +839,7 @@ com! ToggleGitMenu   :cal s:GitMenuBufferToggle()
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:GitPull(<f-args>)
 com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal s:GitLog(<f-args>)
-com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:RemoteAdd( <f-args> )
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitRemoteAdd :cal s:RemoteAdd( <q-args> )
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal s:RemoteRename(<f-args>)
 
