@@ -732,27 +732,45 @@ fun! s:initGitMenuBuffer(bufn)
   cal cursor(2,1)
 endf
 
+
+
+
 fun! s:GitMenuBufferToggle()
-  if ! exists('t:HypergitMenuBuffer')
-    let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
-    cal s:initGitMenuBuffer(t:HypergitMenuBuffer)
-  else
-    let bufn = t:HypergitMenuBuffer
-    if bufnr( bufn ) == -1
-      let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
-      cal s:initGitMenuBuffer( t:HypergitMenuBuffer )
-    elseif bufwinnr( bufnr( bufn ) ) > -1
-        " buffer is in window
-        let cbuf = bufnr('%')
-        if bufwinnr( bufnr( bufn ) ) != bufwinnr(cbuf)
-          exec (bufwinnr(bufnr(bufn))) . "wincmd w"
-        else
-          close
-        endif
-    elseif bufwinnr( bufnr( bufn ) ) == -1
-      cal hypergit#buffer#init('vsplit',bufn)
-    endif
+  if bufname('%') =~ '^GitMenu'
+    close
+    return
   endif
+
+  for wn in range(1,winnr('$'))
+    if bufname(winbufnr(wn)) =~ '^GitMenu'
+      let bufnr = winbufnr(wn)
+      let bufname = bufname(bufnr)
+      break
+    endif
+  endfor
+
+  " found gitmenu in current tab
+  if exists('bufnr') && exists('bufname')
+      if exists('b:HypergitMenuBuffer') && bufname == b:HypergitMenuBuffer
+          exec bufwinnr(bufnr) . "wincmd w"
+          return
+      else
+          let pbufname = bufname('%')
+          " XXX: hate , there is no command for hide a specified buffer or
+          " window directlry
+          exec bufwinnr(bufnr) . 'wincmd w'
+          close
+          exec bufwinnr(bufnr(pbufname)) . "wincmd w"
+      endif
+  endif
+
+  " find my gitmenu
+  if exists('b:HypergitMenuBuffer') && bufnr(b:HypergitMenuBuffer) != -1
+      cal hypergit#buffer#init('vsplit',b:HypergitMenuBuffer)
+      return
+  endif
+  let b:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
+  cal s:initGitMenuBuffer(b:HypergitMenuBuffer)
 endf
 
 " Command Completion Functions {{{
