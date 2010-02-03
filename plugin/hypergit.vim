@@ -732,14 +732,14 @@ fun! s:initGitMenuBuffer(bufn)
 endf
 
 fun! s:GitMenuBufferToggle()
-  if ! exists('t:HypergitMenuBuffer')
-    let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
-    cal s:initGitMenuBuffer(t:HypergitMenuBuffer)
+  if ! exists('b:HypergitMenuBuffer')
+    let b:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
+    cal s:initGitMenuBuffer(b:HypergitMenuBuffer)
   else
-    let bufn = t:HypergitMenuBuffer
+    let bufn = b:HypergitMenuBuffer
     if bufnr( bufn ) == -1
-      let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
-      cal s:initGitMenuBuffer( t:HypergitMenuBuffer )
+      let b:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
+      cal s:initGitMenuBuffer( b:HypergitMenuBuffer )
     elseif bufwinnr( bufnr( bufn ) ) > -1
         " buffer is in window
         let cbuf = bufnr('%')
