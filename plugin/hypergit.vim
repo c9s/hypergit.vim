@@ -472,6 +472,13 @@ fun! s:RemoteAdd(remote)
   endif
 endf
 
+fun! s:RemoteRename(remote)
+  let newname = input("New Remote Name:",'')
+  if strlen(newname) > 0
+    exec printf('!git remote rename %s %s',a:remote ,newname))
+  endif
+endf
+
 fun! s:RemoteRm(remote)
   let ret = system( printf('git remote rm %s ',a:remote))
   let ret = substitute( ret , "\n" , "" , 'g')
@@ -830,16 +837,18 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:Gi
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPull     :cal s:GitPull(<f-args>)
 com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal s:GitLog(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteAdd :cal s:RemoteAdd( <f-args> )
-com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm( <f-args> )
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm(<f-args>)
+com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal s:RemoteRename(<f-args>)
 
 nmap <silent> <leader>ci  :exec 'GitCommit ' . expand('%')<CR>
 nmap <silent> <leader>ca  :GitCommitAll<CR>
 nmap <silent> <leader>g   :ToggleGitMenu<CR>
 
 if g:hypergitCAbbr
-  cabbr glog GitLog
-  cabbr gpush GitPush
-  cabbr gpull GitPull
-  cabbr gmadd GitRemoteAdd
-  cabbr gmdel GitRemoteDel
+    cabbr   glog       GitLog
+    cabbr   gpush      GitPush
+    cabbr   gpull      GitPull
+    cabbr   gmadd      GitRemoteAdd
+    cabbr   gmdel      GitRemoteDel
+    cabbr   gmrename   GitRemoteRename
 endif
