@@ -614,10 +614,10 @@ fun! DrawGitMenuHelp()
   cal s:Help.redraw()
 endf
 
-fun! s:initGitMenuBuffer()
+fun! s:initGitMenuBuffer(bufn)
   let target_file = expand('%')
 
-  cal hypergit#buffer#init('v')
+  cal hypergit#buffer#init('vnew',a:bufn)
   cal s:Help.reg("Git Menu",join([
         \" <Enter> - execute item",
         \" o       - open node",
@@ -721,8 +721,6 @@ fun! s:initGitMenuBuffer()
   let m.after_render = function("DrawGitMenuHelp")
   cal m.render()
 
-  file GitMenu
-
   " Initialize Help Syntax
   syntax match HelpComment +^#.*+
   syntax match String      +".\{-}"+
@@ -735,25 +733,24 @@ endf
 
 fun! s:GitMenuBufferToggle()
   if ! exists('t:HypergitMenuBuffer')
-
+    let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
+    cal s:initGitMenuBuffer(t:HypergitMenuBuffer)
   else
-
-  endif
-
-  if bufnr("GitMenu") != -1
-    if bufnr('.') != bufnr("GitMenu")
-      let wnr = bufwinnr( bufnr("GitMenu") )
-      if wnr != -1
-        exe (wnr-1) . "wincmd w"
-        :bw!
-      else
-        exec bufnr("GitMenu") . 'bw!'
-      endif
-    else
-      :bw!
+    let bufn = t:HypergitMenuBuffer
+    if bufnr( bufn ) == -1
+      let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
+      cal s:initGitMenuBuffer( t:HypergitMenuBuffer )
+    elseif bufwinnr( bufnr( bufn ) ) > -1
+        " buffer is in window
+        let cbuf = bufnr('%')
+        if bufwinnr( bufnr( bufn ) ) != bufwinnr(cbuf)
+          exec (bufwinnr(bufnr(bufn))) . "wincmd w"
+        else
+          close
+        endif
+    elseif bufwinnr( bufnr( bufn ) ) == -1
+      cal hypergit#buffer#init('vsplit',bufn)
     endif
-  else
-    cal s:initGitMenuBuffer()
   endif
 endf
 
