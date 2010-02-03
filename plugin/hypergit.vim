@@ -487,7 +487,7 @@ endf
 " }}}
 
 fun! s:initGitStatusBuffer()
-  cal hypergit#buffer#init()
+  cal hypergit#buffer#init('GitCommit')
 endf
 
 fun! s:initGitBranchBuffer()
@@ -522,7 +522,7 @@ endf
 
 fun! s:initGitCommitSingleBuffer(target)
   let msgfile = tempname()
-  cal hypergit#buffer#init(msgfile)
+  cal hypergit#buffer#init('new',msgfile)
   cal s:initGitCommitBuffer()
 
 
@@ -537,7 +537,7 @@ endf
 
 fun! s:initGitCommitAllBuffer()
   let msgfile = tempname()
-  cal hypergit#buffer#init(msgfile)
+  cal hypergit#buffer#init('new',msgfile)
   cal s:initGitCommitBuffer()
   cal hypergit#commit#render()
 
@@ -548,7 +548,7 @@ endf
 
 fun! s:initGitCommitAmendBuffer()
   let msgfile = tempname()
-  cal hypergit#buffer#init(msgfile)
+  cal hypergit#buffer#init('new',msgfile)
   cal s:initGitCommitBuffer()
   cal hypergit#commit#render_amend()
 
