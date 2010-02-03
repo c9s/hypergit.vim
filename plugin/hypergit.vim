@@ -5,7 +5,7 @@
 " Author: Cornelius
 " Email:  cornelius.howl@gmail.com
 " Web:    http://oulixe.us/
-" Version: 2.07
+" Version: 2.08
 
 
 if exists('g:loaded_hypergit')
