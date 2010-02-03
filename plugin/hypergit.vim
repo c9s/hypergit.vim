@@ -617,6 +617,7 @@ endf
 fun! s:initGitMenuBuffer(bufn)
   let target_file = expand('%')
 
+
   cal hypergit#buffer#init('vnew',a:bufn)
   cal s:Help.reg("Git Menu",join([
         \" <Enter> - execute item",
@@ -732,14 +733,14 @@ fun! s:initGitMenuBuffer(bufn)
 endf
 
 fun! s:GitMenuBufferToggle()
-  if ! exists('b:HypergitMenuBuffer')
-    let b:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
-    cal s:initGitMenuBuffer(b:HypergitMenuBuffer)
+  if ! exists('t:HypergitMenuBuffer')
+    let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
+    cal s:initGitMenuBuffer(t:HypergitMenuBuffer)
   else
-    let bufn = b:HypergitMenuBuffer
+    let bufn = t:HypergitMenuBuffer
     if bufnr( bufn ) == -1
-      let b:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
-      cal s:initGitMenuBuffer( b:HypergitMenuBuffer )
+      let t:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
+      cal s:initGitMenuBuffer( t:HypergitMenuBuffer )
     elseif bufwinnr( bufnr( bufn ) ) > -1
         " buffer is in window
         let cbuf = bufnr('%')
