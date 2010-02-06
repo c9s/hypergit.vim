@@ -4,7 +4,7 @@ fun! hypergit#commit#init_syntax()
 endf
 
 fun! hypergit#commit#render()
-  let status = split(system('git status'),"\n")
+  let status = split(system('git status -u'.g:hypergitUntrackMode ),"\n")
   cal filter(status, 'v:val =~ "^#"')
   cal append(1,  status )
 endf

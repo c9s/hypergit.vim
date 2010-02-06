@@ -825,6 +825,7 @@ fun! GitRemoteBranchCompletion(lead,cmd,pos)
 endf
 " }}}
 
+cal s:defopt('g:hypergitUntrackMode' , 'no' )
 cal s:defopt('g:git_bin','git')
 cal s:defopt('g:gitbuffer_default_position','topleft')
 cal s:defopt('g:hypergitBufferHeight' , 15 )
