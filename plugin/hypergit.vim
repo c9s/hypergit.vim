@@ -542,17 +542,22 @@ fun! s:initGitCommitBuffer()
   setfiletype gitcommit
 endf
 
-fun! s:initGitCommitSingleBuffer(target)
+fun! s:initGitCommitSingleBuffer(...)
+  if a:0 == 0
+    let target = expand('%')
+  elseif a:0 == 1
+    let target = a:1
+  endif
+
   let msgfile = tempname()
   cal hypergit#buffer#init('new',msgfile)
   cal s:initGitCommitBuffer()
 
+  " XXX: make sure target exists, and it's in git commit list.
+  let b:commit_target = target
+  cal hypergit#commit#render_single(target)
 
-  " XXX: make sure a:target exists, and it's in git commit list.
-  let b:commit_target = a:target
-  cal hypergit#commit#render_single(a:target)
-
-  cal s:Help.reg("Git: commit " . a:target ," s - (skip)",1)
+  cal s:Help.reg("Git: commit " . target ," s - (skip)",1)
   cal cursor(2,1)
   startinsert
 endf
@@ -843,7 +848,7 @@ cal s:defopt('g:hypergitBufferWidth' ,35 )
 cal s:defopt('g:hypergitCAbbr',1)
 cal s:defopt('g:hypergitDefaultMapping',1)
 
-com! -complete=file -nargs=1 GitCommit       :cal s:initGitCommitSingleBuffer(<q-args>)
+com! -complete=file -nargs=? GitCommit       :cal s:initGitCommitSingleBuffer(<f-args>)
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
 com! -nargs=?        GitAdd     :cal s:GitAdd(<f-args>)
@@ -857,10 +862,10 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:R
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal s:RemoteRename(<f-args>)
 
 if g:hypergitDefaultMapping
-  nmap <silent> <leader>ci  :exec 'GitCommit ' . expand('%')<CR>
-  nmap <silent> <leader>ca  :GitCommitAll<CR>
-  nmap <silent> <leader>ga  :GitAdd<CR>
-  nmap <silent> <leader>G   :ToggleGitMenu<CR>
+  nmap <silent> <leader>ci   :GitCommit<CR>
+  nmap <silent> <leader>ca   :GitCommitAll<CR>
+  nmap <silent> <leader>ga   :GitAdd<CR>
+  nmap <silent> <leader>G    :ToggleGitMenu<CR>
 endif
 
 if g:hypergitCAbbr
