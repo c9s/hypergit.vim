@@ -424,6 +424,16 @@ fun! s:GitCurrentBranch()
    return name[0]
 endf
 
+fun! s:GitAdd(...)
+  if a:0 == 0
+    let file = expand('%')
+  elseif a:0 == 1
+    let file = a:1
+  endif
+  echo "Adding File: " . file
+  exec '!git add ' . file
+endf
+
 fun! s:GitLog(...)
   if a:0 == 1
     let [since,until] = split(a:1)
@@ -831,10 +841,12 @@ cal s:defopt('g:gitbuffer_default_position','topleft')
 cal s:defopt('g:hypergitBufferHeight' , 15 )
 cal s:defopt('g:hypergitBufferWidth' ,35 )
 cal s:defopt('g:hypergitCAbbr',1)
+cal s:defopt('g:hypergitDefaultMapping',1)
 
 com! -complete=file -nargs=1 GitCommit       :cal s:initGitCommitSingleBuffer(<q-args>)
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
+com! -nargs=?        GitAdd     :cal s:GitAdd(<f-args>)
 com! ToggleGitMenu   :cal s:GitMenuBufferToggle()
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
@@ -844,9 +856,12 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitRemoteAdd :cal s:R
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal s:RemoteRename(<f-args>)
 
-nmap <silent> <leader>ci  :exec 'GitCommit ' . expand('%')<CR>
-nmap <silent> <leader>ca  :GitCommitAll<CR>
-nmap <silent> <leader>g   :ToggleGitMenu<CR>
+if g:hypergitDefaultMapping
+  nmap <silent> <leader>ci  :exec 'GitCommit ' . expand('%')<CR>
+  nmap <silent> <leader>ca  :GitCommitAll<CR>
+  nmap <silent> <leader>ga  :GitAdd<CR>
+  nmap <silent> <leader>G   :ToggleGitMenu<CR>
+endif
 
 if g:hypergitCAbbr
     cabbr   glog       GitLog
