@@ -431,7 +431,7 @@ fun! s:GitAdd(...)
     let file = a:1
   endif
   echo "Adding File: " . file
-  exec '!git add ' . file
+  exec '!git add -v ' . file
 endf
 
 fun! s:GitLog(...)
