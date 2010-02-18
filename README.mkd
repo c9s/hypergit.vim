@@ -10,18 +10,24 @@ Installation
 
     $ make -f Makefile.pure install
 
-
 Add Git Menu key mapping to your ~/.vimrc:
 
+    nmap <leader>G   :ToggleGitMenu<CR>
 
-    nmap <leader>g   :ToggleGitMenu<CR>
-
-
-Key Mappings
+Default Key Mappings
 ============
 
+    <leader>G    toggle hypergit menu
     <leader>ci   commit current file changes
     <leader>ca   commit all changes
+    <leader>ga   add file to git repository
+
+Commands
+========
+
+    :GitCommit
+    :GitCommitAll
+    :GitCommitAmend
 
 Screenshot
 ===========
