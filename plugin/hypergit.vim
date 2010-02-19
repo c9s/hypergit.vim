@@ -877,6 +877,8 @@ if g:hypergitDefaultMapping
   nmap <silent> <leader>ca   :GitCommitAll<CR>
   nmap <silent> <leader>ga   :GitAdd<CR>
   nmap <silent> <leader>G    :ToggleGitMenu<CR>
+  nmap <silent> <leader>gp   :GitPush<CR>
+  nmap <silent> <leader>gl   :GitPull<CR>
 endif
 
 if g:hypergitCAbbr
