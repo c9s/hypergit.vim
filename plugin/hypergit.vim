@@ -424,6 +424,16 @@ fun! s:GitCurrentBranch()
    return name[0]
 endf
 
+fun! s:GitRm(...)
+  if a:0 == 0
+    let file = expand('%')
+  elseif a:0 == 1
+    let file = a:1
+  endif
+  echo "Deleting File: " . file
+  exec '!git rm -v ' . file
+endf
+
 fun! s:GitAdd(...)
   if a:0 == 0
     let file = expand('%')
@@ -848,10 +858,11 @@ cal s:defopt('g:hypergitBufferWidth' ,35 )
 cal s:defopt('g:hypergitCAbbr',1)
 cal s:defopt('g:hypergitDefaultMapping',1)
 
-com! -complete=file -nargs=? GitCommit       :cal s:initGitCommitSingleBuffer(<f-args>)
+com! -complete=file -nargs=?        GitAdd    :cal s:GitAdd(<f-args>)
+com! -complete=file -nargs=?        GitRm     :cal s:GitRm(<f-args>)
+com! -complete=file -nargs=?        GitCommit :cal s:initGitCommitSingleBuffer(<f-args>)
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
-com! -nargs=?        GitAdd     :cal s:GitAdd(<f-args>)
 com! ToggleGitMenu   :cal s:GitMenuBufferToggle()
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
