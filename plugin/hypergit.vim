@@ -453,7 +453,7 @@ fun! s:GitLog(...)
     let until = input("Until:","")
   endif
   if strlen(since) && strlen(until)
-    exec printf('! clear && %s log %s..%s',g:git_bin,since,until)
+    exec printf('! clear & %s log %s..%s',g:git_bin,since,until)
   else
     echo "..."
   endif
@@ -466,7 +466,7 @@ fun! s:GitPush(...)
     let remote = input("Remote:","",'customlist,GitRemoteNameCompletion')
   endif
   let branch = input('Branch:', s:GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
-  exec printf('! clear && %s push %s %s',g:git_bin,remote,branch)
+  exec printf('! clear & %s push %s %s',g:git_bin,remote,branch)
 endf
 
 fun! s:GitPull(...)
@@ -476,7 +476,7 @@ fun! s:GitPull(...)
     let remote = input("Remote:","",'customlist,GitRemoteNameCompletion')
   endif
   let branch = input('Branch:', s:GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
-  exec printf('! clear && %s pull %s %s',g:git_bin,remote,branch)
+  exec printf('! clear & %s pull %s %s',g:git_bin,remote,branch)
 endf
 
 fun! s:RemoteAdd(...)
@@ -677,7 +677,7 @@ fun! s:initGitMenuBuffer(bufn)
         \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) 
     cal m_fs.createChild({ 
         \'label': printf('Diff "%s"' , target_file ) ,
-        \'exec_cmd': '!clear && git diff ' . target_file }) 
+        \'exec_cmd': '!clear & git diff ' . target_file }) 
     cal m.addItem( m_fs )
   endif
 
@@ -686,33 +686,33 @@ fun! s:initGitMenuBuffer(bufn)
     \'close': 0,
     \'exec_cmd': 'GitCommitAll' }) )
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear && git diff' , 'childs': [
+  cal m.addItem(s:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear & git diff' , 'childs': [
           \{ 'label': 'Diff to ..' , 'exec_cmd': '' } ] }))
 
-  cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear && git show' } ))
+  cal m.addItem(s:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear & git show' } ))
 
   " Push {{{
   let push_menu = m.addItem(s:MenuItem.create({ 'label': 'Push (all)' ,
-    \ 'exec_cmd': '!clear && git push' , 
+    \ 'exec_cmd': '!clear & git push' , 
     \ 'expanded': 1,
     \ 'childs': [ { 'label': 'Push to ..' , 'exec_cmd': '' } ] }))
 
   " XXX: refactor this
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
-    cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exec_cmd': '!clear && git push ' . rm_name })
+    cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exec_cmd': '!clear & git push ' . rm_name })
   endfor
   "}}}
 
   " Pull {{{
   let pull_menu = m.addItem(s:MenuItem.create({ 'label': 'Pull (all)' , 
-    \ 'exec_cmd': '!clear && git pull' , 
+    \ 'exec_cmd': '!clear & git pull' , 
     \ 'expanded': 1,
     \ 'childs': [ { 'label': 'Pull from ..' , 'exec_cmd': '' } ] }))
 
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
-    cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exec_cmd': '!clear && git pull ' . rm_name })
+    cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exec_cmd': '!clear & git pull ' . rm_name })
   endfor
   " }}}
 
@@ -721,7 +721,7 @@ fun! s:initGitMenuBuffer(bufn)
   let local_branches = split(system('git branch | cut -c3-'),"\n")
   for br in local_branches
     cal menu_chkout.createChild({ 'label': 'Checkout ' . br ,
-      \'exec_cmd': '!clear && git checkout ' . br })
+      \'exec_cmd': '!clear & git checkout ' . br })
   endfor
   cal m.addItem( menu_chkout )
 
@@ -730,14 +730,14 @@ fun! s:initGitMenuBuffer(bufn)
   let remote_branches = split(system('git branch -r | cut -c3-'),"\n")
   for br in remote_branches
     cal menu_chkout2.createChild({ 'label': 'Checkout ' . br ,
-      \'exec_cmd': '!clear && git checkout -t ' . br })
+      \'exec_cmd': '!clear & git checkout -t ' . br })
   endfor
   cal m.addItem( menu_chkout2 )
 
   " Log {{{
   let menu_log= s:MenuItem.create({ 'label': 'Log' , 'expanded': 1 })
-  cal menu_log.createChild({ 'label': 'Log' , 'exec_cmd': '!clear && git log ' })
-  cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear && git log -p' })
+  cal menu_log.createChild({ 'label': 'Log' , 'exec_cmd': '!clear & git log ' })
+  cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear & git log -p' })
   cal menu_log.createChild({ 
       \'label': 'Log (patch) since..until' , 
       \'exec_cmd': 'GitLog' })
@@ -749,7 +749,7 @@ fun! s:initGitMenuBuffer(bufn)
   cal menu_remotes.createChild({ 
       \'label': 'Add ..' , 
       \'exec_cmd': 'GitRemoteAdd' })
-  cal menu_remotes.createChild({ 'label': 'List' , 'exec_cmd': '!clear && git remote -v ' })
+  cal menu_remotes.createChild({ 'label': 'List' , 'exec_cmd': '!clear & git remote -v ' })
 
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
