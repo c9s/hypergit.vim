@@ -682,6 +682,11 @@ fun! s:initGitMenuBuffer(bufn)
   endif
 
   cal m.addItem( s:MenuItem.create({ 
+    \'label': 'Edit Git Config',
+    \'close': 0,
+    \'exec_cmd': 'GitConfig' }) )
+
+  cal m.addItem( s:MenuItem.create({ 
     \'label': 'Commit All',
     \'close': 0,
     \'exec_cmd': 'GitCommitAll' }) )
@@ -871,6 +876,8 @@ com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal s:Gi
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitRemoteAdd :cal s:RemoteAdd( <q-args> )
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal s:RemoteRename(<f-args>)
+
+com! GitConfig   :tabe ~/.gitconfig
 
 if g:hypergitDefaultMapping
   nmap <silent> <leader>ci   :GitCommit<CR>
