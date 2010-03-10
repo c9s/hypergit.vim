@@ -199,7 +199,6 @@ fun! g:MenuBuffer.execCurrent()
   let id = self.getCurrentMenuId()
   let item = self.findItem(id)
 
-
   try 
     if type(item) == type({}) && has_key(item,'exe')
 
@@ -289,11 +288,10 @@ fun! g:MenuBuffer.toggleCurrent()
   cal self.render()
 endf
 
-" FIXME:
 fun! g:MenuBuffer.toggleCurrentR()
   let id = self.getCurrentMenuId()
   let item = self.findItem(id)
-  if type(item) == 4
+  if type(item) == type({})
     cal item.toggleR()
   endif
   cal self.render()
