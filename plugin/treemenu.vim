@@ -157,6 +157,17 @@ fun! s:take_input_args(inputs)
   return args
 endf
 
+
+fun! g:MenuBuffer.execVerbose(cmd,args)
+  redraw
+  if type(a:cmd) == type(function('tr'))
+    echo 'Calling Function: "' . string(a:cmd) . '" ' . join(a:args,' ')
+  elseif type(a:cmd) == type('')
+    echo 'Executing Command: "' . a:cmd . '" ' . join(a:args,' ')
+  endif
+  sleep 600m
+endf
+
 " New Synopsis:
 "  { label: ... , exe: function('FunctionName') , args: [ ... ]
 "  { label: ... , exe: function('FunctionName') , inputs: [ .. ]
@@ -173,20 +184,28 @@ fun! g:MenuBuffer.execCurrent()
     " if exe is a function reference
     if has_key(item,'exe') && type(item.exe) == type(function('tr'))
       if has_key(item,'args')
+        cal self.execVerbose(item.exe,item.args)
         cal call(item.exe,item.args)
       elseif has_key(item,'inputs')
-        cal call(item.exe,s:take_input_args(item.inputs))
+        let input_args = s:take_input_args(item.inputs)
+        cal self.execVerbose(item.exe,input_args)
+        cal call(item.exe,input_args)
       else
+        cal self.execVerbose(item.exe,[])
         cal call(item.exe,[])
       endif
 
     " if exe is a string , then this should be a command.
     elseif has_key(item,'exe') && type(item.exe) == type("")
       if has_key(item,'args')
+        cal self.execVerbose(item.exe,item.args)
         exec item.exe . ' ' . join(item.args,' ')
       elseif has_key(item,'inputs')
-        exec item.exe . ' ' . join(s:take_input_args(item.inputs),' ')
+        let input_args = s:take_input_args(item.inputs)
+        cal self.execVerbose(item.exe,input_args)
+        exec item.exe . ' ' . join( input_args ,' ')
       else
+        cal self.execVerbose(item.exe,[])
         exec item.exe
       endif
 
