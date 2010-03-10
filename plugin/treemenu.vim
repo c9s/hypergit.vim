@@ -1,7 +1,7 @@
 " vim:fdm=marker:
 "
 " TreeMenu {{{
-" Version: 0.2
+" Version: 0.3
 " Author:  Cornelius <cornelius.howl@gmail.com>
 " ScriptType: plugin
 
