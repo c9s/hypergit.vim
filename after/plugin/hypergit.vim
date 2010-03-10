@@ -9,9 +9,9 @@
 
 
 if exists('g:loaded_hypergit')
-  "finish
+  finish
 elseif v:version < 702
-  echoerr 'ahaha. your vim seems too old , please do upgrade. i found your vim is ' . v:version . '.'
+  echoerr 'Ahaha. your vim seems too old , please do upgrade. i found your vim is ' . v:version . '.'
   finish
 endif
 
@@ -308,39 +308,42 @@ fun! s:initGitMenuBuffer(bufn)
     cal m_fs.createChild({ 
         \'label': printf('Commit "%s"', target_file ) ,
         \'close':0,
-        \'exec_cmd': 'GitCommit ' . target_file })
+        \'exe': 'GitCommit ' . target_file })
     cal m_fs.createChild({ 
         \'label': printf('Add "%s"' , target_file ) ,
-        \'exec_cmd': 'echo system("git add -v ' . target_file . '")' }) 
+        \'exe': 'echo system("git add -v ' . target_file . '")' }) 
     cal m_fs.createChild({ 
         \'label': printf('Diff "%s"' , target_file ) ,
-        \'exec_cmd': '!clear & git diff ' . target_file }) 
+        \'exe': '!clear & git diff ' . target_file }) 
     cal m.addItem( m_fs )
   endif
 
   cal m.createChild({ 
     \'label': 'Edit Git Config',
     \'close': 0,
-    \'exec_cmd': 'GitConfig' })
+    \'exe': 'GitConfig' })
 
   cal m.createChild({ 
     \'label': 'Commit All',
     \'close': 0,
-    \'exec_cmd': 'GitCommitAll' })
+    \'exe': 'GitCommitAll' })
 
-  cal m.createChild({ 'label': 'Diff' , 'exec_cmd': '!clear & git diff' , 'childs': [
-          \{ 'label': 'Diff to ..' , 'exec_cmd': '' } ] })
+  cal m.createChild({ 'label': 'Diff (all)' , 'exe': '!clear & git diff' , 'childs': [
+          \   { 'label': 'Diff to file'   , 'exe': '!clear & git diff' , 'inputs': [  g:mb_input('File to diff:'   , '' , 'file') ] }
+          \ , { 'label': 'Diff to dir'    , 'exe': '!clear & git diff' , 'inputs': [  g:mb_input('Dir to diff:'    , '' , 'dir') ] }
+          \ , { 'label': 'Diff to buffer' , 'exe': '!clear & git diff' , 'inputs': [  g:mb_input('Buffer to diff:' , '' , 'buffer') ] }
+          \ ] })
 
-  cal m.createChild({ 'label': 'Show' , 'exec_cmd': '!clear & git show' } )
+  cal m.createChild({ 'label': 'Show' , 'exe': '!clear & git show' } )
 
   " Push {{{
   let push_menu = m.createChild({
     \ 'label': 'Push (all)' ,
-    \ 'exec_cmd': '!clear & git push' , 
+    \ 'exe': '!clear & git push' , 
     \ 'expanded': 1,
     \ 'childs': [{ 'label': 'Push to ..' ,
-      \ 'exec_cmd': '!clear & git push ', 
-      \ 'cmd_inputs': [ 
+      \ 'exe': '!clear & git push ', 
+      \ 'inputs': [ 
             \ g:mb_input('Remote:',function('GitDefaultRemoteName'),'customlist,GitRemoteNameCompletion'),
             \ g:mb_input('Branch:',function('GitDefaultBranchName'),'customlist,GitLocalBranchCompletion')
           \]
@@ -350,48 +353,48 @@ fun! s:initGitMenuBuffer(bufn)
   " XXX: refactor this
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
-    cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exec_cmd': '!clear & git push ' . rm_name })
+    cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exe': '!clear & git push ' . rm_name })
   endfor
   "}}}
 
   " Pull {{{
   let pull_menu = m.createChild({ 'label': 'Pull (all)' , 
-    \ 'exec_cmd': '!clear & git pull' , 
+    \ 'exe': '!clear & git pull' , 
     \ 'expanded': 1,
-    \ 'childs': [ { 'label': 'Pull from ..' , 'exec_cmd': '' } ] })
+    \ 'childs': [ { 'label': 'Pull from ..' , 'exe': '' } ] })
 
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
-    cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exec_cmd': '!clear & git pull ' . rm_name })
+    cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
   endfor
   " }}}
 
   let menu_chkout= g:MenuItem.create({ 'label': 'Checkout Local Branch' })
-  cal menu_chkout.createChild({ 'label': 'Checkout ..' , 'exec_cmd': '' })
+  cal menu_chkout.createChild({ 'label': 'Checkout ..' , 'exe': '' })
   let local_branches = split(system('git branch | cut -c3-'),"\n")
   for br in local_branches
     cal menu_chkout.createChild({ 'label': 'Checkout ' . br ,
-      \'exec_cmd': '!clear & git checkout ' . br })
+      \'exe': '!clear & git checkout ' . br })
   endfor
   cal m.addItem( menu_chkout )
 
   let menu_chkout2= g:MenuItem.create({ 'label': 'Checkout Remote Branch' })
-  cal menu_chkout2.createChild({ 'label': 'Checkout ..' , 'exec_cmd': '' })
+  cal menu_chkout2.createChild({ 'label': 'Checkout ..' , 'exe': '' })
   let remote_branches = split(system('git branch -r | cut -c3-'),"\n")
   for br in remote_branches
     cal menu_chkout2.createChild({ 'label': 'Checkout ' . br ,
-      \'exec_cmd': '!clear & git checkout -t ' . br })
+      \'exe': '!clear & git checkout -t ' . br })
   endfor
   cal m.addItem( menu_chkout2 )
 
   " Log {{{
   let menu_log= g:MenuItem.create({ 'label': 'Log' , 'expanded': 1 })
   cal menu_log.createChild({ 
-        \ 'label': 'Log' , 'exec_cmd': '!clear & git log ' }) 
-  cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear & git log -p' }) 
+        \ 'label': 'Log' , 'exe': '!clear & git log ' }) 
+  cal menu_log.createChild({ 'label': 'Log (patch)' , 'exe': '!clear & git log -p' }) 
   cal menu_log.createChild({ 
         \'label': 'Log (patch) since..until' , 
-        \'exec_cmd': 'GitLog' }) 
+        \'exe': 'GitLog' }) 
   cal m.addItem( menu_log )
   " }}}
 
@@ -399,15 +402,15 @@ fun! s:initGitMenuBuffer(bufn)
   let menu_remotes= g:MenuItem.create({ 'label': 'Remotes' })
   cal menu_remotes.createChild({ 
       \'label': 'Add ..' , 
-      \'exec_cmd': 'GitRemoteAdd' })
-  cal menu_remotes.createChild({ 'label': 'List' , 'exec_cmd': '!clear & git remote -v ' })
+      \'exe': 'GitRemoteAdd' })
+  cal menu_remotes.createChild({ 'label': 'List' , 'exe': '!clear & git remote -v ' })
 
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
       cal menu_remotes.createChild( { 'label': rm_name , 'childs': [ 
-            \{ 'label': 'Rename' , 'exec_cmd': 'GitRemoteRename ' . rm_name  },
-            \{ 'label': 'Prune'  , 'exec_cmd':  '  ' },
-            \{ 'label': 'Remove' , 'exec_cmd': 'GitRemoteDel ' . rm_name }
+            \{ 'label': 'Rename' , 'exe': 'GitRemoteRename ' . rm_name  },
+            \{ 'label': 'Prune'  , 'exe':  '  ' },
+            \{ 'label': 'Remove' , 'exe': 'GitRemoteDel ' . rm_name }
             \]} )
   endfor
   cal m.addItem( menu_remotes )
