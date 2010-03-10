@@ -47,13 +47,13 @@ fun! g:MenuBuffer.init_buffer()
   syn match MenuLabelExpanded   +\(^[~]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
   syn match MenuLabelCollapsed  +\(^[+]-*\)\@<=[a-zA-Z0-9-()._/ ]*+
 
-  hi MenuId ctermfg=black ctermbg=black
-  hi MenuPre ctermfg=darkblue
+  hi MenuId ctermfg=black ctermbg=black guifg=black guibg=black
+  hi MenuPre ctermfg=darkblue guifg=darkblue
   hi CursorLine cterm=underline
 
-  hi MenuLabelExpanded ctermfg=blue
-  hi MenuLabelCollapsed ctermfg=yellow
-  hi MenuLabelExecutable ctermfg=white
+  hi MenuLabelExpanded ctermfg=blue guifg=blue
+  hi MenuLabelCollapsed ctermfg=yellow guifg=gold
+  hi MenuLabelExecutable ctermfg=white guifg=white
 
   let b:_menu = self
 
