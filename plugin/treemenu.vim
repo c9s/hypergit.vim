@@ -22,8 +22,13 @@ endf
 let g:MenuBuffer = { 'buf_nr' : -1 , 'root': {}  }
 
 fun! g:MenuBuffer.create(options)
+  let rt_label = 'root'
+  if has_key(a:options,'rootLabel')
+    let rt_label = a:options.rootLabel
+  endif
+
   let menu_obj = copy(self)
-  let menu_obj.root = g:MenuItem.create({ 'label': 'root' })
+  let menu_obj.root = g:MenuItem.create({ 'label': rt_label, 'expanded': 1 })
   cal extend(menu_obj,a:options)
   cal menu_obj.init_buffer()
   return menu_obj
@@ -62,11 +67,23 @@ fun! g:MenuBuffer.setBufNr(nr)
 endf
 
 fun! g:MenuBuffer.addItem(item)
-  return self.root.createChild(a:item)
+  let a:item.parent = self.root
+  cal add(self.root.childs, a:item)
+  return a:item
 endf
 
-fun! g:MenuBuffer.addPath(path,args)
-  let labels = split(a:path,'\.')
+fun! g:MenuBuffer.createChild(arg)
+  return self.root.createChild(a:arg)
+endf
+
+fun! g:MenuBuffer.addPath(...)
+  let path = a:1
+  let args = {}
+  if a:0 == 2
+    let args = a:2
+  endif
+
+  let labels = split(path,'\.')
   let last_label = labels[ len( labels ) - 1 ]
   let node = self.root
 
@@ -84,11 +101,11 @@ fun! g:MenuBuffer.addPath(path,args)
 
 
   if s:FoundNode(node) && node.label == last_label
-    cal extend(node,a:args)
+    cal extend(node,args)
   else
     echoerr "addPath Error"
-    echoerr a:path
-    echoerr a:args
+    echoerr a:0
+    echoerr a:1
     echoerr node
   endif
 endf
@@ -177,8 +194,7 @@ fun! g:MenuBuffer.execCurrent()
     " old api, should be deprecated.
     elseif has_key(item,'exec_cmd')
       if has_key(item,'cmd_inputs')
-        exec item.exec_cmd . ' ' . join(s:take_input_args( 
-          item.cmd_inputs ),' ')
+        exec item.exec_cmd . ' ' . join(s:take_input_args( item.cmd_inputs ),' ')
       else
         exec item.exec_cmd
       endif
@@ -367,9 +383,8 @@ fun! g:MenuItem.displayString()
     let indent = repeat('-', lev)
     return op . indent . self.label . self.idString()
   elseif has_key(self,'parent')
-    let indent = repeat(' ', lev-2) . '|-'
-    " let indent = repeat('-', lev-1) . '|'
-    return indent . self.label . self.idString()
+    let indent = repeat('-', lev)
+    return '|' . indent . self.label . self.idString()
   else
     let indent = repeat('-', lev)
     return '-' . indent . self.label . self.idString()
@@ -476,19 +491,19 @@ let m = g:MenuBuffer.create({ 'buf_nr': bufnr('.') })
 
 cal m.addItem( g:MenuItem.create({ 
     \ 'label': 'Edit' , 'expanded': 1 , 'childs': [
-      \ g:MenuItem.create({
+      \ {
       \   'label': 'Echo YES'  , 
       \   'close': 0 ,  
-      \   'exe': 'echo' , 'args': [ '"YES"' ] })
-      \ ,g:MenuItem.create({
+      \   'exe': 'echo' , 'args': [ '"YES"' ] }
+      \ ,{
       \   'label': 'Echo with arguments'  , 
       \   'close': 0 ,  
-      \   'exe': 'echo' , 'inputs': [ g:mb_input('Test:','123','') ]   })
-      \ ,g:MenuItem.create({
+      \   'exe': 'echo' , 'inputs': [ g:mb_input('Test:','123','') ]   }
+      \ ,{
       \   'label': 'Menu Exe Test', 
       \   'close': 0,  
-      \   'exe': function('MenuExeTest') })
-    \ ]   }) 
+      \   'exe': function('MenuExeTest') }
+    \ ]   })
     \ )
 
 cal m.render()
