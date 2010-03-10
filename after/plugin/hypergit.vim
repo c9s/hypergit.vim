@@ -291,6 +291,7 @@ fun! s:initGitMenuBuffer(bufn)
   let target_file = expand('%')
 
   cal hypergit#buffer#init('vnew',a:bufn)
+
   cal g:Help.reg("Git Menu",join([
         \" <Enter> - execute item",
         \" o       - open node",
@@ -330,15 +331,17 @@ fun! s:initGitMenuBuffer(bufn)
   cal m.addItem(g:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear & git show' } ))
 
   " Push {{{
-  let push_menu = m.addItem(g:MenuItem.create({ 'label': 'Push (all)' ,
+  let push_menu = m.addItem(g:MenuItem.create({
+    \ 'label': 'Push (all)' ,
     \ 'exec_cmd': '!clear & git push' , 
     \ 'expanded': 1,
-    \ 'childs': [ { 'label': 'Push to ..' ,
-      \ 'exec_cmd': '' } ],
+    \ 'childs': [{ 'label': 'Push to ..' ,
+      \ 'exec_cmd': '!clear & git push ', 
       \ 'cmd_inputs': [ 
-          \ g:mb_input('Remote',function('GitDefaultRemoteName'),'customelist,GitRemoteNameCompletion'),
-          \ g:mb_input('Branch',function('GitDefaultBranchName'),'customelist,GitLocalBranchCompletion')
+            \ g:mb_input('Remote',function('GitDefaultRemoteName'),'customelist,GitRemoteNameCompletion'),
+            \ g:mb_input('Branch',function('GitDefaultBranchName'),'customelist,GitLocalBranchCompletion')
           \]
+        \ }]
       \}))
 
   " XXX: refactor this
@@ -380,11 +383,12 @@ fun! s:initGitMenuBuffer(bufn)
 
   " Log {{{
   let menu_log= g:MenuItem.create({ 'label': 'Log' , 'expanded': 1 })
-  cal menu_log.createChild({ 'label': 'Log' , 'exec_cmd': '!clear & git log ' })
-  cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear & git log -p' })
   cal menu_log.createChild({ 
-      \'label': 'Log (patch) since..until' , 
-      \'exec_cmd': 'GitLog' })
+        \ 'label': 'Log' , 'exec_cmd': '!clear & git log ' }) 
+  cal menu_log.createChild({ 'label': 'Log (patch)' , 'exec_cmd': '!clear & git log -p' }) 
+  cal menu_log.createChild({ 
+        \'label': 'Log (patch) since..until' , 
+        \'exec_cmd': 'GitLog' }) 
   cal m.addItem( menu_log )
   " }}}
 
