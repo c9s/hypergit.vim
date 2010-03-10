@@ -80,11 +80,24 @@ fun! s:GitLog(...)
   endif
 endf
 
+fun! GitDefaultBranchName()
+  return s:GitCurrentBranch()
+endf
+
+fun! GitDefaultRemoteName()
+  let names = split(system('git remote'),"\n")
+  if len(names) == 1
+    return names[0]
+  else 
+    return ''
+  endif
+endf
+
 fun! s:GitPush(...)
   if a:0 == 1
     let remote = a:1
   else
-    let remote = input("Remote:","",'customlist,GitRemoteNameCompletion')
+    let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
   endif
   let branch = input('Branch:', s:GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
   exec printf('! clear & %s push %s %s',g:git_bin,remote,branch)
@@ -277,7 +290,6 @@ endf
 fun! s:initGitMenuBuffer(bufn)
   let target_file = expand('%')
 
-
   cal hypergit#buffer#init('vnew',a:bufn)
   cal g:Help.reg("Git Menu",join([
         \" <Enter> - execute item",
@@ -321,7 +333,13 @@ fun! s:initGitMenuBuffer(bufn)
   let push_menu = m.addItem(g:MenuItem.create({ 'label': 'Push (all)' ,
     \ 'exec_cmd': '!clear & git push' , 
     \ 'expanded': 1,
-    \ 'childs': [ { 'label': 'Push to ..' , 'exec_cmd': '' } ] }))
+    \ 'childs': [ { 'label': 'Push to ..' ,
+      \ 'exec_cmd': '' } ],
+      \ 'cmd_inputs': [ 
+          \ g:mb_input('Remote',function('GitDefaultRemoteName'),'customelist,GitRemoteNameCompletion'),
+          \ g:mb_input('Branch',function('GitDefaultBranchName'),'customelist,GitLocalBranchCompletion')
+          \]
+      \}))
 
   " XXX: refactor this
   let remotes = split(system('git remote'),"\n")
