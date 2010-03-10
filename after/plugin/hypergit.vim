@@ -329,9 +329,9 @@ fun! s:initGitMenuBuffer(bufn)
     \'exe': 'GitCommitAll' })
 
   cal m.createChild({ 'label': 'Diff (all)' , 'exe': '!clear & git diff' , 'childs': [
-          \   { 'label': 'Diff to file'   , 'exe': '!clear & git diff' , 'inputs': [  g:mb_input('File to diff:'   , '' , 'file') ] }
-          \ , { 'label': 'Diff to dir'    , 'exe': '!clear & git diff' , 'inputs': [  g:mb_input('Dir to diff:'    , '' , 'dir') ] }
-          \ , { 'label': 'Diff to buffer' , 'exe': '!clear & git diff' , 'inputs': [  g:mb_input('Buffer to diff:' , '' , 'buffer') ] }
+          \   { 'label': 'Diff to file'   , 'exe': '!clear & git diff' , 'inputs': [ ['File to diff:'   , '' , 'file'] ] }
+          \ , { 'label': 'Diff to dir'    , 'exe': '!clear & git diff' , 'inputs': [ ['Dir to diff:'    , '' , 'dir' ] ] }
+          \ , { 'label': 'Diff to buffer' , 'exe': '!clear & git diff' , 'inputs': [ ['Buffer to diff:' , '' , 'buffer' ] ] }
           \ ] })
 
   cal m.createChild({ 'label': 'Show' , 'exe': '!clear & git show' } )
@@ -344,8 +344,8 @@ fun! s:initGitMenuBuffer(bufn)
     \ 'childs': [{ 'label': 'Push to ..' ,
       \ 'exe': '!clear & git push ', 
       \ 'inputs': [ 
-            \ g:mb_input('Remote:',function('GitDefaultRemoteName'),'customlist,GitRemoteNameCompletion'),
-            \ g:mb_input('Branch:',function('GitDefaultBranchName'),'customlist,GitLocalBranchCompletion')
+            \ ['Remote:' , function('GitDefaultRemoteName') , 'customlist,GitRemoteNameCompletion']  , 
+            \ ['Branch:' , function('GitDefaultBranchName') , 'customlist,GitLocalBranchCompletion']
           \]
         \ }]
       \})
@@ -409,7 +409,7 @@ fun! s:initGitMenuBuffer(bufn)
   for rm_name in remotes
       cal menu_remotes.createChild( { 'label': rm_name , 'childs': [ 
             \{ 'label': 'Rename' , 'exe': 'GitRemoteRename ' . rm_name  },
-            \{ 'label': 'Prune'  , 'exe':  '  ' },
+            \{ 'label': 'Prune'  , 'exe': '  ' },
             \{ 'label': 'Remove' , 'exe': 'GitRemoteDel ' . rm_name }
             \]} )
   endfor
