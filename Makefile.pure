@@ -1,5 +1,0 @@
-
-
-install:
-		rsync -rv autoload/  ~/.vim/autoload/
-		rsync -rv plugin/    ~/.vim/plugin/

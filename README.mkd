@@ -5,10 +5,20 @@ HyperGit Vim Plugin
 
 Installation
 ============
+Via rakefile:
+
+    $ git clone git://github.com/c9s/hypergit.vim
+    $ cd hypergit.vim
+    $ rake install
+
+To install hypergit from github:
+
+    $ vimana i git:git://github.com/c9s/hypergit.vim -n hypergit.vim
+
+To install hypergit from vim.org:
 
     $ vimana i hypergit.vim
 
-    $ make -f Makefile.pure install
 
 Add Git Menu key mapping to your ~/.vimrc:
 
