@@ -338,8 +338,8 @@ fun! s:initGitMenuBuffer(bufn)
     \ 'childs': [{ 'label': 'Push to ..' ,
       \ 'exec_cmd': '!clear & git push ', 
       \ 'cmd_inputs': [ 
-            \ g:mb_input('Remote',function('GitDefaultRemoteName'),'customelist,GitRemoteNameCompletion'),
-            \ g:mb_input('Branch',function('GitDefaultBranchName'),'customelist,GitLocalBranchCompletion')
+            \ g:mb_input('Remote:',function('GitDefaultRemoteName'),'customlist,GitRemoteNameCompletion'),
+            \ g:mb_input('Branch:',function('GitDefaultBranchName'),'customlist,GitLocalBranchCompletion')
           \]
         \ }]
       \}))
