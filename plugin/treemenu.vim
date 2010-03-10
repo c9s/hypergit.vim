@@ -108,13 +108,41 @@ fun! s:take_input_args(inputs)
   return args
 endf
 
+" New Synopsis:
+"  { label: ... , exe: function('FunctionName') , args: [ ... ]
+"  { label: ... , exe: function('FunctionName') , inputs: [ .. ]
+"  { label: ... , exe: 'Command', args: [ ... ]
+"  { label: ... , exe: 'Command', inputs: [ .. ]
+" 
+" Current Interface:
+"  { label: ... , exec_cmd: 'Command' , cmd_inputs: [ ... ]
 fun! g:MenuBuffer.execCurrent()
   let id = self.getCurrentMenuId()
   let item = self.findItem(id)
-  if type(item) == 4
-    if has_key(item,'exec_cmd')
+  if type(item) == type({})
+
+    " if exe is a function reference
+    if has_key(item,'exe') && type(item.exe) == type(function('tr'))
+      if has_key(item,'args')
+        call(item.exe,item.args)
+      elseif has_key(item,'inputs')
+        call(item.exe,s:take_input_args(item.inputs))
+      endif
+
+    " if exe is a string , then this should be a command.
+    elseif has_key(item,'exe') && type(item.exe) == type('')
+      if has_key(item,'args')
+        exec item.exe . ' ' . join(item.args,' ')
+      elseif has_key(item,'inputs')
+        exec item.exe . ' ' . join(s:take_input_args(item.inputs),' ')
+      endif
+
+    " XXX:
+    " old api, should be deprecated.
+    elseif has_key(item,'exec_cmd')
       if has_key(item,'cmd_inputs')
-        exec item.exec_cmd . ' ' . join(s:take_input_args( item.cmd_inputs ),' ')
+        exec item.exec_cmd . ' ' . join(s:take_input_args( 
+          item.cmd_inputs ),' ')
       else
         exec item.exec_cmd
       endif
@@ -127,8 +155,10 @@ fun! g:MenuBuffer.execCurrent()
         close
       endif
     else
-      echo "Can't execute!"
+      " XXX: do more
+      echoerr "Can't execute!"
     endif
+
   endif
 endf
 
