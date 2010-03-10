@@ -40,10 +40,6 @@ endf
 
 " Git Commands {{{
 
-fun! s:GitCurrentBranch()
-   let name = split(system("git branch | grep '^*' | cut -c3-"))
-   return name[0]
-endf
 
 fun! s:GitRm(...)
   if a:0 == 0
@@ -80,18 +76,25 @@ fun! s:GitLog(...)
   endif
 endf
 
+" Git API {{{
+fun! GitCurrentBranch()
+   let name = split(system("git branch | grep '^*' | cut -c3-"))
+   return name[0]
+endf
+
 fun! GitDefaultBranchName()
-  return s:GitCurrentBranch()
+  return GitCurrentBranch()
 endf
 
 fun! GitDefaultRemoteName()
   let names = split(system('git remote'),"\n")
-  if len(names) == 1
+  if len(names) > 0
     return names[0]
   else 
     return ''
   endif
 endf
+" }}}
 
 fun! s:GitPush(...)
   if a:0 == 1
@@ -99,7 +102,7 @@ fun! s:GitPush(...)
   else
     let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
   endif
-  let branch = input('Branch:', s:GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
+  let branch = input('Branch:', GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
   exec printf('! clear & %s push %s %s',g:git_bin,remote,branch)
 endf
 
@@ -107,9 +110,9 @@ fun! s:GitPull(...)
   if a:0 == 1
     let remote = a:1
   else
-    let remote = input("Remote:","",'customlist,GitRemoteNameCompletion')
+    let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
   endif
-  let branch = input('Branch:', s:GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
+  let branch = input('Branch:', GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
   exec printf('! clear & %s pull %s %s',g:git_bin,remote,branch)
 endf
 
@@ -298,7 +301,7 @@ fun! s:initGitMenuBuffer(bufn)
         \" O       - open node recursively",
         \],"\n"),1)
 
-  let m = g:MenuBuffer.create({ 'buf_nr': bufnr('.') })
+  let m = g:MenuBuffer.create({ 'rootLabel': 'Git' , 'buf_nr': bufnr('.') })
 
   if strlen(target_file) > 0
     let m_fs = g:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
@@ -315,23 +318,23 @@ fun! s:initGitMenuBuffer(bufn)
     cal m.addItem( m_fs )
   endif
 
-  cal m.addItem( g:MenuItem.create({ 
+  cal m.createChild({ 
     \'label': 'Edit Git Config',
     \'close': 0,
-    \'exec_cmd': 'GitConfig' }) )
+    \'exec_cmd': 'GitConfig' })
 
-  cal m.addItem( g:MenuItem.create({ 
+  cal m.createChild({ 
     \'label': 'Commit All',
     \'close': 0,
-    \'exec_cmd': 'GitCommitAll' }) )
+    \'exec_cmd': 'GitCommitAll' })
 
-  cal m.addItem(g:MenuItem.create({ 'label': 'Diff' , 'exec_cmd': '!clear & git diff' , 'childs': [
-          \{ 'label': 'Diff to ..' , 'exec_cmd': '' } ] }))
+  cal m.createChild({ 'label': 'Diff' , 'exec_cmd': '!clear & git diff' , 'childs': [
+          \{ 'label': 'Diff to ..' , 'exec_cmd': '' } ] })
 
-  cal m.addItem(g:MenuItem.create({ 'label': 'Show' , 'exec_cmd': '!clear & git show' } ))
+  cal m.createChild({ 'label': 'Show' , 'exec_cmd': '!clear & git show' } )
 
   " Push {{{
-  let push_menu = m.addItem(g:MenuItem.create({
+  let push_menu = m.createChild({
     \ 'label': 'Push (all)' ,
     \ 'exec_cmd': '!clear & git push' , 
     \ 'expanded': 1,
@@ -342,7 +345,7 @@ fun! s:initGitMenuBuffer(bufn)
             \ g:mb_input('Branch:',function('GitDefaultBranchName'),'customlist,GitLocalBranchCompletion')
           \]
         \ }]
-      \}))
+      \})
 
   " XXX: refactor this
   let remotes = split(system('git remote'),"\n")
@@ -352,10 +355,10 @@ fun! s:initGitMenuBuffer(bufn)
   "}}}
 
   " Pull {{{
-  let pull_menu = m.addItem(g:MenuItem.create({ 'label': 'Pull (all)' , 
+  let pull_menu = m.createChild({ 'label': 'Pull (all)' , 
     \ 'exec_cmd': '!clear & git pull' , 
     \ 'expanded': 1,
-    \ 'childs': [ { 'label': 'Pull from ..' , 'exec_cmd': '' } ] }))
+    \ 'childs': [ { 'label': 'Pull from ..' , 'exec_cmd': '' } ] })
 
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
