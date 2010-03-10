@@ -125,10 +125,25 @@ endf
 " \  {'label': '', 'default_value': '', 'completion', ''},
 " ]
 
+
+" Transform Input Args into Hash (Dictionary)
 fun! g:mb_input(...)
   let arg = { 'label': a:1, 'default_value': a:2 }
   if strlen(a:3) > 0
     let arg.completion = a:3
+  endif
+  return arg
+endf
+
+fun! s:mb_input2(list)
+  let arg = { 'label': a:list[0], 'default_value': a:list[1] }
+  let arg.skip_when_empty = 1
+
+  if len( a:list ) > 2
+    let arg.completion = a:list[2]
+  endif
+  if len( a:list ) > 3
+    let arg.skip_when_empty = a:list[3]
   endif
   return arg
 endf
@@ -152,6 +167,10 @@ fun! s:take_input_args(inputs)
       let arg = input( input.label , l:default_value )
     endif
     call inputrestore()
+
+    if strlen(arg) == 0 && input.skip_when_empty
+      throw "Skip"
+    endif
     call add(args,arg)
   endfor
   return args
@@ -179,58 +198,86 @@ endf
 fun! g:MenuBuffer.execCurrent()
   let id = self.getCurrentMenuId()
   let item = self.findItem(id)
-  if type(item) == type({})
 
-    " if exe is a function reference
-    if has_key(item,'exe') && type(item.exe) == type(function('tr'))
-      if has_key(item,'args')
-        cal self.execVerbose(item.exe,item.args)
-        cal call(item.exe,item.args)
-      elseif has_key(item,'inputs')
-        let input_args = s:take_input_args(item.inputs)
-        cal self.execVerbose(item.exe,input_args)
-        cal call(item.exe,input_args)
-      else
-        cal self.execVerbose(item.exe,[])
-        cal call(item.exe,[])
-      endif
 
-    " if exe is a string , then this should be a command.
-    elseif has_key(item,'exe') && type(item.exe) == type("")
-      if has_key(item,'args')
-        cal self.execVerbose(item.exe,item.args)
-        exec item.exe . ' ' . join(item.args,' ')
-      elseif has_key(item,'inputs')
-        let input_args = s:take_input_args(item.inputs)
-        cal self.execVerbose(item.exe,input_args)
-        exec item.exe . ' ' . join( input_args ,' ')
-      else
-        cal self.execVerbose(item.exe,[])
-        exec item.exe
-      endif
+  try 
+    if type(item) == type({}) && has_key(item,'exe')
 
-    " XXX:
-    " old api, should be deprecated.
-    elseif has_key(item,'exec_cmd')
-      if has_key(item,'cmd_inputs')
-        exec item.exec_cmd . ' ' . join(s:take_input_args( item.cmd_inputs ),' ')
+      " For 'exe' {{{
+      " if exe is a function reference
+      if type(item.exe) == type(function('tr'))
+
+        if has_key(item,'args')
+          cal self.execVerbose(item.exe,item.args)
+          cal call(item.exe,item.args)
+        elseif has_key(item,'inputs')
+
+          let hash_list = [ ]
+          for i in item.inputs
+            if type(i) == type([])
+              cal add(hash_list,s:mb_input2(i))
+            else
+              cal add(hash_list,i)
+            endif
+          endfor
+
+          let input_args = s:take_input_args( hash_list )
+          cal self.execVerbose(item.exe,input_args)
+          cal call(item.exe,input_args)
+
+        else
+          cal self.execVerbose(item.exe,[])
+          cal call(item.exe,[])
+        endif
+
+      " if exe is a string , then this should be a command.
+      elseif has_key(item,'exe') && type(item.exe) == type("")
+        if has_key(item,'args')
+          cal self.execVerbose(item.exe,item.args)
+          exec item.exe . ' ' . join(item.args,' ')
+        elseif has_key(item,'inputs')
+
+          let hash_list = [ ]
+          for i in item.inputs
+            if type(i) == type([])
+              cal add(hash_list,s:mb_input2(i))
+            else
+              cal add(hash_list,i)
+            endif
+          endfor
+
+          let input_args = s:take_input_args( hash_list )
+          cal self.execVerbose(item.exe,input_args)
+          exec item.exe . ' ' . join( input_args ,' ')
+        else
+          cal self.execVerbose(item.exe,[])
+          exec item.exe
+        endif
+      " }}}
+      " XXX: old api, should be deprecated. {{{
+      elseif has_key(item,'exec_cmd')
+        if has_key(item,'cmd_inputs')
+          exec item.exec_cmd . ' ' . join(s:take_input_args( item.cmd_inputs ),' ')
+        else
+          exec item.exec_cmd
+        endif
+      elseif has_key(item,'exec_func')
+        exec 'cal ' . item.exec_func . '()' 
+      " }}}
       else
-        exec item.exec_cmd
+        redraw
+        echo "Can't execute."
       endif
       if item.close
         close
       endif
-    elseif has_key(item,'exec_func')
-      exec 'cal ' . item.exec_func . '()' 
-      if item.close
-        close
-      endif
-    else
-      redraw
-      echo "Can't execute."
     endif
+  catch /Skip/
+    redraw
+    echo "Skip."
+  finally
 
-  endif
+  endtry
 endf
 
 fun! g:MenuBuffer.toggleCurrent()
