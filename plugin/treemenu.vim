@@ -19,11 +19,11 @@ fun! s:FoundNode(node)
 endf
 
 " MenuBuffer Class {{{
-let g:MenuBuffer = { 'buf_nr' : -1 , 'items': [  ] }
+let g:MenuBuffer = { 'buf_nr' : -1 , 'root': {}  }
 
 fun! g:MenuBuffer.create(options)
   let menu_obj = copy(self)
-  let menu_obj.items = [ ]
+  let menu_obj.root = g:MenuItem.create({ 'label': 'root' })
   cal extend(menu_obj,a:options)
   cal menu_obj.init_buffer()
   return menu_obj
@@ -62,20 +62,13 @@ fun! g:MenuBuffer.setBufNr(nr)
 endf
 
 fun! g:MenuBuffer.addItem(item)
-  cal add(self.items,a:item)
-  return a:item
+  return self.root.createChild(a:item)
 endf
 
-" XXX: remove MenuBuffer.items, should just provide a root node.
 fun! g:MenuBuffer.addPath(path,args)
   let labels = split(a:path,'\.')
   let last_label = labels[ len( labels ) - 1 ]
-
-  if len(self.items) == 0
-    let node = self.addItem( g:MenuItem.create({'label': 'root' }))
-  else
-    let node = self.items[0]
-  endif
+  let node = self.root
 
   while s:FoundNode(node) && len(labels) > 0
     let label = remove( labels , 0 )
@@ -99,12 +92,6 @@ fun! g:MenuBuffer.addPath(path,args)
     echoerr node
   endif
 endf
-
-fun! g:MenuBuffer.addItems(items)
-  cal extend(self.items,a:items)
-  return a:items
-endf
-
 
 fun! g:MenuBuffer.findWindow(switch)
   let win = bufwinnr( self.buf_nr )
@@ -234,9 +221,7 @@ fun! g:MenuBuffer.render()
   let cur = getpos('.')
   let win = self.findWindow(1)
   let out = [  ]
-  for item in self.items
-    cal add(out,item.render())
-  endfor
+  cal add(out,self.root.render())
 
   setlocal modifiable
   if line('$') > 1 
@@ -270,14 +255,7 @@ fun! g:MenuBuffer.getCurrentMenuId()
 endf
 
 fun! g:MenuBuffer.findItem(id)
-  for item in self.items
-    let l:ret = item.findItem(a:id)
-    if type(l:ret) == 4
-      return l:ret
-    endif
-    unlet l:ret
-  endfor
-  return -1
+  return self.root.findItem(a:id)
 endf
 " }}}
 " MenuItem Class {{{
@@ -471,22 +449,16 @@ finish
 " Find Node by label {{{
 new
 let m = g:MenuBuffer.create({ 'buf_nr': bufnr('.') })
-cal m.addItem( g:MenuItem.create({ 
-    \ 'label': 'Test' , 'expanded': 1 , 'childs': [
-      \  g:MenuItem.create({ 'label': 'A1' })
-      \ ,g:MenuItem.create({ 'label': 'A2' })
-      \ ,g:MenuItem.create({ 'label': 'B3', 'childs': [ g:MenuItem.create({ 'label': 'CC'  })   ] })
-      \ ]}) 
-      \ )
+cal m.addItem({ 
+      \ 'label': 'Test' , 'expanded': 1 , 'childs': [
+      \  { 'label': 'A1' }
+      \ ,{ 'label': 'A2' }
+      \ ,{ 'label': 'B3', 'childs': [ 
+      \         g:MenuItem.create({ 'label': 'CC'  })  ]}
+      \ ]} )
 
-let node = m.items[0].findChildByLabel( 'B3' )
-if s:FoundNode(node) && node.label == 'B3' 
-  echo node.label
-  let node = node.findChildByLabel('CC')
-  if s:FoundNode(node) && node.label == 'CC' 
-    echo node.label
-  endif
-endif
+let node = m.root.findChildByLabel( 'Test' ).findChildByLabel('B3').findChildByLabel('CC')
+echo node.label
 unlet m
 unlet node
 finish
