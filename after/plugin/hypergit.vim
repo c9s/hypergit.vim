@@ -7,7 +7,6 @@
 " Web:    http://oulixe.us/
 " Version: 2.1
 
-
 if exists('g:loaded_hypergit')
   finish
 elseif v:version < 702

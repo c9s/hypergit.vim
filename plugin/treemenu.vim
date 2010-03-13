@@ -68,8 +68,7 @@ endf
 
 fun! g:MenuBuffer.addItem(item)
   let a:item.parent = self.root
-  cal add(self.root.childs, a:item)
-  return a:item
+  return self.root.addItem( a:item );
 endf
 
 fun! g:MenuBuffer.createChild(arg)
@@ -187,14 +186,13 @@ fun! g:MenuBuffer.execVerbose(cmd,args)
   sleep 600m
 endf
 
-" New Synopsis:
+
+" menu item args:
 "  { label: ... , exe: function('FunctionName') , args: [ ... ]
 "  { label: ... , exe: function('FunctionName') , inputs: [ .. ]
 "  { label: ... , exe: 'Command', args: [ ... ]
 "  { label: ... , exe: 'Command', inputs: [ .. ]
 " 
-" Current Interface:
-"  { label: ... , exec_cmd: 'Command' , cmd_inputs: [ ... ]
 fun! g:MenuBuffer.execCurrent()
   let id = self.getCurrentMenuId()
   let item = self.findItem(id)

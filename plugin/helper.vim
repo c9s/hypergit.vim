@@ -26,7 +26,7 @@ fun! g:Help.redraw()
   cal g:Help.show_brief()
 endf
 
-fun! g:toggle_fulltext()
+fun! s:toggle_fulltext()
   if exists('b:help_fulltext_on')
     cal g:Help.hide_fulltext()
   else
