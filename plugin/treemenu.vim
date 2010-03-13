@@ -68,7 +68,11 @@ endf
 
 fun! g:MenuBuffer.addItem(item)
   let a:item.parent = self.root
-  return self.root.addItem( a:item );
+  if ! has_key(self.root, 'childs')
+    let self.root.childs = []
+  endif
+  cal add(self.root.childs,a:item)
+  return a:item
 endf
 
 fun! g:MenuBuffer.createChild(arg)
