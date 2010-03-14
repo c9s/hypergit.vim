@@ -327,19 +327,17 @@ fun! s:initGitMenuBuffer(bufn)
     \'close': 0,
     \'exe': 'GitCommitAll' })
 
-
   " support for git sync
   if executable('git-sync') 
     let gc_config = m.createChild({'label': 'Sync'})
     let gitconfig = readfile(expand('~/.gitconfig'))
     for line in gitconfig
-      if line =~ '^\[sync '
-        let category = substitute(line,'\[sync\s\+"\(.*\)"\]','\1','')
+      if line =~ '^\[sync'
+        let category = substitute(line,'\[sync\s\+[''"]\(.*\)[''"]\]','\1','')
         cal gc_config.createChild({ 'label':  'Sync ' . category , 'exe': '!git sync ' . category })
       endif
     endfor
   endif
-
 
   cal m.createChild({ 'label': 'Clone ...' , 'exe': '!git clone ' , 'inputs':[
                 \['From:','']]})
