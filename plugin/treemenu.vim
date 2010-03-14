@@ -202,6 +202,7 @@ endf
 " 
 fun! g:MenuBuffer.execCurrent()
   let id = self.getCurrentMenuId()
+  let bufnr = bufnr('%')
   let item = self.findItem(id)
 
   try 
@@ -275,6 +276,10 @@ fun! g:MenuBuffer.execCurrent()
       if item.close
         close
       endif
+
+      if item.refresh 
+        exec bufnr . 'bw!'
+      endif
     endif
   catch /Skip/
     redraw
@@ -345,7 +350,7 @@ endf
 " }}}
 " MenuItem Class {{{
 
-let g:MenuItem = {'id':0, 'expanded':0 , 'close':1 }
+let g:MenuItem = {'id':0, 'expanded':0 , 'close':1 , 'refresh':0 }
 
 " Factory method
 fun! g:MenuItem.create(options)
