@@ -62,14 +62,17 @@ endf
 
 fun! s:GitLog(...)
   if a:0 == 1
-    let [since,until] = split(a:1)
-  else
+    let [since,til] = split(a:1)
+  elseif a:0 == 0
     "let commit = input("Commit:","",'customlist,GitRemoteNameCompletion')
     let since = input("Since:","")
-    let until = input("Until:","")
+    let til = input("Til:","")
+  elseif a:0 == 2
+    let since = a:1
+    let til = a:2
   endif
-  if strlen(since) && strlen(until)
-    exec printf('! clear & %s log %s..%s',g:git_bin,since,until)
+  if strlen(since) && strlen(til)
+    exec printf('! clear & %s log %s..%s',g:git_bin,since,til)
   else
     echo "..."
   endif
@@ -402,8 +405,8 @@ fun! s:initGitMenuBuffer(bufn)
         \ 'label': 'Log' , 'exe': '!clear & git log ' }) 
   cal menu_log.createChild({ 'label': 'Log (patch)' , 'exe': '!clear & git log -p' }) 
   cal menu_log.createChild({ 
-        \'label': 'Log (patch) since..until' , 
-        \'exe': 'GitLog' }) 
+        \'label': 'Log (patch) since..til' , 
+        \'exe': 'GitLog' , 'inputs':[ ['Since:','',''], ['Til:',''] ] }) 
   cal m.addItem( menu_log )
   " }}}
 
