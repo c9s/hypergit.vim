@@ -287,7 +287,7 @@ endf
 fun! g:MenuBuffer.toggleCurrent()
   let id = self.getCurrentMenuId()
   let item = self.findItem(id)
-  if type(item) == 4
+  if type(item) == type({})
     cal item.toggle()
   endif
   cal self.render()
@@ -416,7 +416,7 @@ fun! g:MenuItem.findItem(id)
     if has_key(self,'childs')
       for ch in self.childs 
         let l:ret = ch.findItem(a:id)
-        if type(l:ret) == 4
+        if type(l:ret) == type({})
           return l:ret
         endif
         unlet l:ret
