@@ -408,7 +408,8 @@ fun! s:initGitMenuBuffer(bufn)
   for rm_name in remotes
       cal menu_remotes.createChild( { 'label': rm_name , 'childs': [ 
             \{ 'label': 'Rename' , 'exe': 'GitRemoteRename ' . rm_name  },
-            \{ 'label': 'Prune'  , 'exe': '  ' },
+            \{ 'label': 'Prune'  , 'exe': '!git remote prune' , 'inputs': [ 
+              \ ['Remote:' , function('GitDefaultRemoteName') , 'customlist,GitRemoteNameCompletion'] ]},
             \{ 'label': 'Remove' , 'exe': 'GitRemoteDel ' . rm_name }
             \]} )
   endfor
@@ -429,8 +430,10 @@ fun! s:initGitMenuBuffer(bufn)
 endf
 
 
-
-
+" Menu Buffer Toggle:
+"   this buffer toggle function find a git menu buffer of current buffer.  if
+"   buffer is not loaded, then hide current git menu buffer(if found), and
+"   create/reload one.
 fun! s:GitMenuBufferToggle()
   if bufname('%') =~ '^GitMenu'
     close
