@@ -140,12 +140,15 @@ endf
 
 fun! s:mb_input2(list)
   let arg = { 'label': a:list[0], 'default_value': a:list[1] }
+
+  " set default to skip_when_empty
   let arg.skip_when_empty = 1
 
-  if len( a:list ) > 2
+  if len( a:list ) > 2 && strlen(a:list[2]) > 1
     let arg.completion = a:list[2]
   endif
-  if len( a:list ) > 3
+
+  if len( a:list ) > 3 && a:list[3] == 0
     let arg.skip_when_empty = a:list[3]
   endif
   return arg
