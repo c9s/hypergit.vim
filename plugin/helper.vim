@@ -13,7 +13,7 @@ fun! g:Help.reg(brief,fulltext,show_brief)
   let b:help_fulltext = "Press ? To Hide Help\n" . a:fulltext
   let b:help_fulltext_height = 0
 
-  nmap <script>  <Plug>showHelp   :cal <SID>toggle_fulltext()<CR>
+  nmap <script>  <Plug>showHelp   :cal g:toggle_fulltext()<CR>
   nmap <buffer> ? <Plug>showHelp
 
   if b:help_show_brief_on
@@ -26,7 +26,7 @@ fun! g:Help.redraw()
   cal g:Help.show_brief()
 endf
 
-fun! s:toggle_fulltext()
+fun! g:toggle_fulltext()
   if exists('b:help_fulltext_on')
     cal g:Help.hide_fulltext()
   else
