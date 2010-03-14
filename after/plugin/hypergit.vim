@@ -339,6 +339,10 @@ fun! s:initGitMenuBuffer(bufn)
     endfor
   endif
 
+  if executable('git-snapshot')
+    cal m.createChild({'label': 'Snapshot', 'exe': '!git snapshot'})
+  endif
+
   cal m.createChild({ 'label': 'Clone ...' , 'exe': '!git clone ' , 'inputs':[
                 \['From:','']]})
 
