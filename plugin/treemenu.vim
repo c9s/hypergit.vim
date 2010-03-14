@@ -431,6 +431,12 @@ fun! g:MenuItem.findItem(id)
   endif
 endf
 
+fun! g:MenuItem.addItem(item)
+  let item = a:item
+  let item.parent = self
+  cal add(self.childs,item)
+endf
+
 fun! g:MenuItem.getLevel(lev)
   let level = a:lev
   if has_key(self,'parent')
