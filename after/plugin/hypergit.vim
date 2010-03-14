@@ -332,10 +332,6 @@ fun! s:initGitMenuBuffer(bufn)
       \'close': 0,
       \'exe': 'GitCommitAll' })
 
-    cal m.createChild({ 
-      \'label': 'Edit Config',
-      \'close': 0,
-      \'exe': 'GitConfig' })
 
     " support for git sync
     if executable('git-sync') 
@@ -350,7 +346,9 @@ fun! s:initGitMenuBuffer(bufn)
     endif
 
     if executable('git-snapshot')
-      cal m.createChild({'label': 'Snapshot', 'exe': '!git snapshot'})
+      let s = m.createChild({'label': 'Snapshot'})
+      cal s.createChild( {'label': 'Snapshot', 'exe': '!git snapshot'})
+      cal s.createChild( {'label': 'Check Log', 'exe': '!git log refs/snapshots/HEAD -p'})
     endif
 
     cal m.createChild({ 'label': 'Clone ...' , 'exe': '!git clone ' , 'inputs':[
@@ -375,6 +373,11 @@ fun! s:initGitMenuBuffer(bufn)
 
     cal m.createChild({ 'label': 'Show' , 'exe': '!clear & git show' } )
 
+    cal m.createChild({ 
+      \'label': 'Edit Config',
+      \'close': 0,
+      \'exe': 'GitConfig' })
+
 
     let push_menu = m.createChild({ 'label': 'Push' , 'expanded': 1 })
     let pull_menu = m.createChild({ 'label': 'Pull' , 'expanded': 1 })
@@ -383,6 +386,10 @@ fun! s:initGitMenuBuffer(bufn)
       cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
       cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
     endfor
+
+    let br_item = m.createChild({ 'label': 'Branch' })
+    cal br_item.createChild({ 'label': 'Create branch' , 'exe': '!git branch', 'inputs':[['Branch Name:',''] ], 'refresh':1 })
+    cal br_item.createChild({ 'label': 'Create branch from' , 'exe': '!git branch', 'inputs':[['Branch Name:',''],['From Branch',function('GitDefaultBranchName'),'customlist,GitLocalBranchCompletion']], 'refresh':1 })
 
     " Local Branch Checkout {{{
     let menu_chkout= g:MenuItem.create({ 'label': 'Checkout Local Branch' })
@@ -393,9 +400,10 @@ fun! s:initGitMenuBuffer(bufn)
       cal menu_chkout.createChild({ 'label': 'Checkout ' . br ,
         \'exe': '!clear & git checkout ' . br })
     endfor
-    cal m.addItem( menu_chkout )
+    cal br_item.addItem( menu_chkout )
     " }}}
 
+    " Remote Branch Checkout {{{
     let menu_chkout2= g:MenuItem.create({ 'label': 'Checkout Remote Branch' })
     cal menu_chkout2.createChild({ 'label': 'Checkout ..' , 'exe': '!git checkout -t ', 'inputs': [ ['Branch:','','customlist,GitRemoteBranchCompletion'] ] })
     let remote_branches = split(system('git branch -r | cut -c3-'),"\n")
@@ -403,7 +411,8 @@ fun! s:initGitMenuBuffer(bufn)
       cal menu_chkout2.createChild({ 'label': 'Checkout ' . br ,
         \'exe': '!clear & git checkout -t ' . br })
     endfor
-    cal m.addItem( menu_chkout2 )
+    cal br_item.addItem( menu_chkout2 )
+    " }}}
     " Log {{{
     let menu_log= g:MenuItem.create({ 'label': 'Log' , 'expanded': 1 })
     cal menu_log.createChild({ 
