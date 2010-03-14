@@ -296,7 +296,6 @@ endf
 
 fun! s:initGitMenuBuffer(bufn)
   let target_file = expand('%')
-
   cal hypergit#buffer#init('vnew',a:bufn)
 
   cal g:Help.reg("Git Menu",join([
@@ -451,7 +450,8 @@ fun! s:initGitMenuBuffer(bufn)
   " Initialize Help Syntax
   syntax match HelpComment +^#.*+
   syntax match String      +".\{-}"+
-  hi HelpComment ctermfg=blue
+
+  hi HelpComment guibg=darkblue guifg=gold ctermbg=blue ctermfg=yellow
   hi String      ctermfg=red
 
   " reset cursor position
