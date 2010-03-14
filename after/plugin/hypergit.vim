@@ -327,6 +327,20 @@ fun! s:initGitMenuBuffer(bufn)
     \'close': 0,
     \'exe': 'GitCommitAll' })
 
+
+  " support for git sync
+  if executable('git-sync') 
+    let gc_config = m.createChild({'label': 'Sync'})
+    let gitconfig = readfile(expand('~/.gitconfig'))
+    for line in gitconfig
+      if line =~ '^\[sync '
+        let category = substitute(line,'\[sync\s\+"\(.*\)"\]','\1','')
+        cal gc_config.createChild({ 'label':  'Sync ' . category , 'exe': '!git sync ' . category })
+      endif
+    endfor
+  endif
+
+
   cal m.createChild({ 'label': 'Clone ...' , 'exe': '!git clone ' , 'inputs':[
                 \['From:','']]})
 
@@ -358,6 +372,7 @@ fun! s:initGitMenuBuffer(bufn)
     cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
   endfor
 
+  " Local Branch Checkout {{{
   let menu_chkout= g:MenuItem.create({ 'label': 'Checkout Local Branch' })
   cal menu_chkout.createChild({ 'label': 'Checkout ..' , 'exe': '!git checkout ' , 'inputs': [['Branch:','','customlist,GitLocalBranchCompletion']] })
 
@@ -367,6 +382,7 @@ fun! s:initGitMenuBuffer(bufn)
       \'exe': '!clear & git checkout ' . br })
   endfor
   cal m.addItem( menu_chkout )
+  " }}}
 
   let menu_chkout2= g:MenuItem.create({ 'label': 'Checkout Remote Branch' })
   cal menu_chkout2.createChild({ 'label': 'Checkout ..' , 'exe': '!git checkout -t ', 'inputs': [ ['Branch:','','customlist,GitRemoteBranchCompletion'] ] })
