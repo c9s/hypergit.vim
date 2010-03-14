@@ -327,6 +327,20 @@ fun! s:initGitMenuBuffer(bufn)
     \'close': 0,
     \'exe': 'GitCommitAll' })
 
+  cal m.createChild({ 'label': 'Clone ...' , 'exe': '!git clone ' , 'inputs':[
+                \['From:','']]})
+
+  cal m.createChild({ 'label': 'Pull ...' , 'exe': '!git pull ' , 'inputs':[
+              \ ['Remote:' , function('GitDefaultRemoteName') , 'customlist,GitRemoteNameCompletion']  , 
+              \ ['Branch:' , function('GitDefaultBranchName') , 'customlist,GitLocalBranchCompletion' , 0 ] 
+                \]})
+
+  cal m.createChild({ 'label': 'Push ...' , 'exe': '!git pull ' , 'inputs':[
+              \ ['Remote:' , function('GitDefaultRemoteName') , 'customlist,GitRemoteNameCompletion']  , 
+              \ ['Branch:' , function('GitDefaultBranchName') , 'customlist,GitLocalBranchCompletion' , 0 ]
+                \]})
+
+
   cal m.createChild({ 'label': 'Diff (all)' , 'exe': '!clear & git diff' , 'childs': [
           \   { 'label': 'Diff to file'   , 'exe': '!clear & git diff' , 'inputs': [ ['File to diff:'   , '' , 'file'] ] }
           \ , { 'label': 'Diff to dir'    , 'exe': '!clear & git diff' , 'inputs': [ ['Dir to diff:'    , '' , 'dir' ] ] }
@@ -335,38 +349,16 @@ fun! s:initGitMenuBuffer(bufn)
 
   cal m.createChild({ 'label': 'Show' , 'exe': '!clear & git show' } )
 
-  " Push {{{
-  let push_menu = m.createChild({
-    \ 'label': 'Push (all)' ,
-    \ 'exe': '!clear & git push' , 
-    \ 'expanded': 1,
-    \ 'childs': [{ 'label': 'Push to ..' ,
-      \ 'exe': '!clear & git push ', 
-      \ 'inputs': [ 
-            \ ['Remote:' , function('GitDefaultRemoteName') , 'customlist,GitRemoteNameCompletion']  , 
-            \ ['Branch:' , function('GitDefaultBranchName') , 'customlist,GitLocalBranchCompletion']
-          \]
-        \ }]
-      \})
 
-  " XXX: refactor this
-  let remotes = split(system('git remote'),"\n")
-  for rm_name in remotes
-    cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exe': '!clear & git push ' . rm_name })
-  endfor
-  "}}}
+  let push_menu = m.createChild({ 'label': 'Push' , 'expanded': 1 })
+  let pull_menu = m.createChild({ 'label': 'Pull' , 'expanded': 1 })
 
-  " Pull {{{
-  let pull_menu = m.createChild({ 'label': 'Pull (all)' , 
-    \ 'exe': '!clear & git pull' , 
-    \ 'expanded': 1,
-    \ 'childs': [ { 'label': 'Pull from ..' , 'exe': '' } ] })
 
   let remotes = split(system('git remote'),"\n")
   for rm_name in remotes
     cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
+    cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
   endfor
-  " }}}
 
   let menu_chkout= g:MenuItem.create({ 'label': 'Checkout Local Branch' })
   cal menu_chkout.createChild({ 'label': 'Checkout ..' , 'exe': '' })
@@ -385,6 +377,7 @@ fun! s:initGitMenuBuffer(bufn)
       \'exe': '!clear & git checkout -t ' . br })
   endfor
   cal m.addItem( menu_chkout2 )
+
 
   " Log {{{
   let menu_log= g:MenuItem.create({ 'label': 'Log' , 'expanded': 1 })
@@ -434,6 +427,8 @@ endf
 "   this buffer toggle function find a git menu buffer of current buffer.  if
 "   buffer is not loaded, then hide current git menu buffer(if found), and
 "   create/reload one.
+"
+"   depends on current buffer.
 fun! s:GitMenuBufferToggle()
   if bufname('%') =~ '^GitMenu'
     close
@@ -471,6 +466,9 @@ fun! s:GitMenuBufferToggle()
   let b:HypergitMenuBuffer = hypergit#buffer#next_name('GitMenu')
   cal s:initGitMenuBuffer(b:HypergitMenuBuffer)
 endf
+
+
+
 
 " Command Completion Functions {{{
 fun! GitRevCompletion(lead,cmd,pos)
