@@ -71,8 +71,10 @@ fun! s:GitLog(...)
     let since = a:1
     let til = a:2
   endif
-  if strlen(since) && strlen(til)
+  if strlen(since) > 1 && strlen(til) > 1
     exec printf('! clear & %s log %s..%s',g:git_bin,since,til)
+  elseif strlen(since) > 1 
+    exec printf('! clear & %s log %s..HEAD',g:git_bin,since)
   else
     echo "..."
   endif
@@ -406,7 +408,7 @@ fun! s:initGitMenuBuffer(bufn)
   cal menu_log.createChild({ 'label': 'Log (patch)' , 'exe': '!clear & git log -p' }) 
   cal menu_log.createChild({ 
         \'label': 'Log (patch) since..til' , 
-        \'exe': 'GitLog' , 'inputs':[ ['Since:','',''], ['Til:',''] ] }) 
+        \'exe': 'GitLog' , 'inputs':[ ['Since:','','',0], ['Til:',''] ] }) 
   cal m.addItem( menu_log )
   " }}}
 
