@@ -1,13 +1,12 @@
 
-# Makefile for vim plugin.
+# Makefile: install/uninstall/link vim plugin files.
 # Author: Cornelius <cornelius.howl@gmail.com>
 # Date:   一  3/15 22:49:26 2010
 
 DIRS=autoload \
 	 after \
 	 doc \
-	 ftdetect\
-	 syntax\
+	 syntax
 
 VIMRUNTIME=~/.vim
 PWD=`pwd`
