@@ -6,7 +6,8 @@
 DIRS=autoload \
 	 after \
 	 doc \
-	 syntax
+	 syntax \
+	 plugin
 
 VIMRUNTIME=~/.vim
 PWD=`pwd`
