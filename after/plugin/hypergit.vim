@@ -458,7 +458,6 @@ fun! s:initGitMenuBuffer(bufn)
   cal cursor(2,1)
 endf
 
-
 " Menu Buffer Toggle:
 "   this buffer toggle function find a git menu buffer of current buffer.  if
 "   buffer is not loaded, then hide current git menu buffer(if found), and
