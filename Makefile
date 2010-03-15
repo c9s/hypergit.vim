@@ -1,5 +1,8 @@
 
-# FILES=autoload/commit/
+# Makefile for vim plugin.
+# Author: Cornelius <cornelius.howl@gmail.com>
+# Date:   一  3/15 22:49:26 2010
+
 DIRS=autoload \
 	 after \
 	 doc \
@@ -7,11 +10,9 @@ DIRS=autoload \
 	 syntax\
 
 VIMRUNTIME=~/.vim
-
 PWD=`pwd`
 
 all: install
-
 
 init-runtime:
 	find $(DIRS) -type d | while read dir ;  do \
@@ -31,5 +32,3 @@ link: init-runtime
 	@echo "Linking"
 	find $(DIRS) -type f | while read file ; do \
 			ln -sv $(PWD)/$$file $(VIMRUNTIME)/$$file ; done
-
-
