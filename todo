@@ -14,3 +14,4 @@
 * Gpush , Gpull command completion
 * support wildchar when adding files.
 * git action should respect to the current editing buffer.
+* improve git rebase --interactive ui
