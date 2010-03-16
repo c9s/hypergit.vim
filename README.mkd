@@ -2,6 +2,11 @@
 HyperGit Vim Plugin
 ===================
 
+Features
+========
+* Git Actions in TreeMenu 
+* Commit Buffer
+* Rebase (interactive) Helper. when `git rebase -i [branch]`
 
 Installation
 ============
@@ -11,6 +16,10 @@ Via rakefile:
     $ cd hypergit.vim
     $ rake install
 
+or via makefile:
+
+    $ make install
+
 To install hypergit from github:
 
     $ vimana i git:git://github.com/c9s/hypergit.vim -n hypergit.vim
@@ -18,7 +27,6 @@ To install hypergit from github:
 To install hypergit from vim.org:
 
     $ vimana i hypergit.vim
-
 
 Add Git Menu key mapping to your ~/.vimrc:
 
