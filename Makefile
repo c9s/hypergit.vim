@@ -31,4 +31,4 @@ uninstall:
 link: init-runtime
 	@echo "Linking"
 	@find $(DIRS) -type f | while read file ; do \
-			ln -sv $(PWD)/$$file $(VIMRUNTIME)/$$file ; done
+			ln -sfv $(PWD)/$$file $(VIMRUNTIME)/$$file ; done
