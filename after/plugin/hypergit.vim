@@ -379,8 +379,11 @@ fun! s:initGitMenuBuffer(bufn)
 
 
     let push_menu = m.createChild({ 'label': 'Push' , 'expanded': 1 })
+    cal push_menu.createChild({ 'label': 'Push all' , 'exe': '!clear & git push --all' })
+
     let pull_menu = m.createChild({ 'label': 'Pull' , 'expanded': 1 })
     let remotes = split(system('git remote'),"\n")
+
     for rm_name in remotes
       cal pull_menu.createChild({ 'label': 'Pull from ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
       cal push_menu.createChild({ 'label': 'Push to ' . rm_name , 'exe': '!clear & git pull ' . rm_name })
