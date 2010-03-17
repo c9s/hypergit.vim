@@ -358,7 +358,7 @@ fun! s:initGitMenuBuffer(bufn)
                 \ ['Branch:' , function('GitDefaultBranchName') , 'customlist,GitLocalBranchCompletion' , 0 ] 
                   \]})
 
-    cal m.createChild({ 'label': 'Push ...' , 'exe': '!git pull ' , 'inputs':[
+    cal m.createChild({ 'label': 'Push ...' , 'exe': '!git push ' , 'inputs':[
                 \ ['Remote:' , function('GitDefaultRemoteName') , 'customlist,GitRemoteNameCompletion']  , 
                 \ ['Branch:' , function('GitDefaultBranchName') , 'customlist,GitLocalBranchCompletion' , 0 ]
                   \]})
