@@ -44,6 +44,8 @@ RECORD_FILE=.record
 PWD=`pwd`
 README_FILES=`find . -type f -iname "README*"`
 README_FILES=`find . -type f -iname "README*"`
+WGET_OPT="-c -nv"
+CURL_OPT=""
 
 # FUNCTIONS {{{
 
@@ -54,9 +56,9 @@ fetch_deps = \
 		; fi	 							    \
 		; echo " => $(2)"						\
 		; if [[ ! -z `which wget` ]] ; then 	\
-			wget $(1) -O $(2)  				    \
+			wget $(WGET_OPT) $(1) -O $(2)  				    \
 		; elif [[ ! -z `which curl` ]] ; then   \
-			curl $(1) > $(2) ;					\
+			curl $(CURL_OPT) $(1) > $(2) ;					\
 		; fi  									\
 		; echo $(2) >> .bundlefiles
 
@@ -67,9 +69,9 @@ fetch_github = \
 		; fi	 							    \
 		; echo " => $(5)"						\
 		; if [[ ! -z `which wget` ]] ; then                               \
-			wget http://github.com/$(1)/$(2)/raw/$(3)/$(4) -O $(5)  \
+			wget $(WGET_OPT) http://github.com/$(1)/$(2)/raw/$(3)/$(4) -O $(5)  \
 		; elif [[ ! -z `which curl` ]] ; then                        	    \
-			curl http://github.com/$(1)/$(2)/raw/$(3)/$(4) > $(5)      \
+			curl $(CURL_OPT) http://github.com/$(1)/$(2)/raw/$(3)/$(4) > $(5)      \
 		; fi									\
 		; echo $(5) >> .bundlefiles
 
@@ -83,9 +85,10 @@ fetch_local = @cp -v $(1) $(2) \
 
 # Default plugin name
 NAME=`basename \`pwd\``
+VERSION=0.1
 
 # Files to add to tarball:
-DIRS=`find . -type d | grep -v '.git' | grep -v '.svn' | grep -vE "\.$$"`
+DIRS=`ls -1F | grep / | sed -e 's/\///'`
 
 # Runtime path to install:
 VIMRUNTIME=~/.vim
@@ -123,13 +126,11 @@ OTHER_FILES=
 # ======= SECTIONS ======= {{{
 all: install
 
-bundle-deps-init:
-	@echo > ".bundlefiles"
-
-bundle: bundle-deps-init bundle-deps
+bundle: bundle-deps
 
 dist: bundle mkfilelist
-	@tar czvHf $(NAME).tar.gz --exclude '*.svn' --exclude '.git' $(DIRS) $(README_FILES) $(OTHER_FILES)
+	@tar czvHf $(NAME)-$(VERSION).tar.gz --exclude '*.svn' --exclude '.git' $(DIRS) $(README_FILES) $(OTHER_FILES)
+	@echo "$(NAME).tar.gz is ready."
 
 init-runtime:
 	@mkdir -p $(VIMRUNTIME)
@@ -162,6 +163,19 @@ mkfilelist:
 	@echo $(NAME) > $(RECORD_FILE)
 	@find $(DIRS) -type f | while read file ; do \
 			echo $(VIMRUNTIME)/$$file >> $(RECORD_FILE) ; done
+
+vimball-edit:
+	find $(DIRS) -type f > .tmp_list
+	vim .tmp_list
+	vim .tmp_list -c ":MkVimball $(NAME)-$(VERSION)" -c "q"
+	@rm -vf .tmp_list
+	@echo "$(NAME)-$(VERSION).vba is ready."
+
+vimball:
+	find $(DIRS) -type f > .tmp_list
+	vim .tmp_list -c ":MkVimball $(NAME)-$(VERSION)" -c "q"
+	@rm -vf .tmp_list
+	@echo "$(NAME)-$(VERSION).vba is ready."
 
 mkrecordscript:
 		@echo ""  > .record.vim
@@ -200,8 +214,10 @@ clean: clean-bundle-deps
 	rm -f install.log
 
 clean-bundle-deps:
-	if [[ -e .bundlefiles ]] ; then rm -f `cat .bundlefiles` ; fi
-	rm -f .bundlefiles
+	@if [[ -e .bundlefiles ]] ; then \
+		rm -fv `echo \`cat .bundlefiles\``; \
+	fi
+	@rm -fv .bundlefiles
 
 version:
 	@echo version - $(MAKEFILE_VERSION)
