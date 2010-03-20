@@ -123,7 +123,7 @@ OTHER_FILES=
 # ======= SECTIONS ======= {{{
 all: install
 
-bundle-deps-init: clean-bundle-deps
+bundle-deps-init:
 	@echo > ".bundlefiles"
 
 bundle: bundle-deps-init bundle-deps
@@ -146,7 +146,7 @@ pure-install:
 	@find $(DIRS) -type f | while read file ; do \
 			cp -v $$file $(VIMRUNTIME)/$$file ; done
 
-install: init-runtime pure-install record
+install: init-runtime bundle pure-install record
 
 uninstall: rmrecord
 	@echo "Uninstalling"
@@ -164,7 +164,6 @@ mkfilelist:
 			echo $(VIMRUNTIME)/$$file >> $(RECORD_FILE) ; done
 
 mkrecordscript:
-	if [[ -z `which zzzz` ]]; then exit ; fi
 		@echo ""  > .record.vim
 		@echo "fun! s:mkmd5(file)"  >> .record.vim
 		@echo "  if executable('md5')"  >> .record.vim
@@ -190,9 +189,8 @@ mkrecordscript:
 
 
 record: mkfilelist mkrecordscript
-	# vim --noplugin -c "so .record.vim" -c "q"
 	vim --noplugin -V10install.log -c "so .record.vim" -c "q"
-	@echo "Vim script record making log file: install.log"
+	@echo "Vim script record making log: install.log"
 
 rmrecord:
 	@rm -vf $(VIMRUNTIME)/record/$(NAME)
