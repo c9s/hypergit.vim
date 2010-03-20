@@ -1,3 +1,4 @@
+# vim:filetype=make:
 # Makefile: install/uninstall/link vim plugin files.
 # Author: Cornelius <cornelius.howl@gmail.com>
 # Date:   一  3/15 22:49:26 2010
@@ -20,6 +21,8 @@ PWD=`pwd`
 all: install
 
 init-runtime:
+	@mkdir -p $(VIMRUNTIME)
+	@mkdir -p $(VIMRUNTIME)/record
 	@find $(DIRS) -type d | while read dir ;  do \
 			mkdir -p $(VIMRUNTIME)/$$dir ; done
 
@@ -93,3 +96,4 @@ version:
 #           package => $self->package_name,
 #           files => \@e,
 #   }
+	@mkdir 
