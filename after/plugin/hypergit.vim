@@ -294,6 +294,22 @@ fun! DrawGitMenuHelp()
   cal g:Help.redraw()
 endf
 
+fun! s:findDotGit()
+  let path = getcwd()
+  let parts = split(path,'/')
+  let paths = []
+  for i in range(1,len(parts))
+    cal add(paths,  '/'.join(parts,'/'))
+    cal remove(parts,-1)
+  endfor
+  for p in paths 
+    if isdirectory(p . '/.git')
+      return p
+    endif
+  endfor
+  return ""
+endf
+
 fun! s:initGitMenuBuffer(bufn)
   let target_file = expand('%')
   cal hypergit#buffer#init('vnew',a:bufn)
@@ -306,10 +322,7 @@ fun! s:initGitMenuBuffer(bufn)
 
   let m = g:MenuBuffer.create({ 'rootLabel': 'Git' , 'buf_nr': bufnr('.') })
 
-  if ! isdirectory('.git')
-    cal m.createChild({ 'label': 'Create Repository Here' ,'exe': '!git init' , 'refresh':1 })
-    else
-
+  if strlen(s:findDotGit()) > 0
     if strlen(target_file) > 0
       let m_fs = g:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
       cal m_fs.createChild({ 
@@ -325,24 +338,11 @@ fun! s:initGitMenuBuffer(bufn)
       cal m.addItem( m_fs )
     endif
 
-
     cal m.createChild({ 
       \'label': 'Commit All',
       \'close': 0,
       \'exe': 'GitCommitAll' })
 
-
-    " support for git sync
-    if executable('git-sync') 
-      let gc_config = m.createChild({'label': 'Sync'})
-      let gitconfig = readfile(expand('~/.gitconfig'))
-      for line in gitconfig
-        if line =~ '^\[sync'
-          let category = substitute(line,'\[sync\s\+[''"]\(.*\)[''"]\]','\1','')
-          cal gc_config.createChild({ 'label':  'Sync ' . category , 'exe': '!git sync ' . category })
-        endif
-      endfor
-    endif
 
     if executable('git-snapshot')
       let s = m.createChild({'label': 'Snapshot'})
@@ -371,11 +371,6 @@ fun! s:initGitMenuBuffer(bufn)
             \ ] })
 
     cal m.createChild({ 'label': 'Show' , 'exe': '!clear & git show' } )
-
-    cal m.createChild({ 
-      \'label': 'Edit Config',
-      \'close': 0,
-      \'exe': 'GitConfig' })
 
 
     let push_menu = m.createChild({ 'label': 'Push' , 'expanded': 1 })
@@ -444,6 +439,27 @@ fun! s:initGitMenuBuffer(bufn)
     cal m.addItem( menu_remotes )
     " }}}
 
+
+
+  else
+    cal m.createChild({ 'label': 'Create Repository Here' ,'exe': '!git init' , 'refresh':1 })
+  endif
+
+  cal m.createChild({ 
+    \'label': 'Edit Git Config',
+    \'close': 0,
+    \'exe': 'GitConfig' })
+
+  " support for git sync
+  if executable('git-sync') 
+    let gc_config = m.createChild({'label': 'Sync'})
+    let gitconfig = readfile(expand('~/.gitconfig'))
+    for line in gitconfig
+      if line =~ '^\[sync'
+        let category = substitute(line,'\[sync\s\+[''"]\(.*\)[''"]\]','\1','')
+        cal gc_config.createChild({ 'label':  'Sync ' . category , 'exe': '!git sync ' . category })
+      endif
+    endfor
   endif
 
 
