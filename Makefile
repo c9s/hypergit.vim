@@ -44,8 +44,8 @@ RECORD_FILE=.record
 PWD=`pwd`
 README_FILES=`find . -type f -iname "README*"`
 README_FILES=`find . -type f -iname "README*"`
-WGET_OPT="-c -nv"
-CURL_OPT=""
+WGET_OPT=-c -nv
+CURL_OPT=
 
 # FUNCTIONS {{{
 
