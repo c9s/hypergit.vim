@@ -47,6 +47,7 @@ Commands
     :GitCommitAll
     :GitCommitAmend
     :GitStatus
+    :GitStash
     :GitPush
     :GitPull
 
