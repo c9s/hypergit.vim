@@ -603,6 +603,7 @@ fun! s:deleteFileFromStatusLine()
   endif
 endf
 
+" XXX: Need to refresh
 fun! s:GitStatus()
   tabnew
   setlocal noswapfile  
