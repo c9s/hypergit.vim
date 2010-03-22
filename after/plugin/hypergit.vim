@@ -557,7 +557,6 @@ fun! GitRemoteBranchCompletion(lead,cmd,pos)
 endf
 " }}}
 
-
 fun! s:diffFileFromStatusLine()
   let line = getline('.')
   if line =~ '^#\s\+modified:'
@@ -674,6 +673,44 @@ fun! RebaseAction(name)
   exec 's/^\w\+/'.a:name.'/'
 endf
 
+
+fun! s:showFromStashBuffer()
+  let line = getline('.')
+  let stashname = matchstr(line,'^\S*\(:\)\@=')
+  new
+  setlocal noswapfile nobuflisted nowrap cursorline nonumber fdc=0
+  setlocal buftype=nofile bufhidden=wipe
+  let output = system( 'git stash show -v ' . stashname )
+  silent put=output
+  silent normal ggdd
+  setfiletype git
+  setlocal nomodifiable
+endf
+
+fun! s:dropFromStashBuffer()
+  let stashname = matchstr( getline('.') ,'^\S*\(:\)\@=')
+  echo system( 'git stash drop ' . stashname )
+  bw
+  cal s:GitStashBuffer()
+endf
+
+fun! s:GitStashBuffer()
+  tabnew
+  setlocal noswapfile nobuflisted nowrap cursorline nonumber 
+  setlocal fdc=0 buftype=nofile bufhidden=wipe
+  let output = system('git stash list')
+  put=output
+  normal ggdd
+  setfiletype git-stash
+  silent file GitStash
+  setlocal nomodifiable
+
+  nmap <script><buffer> S  :cal <SID>showFromStashBuffer()<CR>
+  nmap <script><buffer> D  :cal <SID>dropFromStashBuffer()<CR>
+endf
+
+cal s:GitStashBuffer()
+
 fun! s:initGitRebase()
   nmap <silent><buffer> L :cal RebaseLog()<CR>
   nmap <silent><buffer> p :cal RebaseAction('pick')<CR>
@@ -696,6 +733,7 @@ com! -complete=file -nargs=?        GitAdd    :cal s:GitAdd(<f-args>)
 com! -complete=file -nargs=?        GitRm     :cal s:GitRm(<f-args>)
 com! -complete=file -nargs=?        GitCommit :cal s:initGitCommitSingleBuffer(<f-args>)
 com! -complete=file -nargs=?        GitStatus :cal s:GitStatus()
+com! -complete=file -nargs=?        GitStash  :cal s:GitStashBuffer()
 
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
@@ -719,6 +757,7 @@ if g:hypergitDefaultMapping
   nmap <silent> <leader>gp   :GitPush<CR>
   nmap <silent> <leader>gl   :GitPull<CR>
   nmap <silent> <leader>gs   :GitStatus<CR>
+  nmap <silent> <leader>gh   :GitStash<CR>
 endif
 
 if g:hypergitCAbbr
