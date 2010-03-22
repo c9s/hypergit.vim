@@ -633,12 +633,20 @@ fun! s:GitStatus()
   normal ggdd
   setfiletype git-status
   silent file GitStatus
-  setlocal nomodifiable
   nmap <script><buffer> L  :cal <SID>diffFileFromStatusLine()<CR>
   nmap <script><buffer> C  :cal <SID>commitFileFromStatusLine()<CR>
   nmap <script><buffer> D  :cal <SID>deleteFileFromStatusLine()<CR>
   nmap <script><buffer> E  :cal <SID>splitFileFromStatusLine()<CR>
   nmap <script><buffer> T  :cal <SID>tabeFileFromStatusLine()<CR>
+
+  cal g:Help.reg("Git Status",
+    \" L - Diff\n" .
+    \" C - Commit\n" .
+    \" D - Delete\n" .
+    \" E - Edit\n" .
+    \" T - Edit in NewTab\n"
+    \,1)
+  setlocal nomodifiable
 endf
 
 " Git rebase helper for:
