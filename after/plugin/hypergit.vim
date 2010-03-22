@@ -8,7 +8,7 @@
 " Version: 2.1
 
 if exists('g:loaded_hypergit')
-  finish
+  "finish
 elseif v:version < 702
   echoerr 'Ahaha. your vim seems too old , please do upgrade. i found your vim is ' . v:version . '.'
   finish
@@ -557,6 +557,57 @@ fun! GitRemoteBranchCompletion(lead,cmd,pos)
 endf
 " }}}
 
+
+fun! s:diffFileFromStatusLine()
+  let line = getline('.')
+  if line =~ '^#\s\+modified:'
+    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+
+    let diff = system('git diff')
+    new
+    setlocal noswapfile  
+    setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
+    silent put=diff
+    normal ggdd
+    setfiletype git
+    exec 'file Diff-' . file
+    nmap <buffer> L  <C-w>q
+    exec 'nmap <script> <leader>ci    :cal <SID>initGitCommitSingleBuffer("'.file.'")<CR>'
+    setlocal nomodifiable
+  endif
+endf
+
+fun! s:commitFileFromStatusLine()
+  let line = getline('.')
+  if line =~ '^#\s\+modified:'
+    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+    cal s:initGitCommitSingleBuffer(file)
+  endif
+endf
+
+fun! s:deleteFileFromStatusLine()
+  let line = getline('.')
+  if line =~ '^#\s\+modified:'
+    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+    echo system('git rm -vf ' . file)
+  endif
+endf
+
+fun! s:GitStatus()
+  tabnew
+  setlocal noswapfile  
+  setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
+  let status = system('git status -uno')
+  put=status
+  normal ggdd
+  setfiletype git-status
+  silent file GitStatus
+  setlocal nomodifiable
+  nmap <script><buffer> L  :cal <SID>diffFileFromStatusLine()<CR>
+  nmap <script><buffer> C  :cal <SID>commitFileFromStatusLine()<CR>
+  nmap <script><buffer> D  :cal <SID>deleteFileFromStatusLine()<CR>
+endf
+
 " Git rebase helper for:
 "   git rebase --interactive
 "
@@ -608,6 +659,8 @@ cal s:defopt('g:hypergitDefaultMapping',1)
 com! -complete=file -nargs=?        GitAdd    :cal s:GitAdd(<f-args>)
 com! -complete=file -nargs=?        GitRm     :cal s:GitRm(<f-args>)
 com! -complete=file -nargs=?        GitCommit :cal s:initGitCommitSingleBuffer(<f-args>)
+com! -complete=file -nargs=?        GitStatus :cal s:GitStatus()
+
 com! GitCommitAll    :cal s:initGitCommitAllBuffer()
 com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
 com! ToggleGitMenu   :cal s:GitMenuBufferToggle()
@@ -618,6 +671,7 @@ com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal s:Gi
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitRemoteAdd :cal s:RemoteAdd( <q-args> )
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal s:RemoteRename(<f-args>)
+
 
 com! GitConfig   :tabe ~/.gitconfig
 
