@@ -590,6 +590,28 @@ fun! s:commitFileFromStatusLine()
   endif
 endf
 
+fun! s:splitFileFromStatusLine()
+  let line = getline('.')
+  if line =~ '^#\s\+\(modified\|new file\):'
+    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+    silent exec 'split ' . file
+  else
+    redraw
+    echo "No avaliable"
+  endif
+endf
+
+fun! s:tabeFileFromStatusLine()
+  let line = getline('.')
+  if line =~ '^#\s\+\(modified\|new file\):'
+    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+    silent exec 'tabe ' . file
+  else
+    redraw
+    echo "No avaliable"
+  endif
+endf
+
 fun! s:deleteFileFromStatusLine()
   let line = getline('.')
   if line =~ '^#\s\+modified:'
@@ -616,6 +638,8 @@ fun! s:GitStatus()
   nmap <script><buffer> L  :cal <SID>diffFileFromStatusLine()<CR>
   nmap <script><buffer> C  :cal <SID>commitFileFromStatusLine()<CR>
   nmap <script><buffer> D  :cal <SID>deleteFileFromStatusLine()<CR>
+  nmap <script><buffer> E  :cal <SID>splitFileFromStatusLine()<CR>
+  nmap <script><buffer> T  :cal <SID>tabeFileFromStatusLine()<CR>
 endf
 
 " Git rebase helper for:
@@ -694,6 +718,7 @@ if g:hypergitDefaultMapping
   nmap <silent> <leader>G    :ToggleGitMenu<CR>
   nmap <silent> <leader>gp   :GitPush<CR>
   nmap <silent> <leader>gl   :GitPull<CR>
+  nmap <silent> <leader>gs   :GitStatus<CR>
 endif
 
 if g:hypergitCAbbr
