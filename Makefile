@@ -91,7 +91,7 @@ fetch_url = \
 		; fi	 							    \
 		; echo " => $(2)"						\
 		; if [[ ! -z `which curl` ]] ; then   \
-			curl $(CURL_OPT) $(1) > $(2) ;					\
+			curl $(CURL_OPT) $(1) -o $(2) ;					\
 		; elif [[ ! -z `which wget` ]] ; then 	\
 			wget $(WGET_OPT) $(1) -O $(2)  				    \
 		; fi  									\
@@ -104,7 +104,7 @@ fetch_github = \
 		; fi	 							    \
 		; echo " => $(5)"						\
 		; if [[ ! -z `which curl` ]] ; then                        	    \
-			curl $(CURL_OPT) http://github.com/$(1)/$(2)/raw/$(3)/$(4) > $(5)      \
+			curl $(CURL_OPT) http://github.com/$(1)/$(2)/raw/$(3)/$(4) -o $(5)      \
 		; elif [[ ! -z `which wget` ]] ; then                               \
 			wget $(WGET_OPT) http://github.com/$(1)/$(2)/raw/$(3)/$(4) -O $(5)  \
 		; fi									\
@@ -172,8 +172,7 @@ check-require:
 	@if [[ -n `which vim` ]] ; then echo "vim: OK" ; else echo "vim: NOT OK" ; fi
 
 
-
-init-config:
+config:
 	@rm -f $(CONFIG_FILE)
 	@echo "NAME="                                                                                      >> $(CONFIG_FILE)
 	@echo "VERSION="                                                                                           >> $(CONFIG_FILE)
@@ -293,20 +292,23 @@ rmrecord:
 
 clean: clean-bundle-deps
 	@rm -vf $(RECORD_FILE)
+	@rm -vf $(RECORD_SCRIPT)
 	@rm -vf install.log
 
 clean-bundle-deps:
+	@echo "Removing Bundled scripts..."
 	@if [[ -e .bundlefiles ]] ; then \
 		rm -fv `echo \`cat .bundlefiles\``; \
 	fi
 	@rm -fv .bundlefiles
 
 update:
-	URL=http://github.com/c9s/vim-makefile/raw/master/Makefile ; \
+	@echo "Updating Makefile..."
+	@URL=http://github.com/c9s/vim-makefile/raw/master/Makefile ; \
+	if [[ -n `which curl` ]]; then \
+		curl $$URL -o Makefile ; \
 	if [[ -n `which wget` ]]; then \
 		wget -c $$URL ; \
-	elif [[ -n `which curl` ]]; then \
-		curl $$URL > Makefile ; \
 	elif [[ -n `which fetch` ]]; then \
 		fetch $$URL ; \
 	fi
