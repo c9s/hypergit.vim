@@ -574,6 +574,9 @@ fun! s:diffFileFromStatusLine()
     nmap <buffer> L  <C-w>q
     exec 'nmap <script> <leader>ci    :cal <SID>initGitCommitSingleBuffer("'.file.'")<CR>'
     setlocal nomodifiable
+  else
+    redraw
+    echo "No avaliable"
   endif
 endf
 
@@ -582,6 +585,9 @@ fun! s:commitFileFromStatusLine()
   if line =~ '^#\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
     cal s:initGitCommitSingleBuffer(file)
+  else
+    redraw
+    echo "No avaliable"
   endif
 endf
 
@@ -589,7 +595,11 @@ fun! s:deleteFileFromStatusLine()
   let line = getline('.')
   if line =~ '^#\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+    redraw
     echo system('git rm -vf ' . file)
+  else
+    redraw
+    echo "No avaliable"
   endif
 endf
 
