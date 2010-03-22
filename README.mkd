@@ -46,6 +46,9 @@ Commands
     :GitCommit
     :GitCommitAll
     :GitCommitAmend
+    :GitStatus
+    :GitPush
+    :GitPull
 
 Screenshot
 ===========
