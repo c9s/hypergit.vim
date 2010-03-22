@@ -722,8 +722,6 @@ fun! s:GitStashBuffer()
   nmap <script><buffer> A  :cal <SID>applyFromStashBuffer()<CR>
 endf
 
-cal s:GitStashBuffer()
-
 fun! s:initGitRebase()
   nmap <silent><buffer> L :cal RebaseLog()<CR>
   nmap <silent><buffer> p :cal RebaseAction('pick')<CR>
@@ -732,7 +730,7 @@ fun! s:initGitRebase()
   nmap <silent><buffer> r :cal RebaseAction('reword')<CR>
   nmap <silent><buffer> D dd
 endf
-autocmd filetype gitrebase :cal s:initGitRebase()
+
 
 cal s:defopt('g:hypergitUntrackMode' , 'no' )
 cal s:defopt('g:git_bin','git')
@@ -759,8 +757,12 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitRemoteAdd :cal s:R
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteDel :cal s:RemoteRm(<f-args>)
 com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal s:RemoteRename(<f-args>)
 
-
 com! GitConfig   :tabe ~/.gitconfig
+
+aug GitRebase
+  au!
+  autocmd filetype gitrebase :cal s:initGitRebase()
+aug END
 
 if g:hypergitDefaultMapping
   nmap <silent> <leader>ci   :GitCommit<CR>
