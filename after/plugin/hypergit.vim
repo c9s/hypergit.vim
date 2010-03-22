@@ -562,7 +562,7 @@ fun! s:diffFileFromStatusLine()
   let line = getline('.')
   if line =~ '^#\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    let diff = system('git diff' . file )
+    let diff = system('git diff ' . file )
     new
     setlocal noswapfile  
     setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
