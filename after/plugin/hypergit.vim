@@ -677,10 +677,10 @@ endf
 fun! s:showFromStashBuffer()
   let line = getline('.')
   let stashname = matchstr(line,'^\S*\(:\)\@=')
+  let output = system( 'git stash show -v ' . stashname )
   new
   setlocal noswapfile nobuflisted nowrap cursorline nonumber fdc=0
   setlocal buftype=nofile bufhidden=wipe
-  let output = system( 'git stash show -v ' . stashname )
   silent put=output
   silent normal ggdd
   setfiletype git
@@ -694,6 +694,18 @@ fun! s:dropFromStashBuffer()
   cal s:GitStashBuffer()
 endf
 
+fun! s:applyFromStashBuffer()
+  let stashname = matchstr( getline('.') ,'^\S*\(:\)\@=')
+  let output = system( 'git stash apply ' . stashname )
+  new
+  setlocal noswapfile nobuflisted nowrap cursorline nonumber fdc=0
+  setlocal buftype=nofile bufhidden=wipe
+  silent put=output
+  silent normal ggdd
+  setfiletype git-status
+  setlocal nomodifiable
+endf
+
 fun! s:GitStashBuffer()
   tabnew
   setlocal noswapfile nobuflisted nowrap cursorline nonumber 
@@ -702,11 +714,12 @@ fun! s:GitStashBuffer()
   put=output
   normal ggdd
   setfiletype git-stash
-  silent file GitStash
+  silent file GitStashList
   setlocal nomodifiable
 
   nmap <script><buffer> S  :cal <SID>showFromStashBuffer()<CR>
   nmap <script><buffer> D  :cal <SID>dropFromStashBuffer()<CR>
+  nmap <script><buffer> A  :cal <SID>applyFromStashBuffer()<CR>
 endf
 
 cal s:GitStashBuffer()
