@@ -562,8 +562,7 @@ fun! s:diffFileFromStatusLine()
   let line = getline('.')
   if line =~ '^#\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-
-    let diff = system('git diff')
+    let diff = system('git diff' . file )
     new
     setlocal noswapfile  
     setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
@@ -646,9 +645,11 @@ fun! RebaseLog()
   setfiletype git
   nmap <silent><buffer> L <C-w>q
 endf
+
 fun! RebaseAction(name)
   exec 's/^\w\+/'.a:name.'/'
 endf
+
 fun! s:initGitRebase()
   nmap <silent><buffer> L :cal RebaseLog()<CR>
   nmap <silent><buffer> p :cal RebaseAction('pick')<CR>
