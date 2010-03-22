@@ -723,11 +723,17 @@ fun! s:GitStashBuffer()
   normal ggdd
   setfiletype git-stash
   silent file GitStashList
-  setlocal nomodifiable
 
   nmap <script><buffer> S  :cal <SID>showFromStashBuffer()<CR>
   nmap <script><buffer> D  :cal <SID>dropFromStashBuffer()<CR>
   nmap <script><buffer> A  :cal <SID>applyFromStashBuffer()<CR>
+
+  cal g:Help.reg("Git Stash",
+    \" S - Show\n" .
+    \" D - Drop\n" .
+    \" A - Apply\n"
+    \,1)
+  setlocal nomodifiable
 endf
 
 fun! s:initGitRebase()
