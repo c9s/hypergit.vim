@@ -623,6 +623,20 @@ fun! s:deleteFileFromStatusLine()
   endif
 endf
 
+fun! s:resetFileFromStatusLine()
+  let line = getline('.')
+  if line =~ '^#\s\+modified:'
+    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+    echo system('git checkout -v ' . file)
+  elseif line =~ '^#\s\+new file:'
+    let file = matchstr(line,'\(new file:\s\+\)\@<=\S*$')
+    echo system('git reset -- ' . file)
+  else
+    redraw
+    echo "No avaliable"
+  endif
+endf
+
 " XXX: Need to refresh
 fun! s:GitStatus()
   tabnew
@@ -638,18 +652,20 @@ fun! s:GitStatus()
   nmap <script><buffer> D  :cal <SID>deleteFileFromStatusLine()<CR>
   nmap <script><buffer> E  :cal <SID>splitFileFromStatusLine()<CR>
   nmap <script><buffer> T  :cal <SID>tabeFileFromStatusLine()<CR>
+  nmap <script><buffer> R  :cal <SID>resetFileFromStatusLine()<CR>
 
   cal g:Help.reg("Git Status",
     \" L - Diff\n" .
     \" C - Commit\n" .
     \" D - Delete\n" .
     \" E - Edit\n" .
-    \" T - Edit in NewTab\n"
+    \" T - Edit in NewTab\n" .
+    \" R - Revert/Reset  \n"
     \,1)
   setlocal nomodifiable
 endf
 
-" Git rebase helper for:
+" Git rebase helper {{{
 "   git rebase --interactive
 "
 "   L   - view commit log
@@ -676,12 +692,19 @@ fun! RebaseLog()
   setfiletype git
   nmap <silent><buffer> L <C-w>q
 endf
-
 fun! RebaseAction(name)
   exec 's/^\w\+/'.a:name.'/'
 endf
-
-
+fun! s:initGitRebase()
+  nmap <silent><buffer> L :cal RebaseLog()<CR>
+  nmap <silent><buffer> p :cal RebaseAction('pick')<CR>
+  nmap <silent><buffer> s :cal RebaseAction('squash')<CR>
+  nmap <silent><buffer> e :cal RebaseAction('edit')<CR>
+  nmap <silent><buffer> r :cal RebaseAction('reword')<CR>
+  nmap <silent><buffer> D dd
+endf
+" }}}
+" Stash {{{
 fun! s:showFromStashBuffer()
   let line = getline('.')
   let stashname = matchstr(line,'^\S*\(:\)\@=')
@@ -735,15 +758,8 @@ fun! s:GitStashBuffer()
     \,1)
   setlocal nomodifiable
 endf
+" }}}
 
-fun! s:initGitRebase()
-  nmap <silent><buffer> L :cal RebaseLog()<CR>
-  nmap <silent><buffer> p :cal RebaseAction('pick')<CR>
-  nmap <silent><buffer> s :cal RebaseAction('squash')<CR>
-  nmap <silent><buffer> e :cal RebaseAction('edit')<CR>
-  nmap <silent><buffer> r :cal RebaseAction('reword')<CR>
-  nmap <silent><buffer> D dd
-endf
 
 
 cal s:defopt('g:hypergitUntrackMode' , 'no' )
