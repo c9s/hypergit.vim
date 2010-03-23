@@ -26,17 +26,13 @@ Via rakefile:
 
     $ git clone git://github.com/c9s/hypergit.vim
     $ cd hypergit.vim
-    $ rake install
-
-or via makefile:
-
     $ make install
 
-To install hypergit from github:
+To install hypergit via Vimana from github:
 
     $ vimana i git:git://github.com/c9s/hypergit.vim -n hypergit.vim
 
-To install hypergit from vim.org:
+To install hypergit via Vimana from www.vim.org:
 
     $ vimana i hypergit.vim
 
@@ -55,11 +51,17 @@ Default Key Mappings
 Commands
 ========
 
-    :GitCommit
-    :GitCommitAll
-    :GitCommitAmend
-    :GitStatus
-    :GitStash
-    :GitPush
-    :GitPull
+*:GitCommit*
+
+*:GitCommitAll*
+
+*:GitCommitAmend*
+
+*:GitStatus*
+
+*:GitStash*
+
+*:GitPush*
+
+*:GitPull*
 
