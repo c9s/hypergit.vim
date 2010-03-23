@@ -56,11 +56,11 @@
 
 RECORD_FILE=.record
 PWD=`pwd`
-README_FILES=`find . -type f -iname "README*"`
-README_FILES=`find . -type f -iname "README*"`
+README_FILES=`ls -1 | grep -i readme`
 WGET_OPT=-c -nv
 CURL_OPT=
 RECORD_SCRIPT=.mkrecord
+TAR=tar czvHf
 
 # INTERNAL FUNCTIONS {{{
 record_file = \
@@ -130,6 +130,7 @@ VIMRUNTIME=~/.vim
 
 # Other Files to be added:
 FILES=`ls -1 | grep '.vim$$'`
+MKFILES=Makefile `ls -1 | grep '.mk$$'`
 
 # ======== USER CONFIG ======= {{{
 #   please write config in config.mk
@@ -192,8 +193,8 @@ bundle-deps:
 bundle: bundle-deps
 
 dist: bundle mkfilelist
-	@tar czvHf $(NAME)-$(VERSION).tar.gz --exclude '*.svn' --exclude '.git' $(DIRS) $(README_FILES) $(FILES)
-	@echo "$(NAME).tar.gz is ready."
+	@$(TAR) $(NAME)-$(VERSION).tar.gz --exclude '*.svn' --exclude '.git' $(DIRS) $(README_FILES) $(FILES) $(MKFILES)
+	@echo "$(NAME)-$(VERSION).tar.gz is ready."
 
 init-runtime:
 	@mkdir -vp $(VIMRUNTIME)
@@ -294,6 +295,7 @@ clean: clean-bundle-deps
 	@rm -vf $(RECORD_FILE)
 	@rm -vf $(RECORD_SCRIPT)
 	@rm -vf install.log
+	@rm -vf *.tar.gz
 
 clean-bundle-deps:
 	@echo "Removing Bundled scripts..."
