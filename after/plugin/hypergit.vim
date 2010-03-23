@@ -617,6 +617,7 @@ fun! s:deleteFileFromStatusLine()
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
     redraw
     echo system('git rm -vf ' . file)
+    cal s:GitStatusRefresh()
   else
     redraw
     echo "No avaliable"
@@ -628,13 +629,32 @@ fun! s:resetFileFromStatusLine()
   if line =~ '^#\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
     echo system('git checkout -v ' . file)
+    cal s:GitStatusRefresh()
   elseif line =~ '^#\s\+new file:'
     let file = matchstr(line,'\(new file:\s\+\)\@<=\S*$')
     echo system('git reset -- ' . file)
+    cal s:GitStatusRefresh()
   else
     redraw
     echo "No avaliable"
   endif
+endf
+
+fun! s:GitStatusRefresh()
+  setlocal modifiable
+  1,$delete _
+  cal g:Help.reg("Git Status",
+    \" L - Diff\n" .
+    \" C - Commit\n" .
+    \" D - Delete\n" .
+    \" E - Edit\n" .
+    \" T - Edit in NewTab\n" .
+    \" R - Revert/Reset  \n"
+    \,1)
+  let status = system('git status -uno')
+  put=status
+  normal ggdd
+  setlocal nomodifiable
 endf
 
 " XXX: Need to refresh
