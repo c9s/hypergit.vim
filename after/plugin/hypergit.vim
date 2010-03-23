@@ -640,6 +640,7 @@ fun! s:resetFileFromStatusLine()
   endif
 endf
 
+" FIXME: update help message
 fun! s:GitStatusRefresh()
   setlocal modifiable
   1,$delete _
@@ -657,7 +658,6 @@ fun! s:GitStatusRefresh()
   setlocal nomodifiable
 endf
 
-" XXX: Need to refresh
 fun! s:GitStatus()
   tabnew
   setlocal noswapfile  
