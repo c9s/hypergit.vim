@@ -628,7 +628,7 @@ fun! s:resetFileFromStatusLine()
   let line = getline('.')
   if line =~ '^#\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    echo system('git checkout -v ' . file)
+    echo system('git checkout ' . file)
     cal s:GitStatusRefresh()
   elseif line =~ '^#\s\+new file:'
     let file = matchstr(line,'\(new file:\s\+\)\@<=\S*$')
