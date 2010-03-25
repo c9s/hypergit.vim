@@ -562,7 +562,7 @@ fun! s:diffFileFromStatusLine()
   if line =~ '^#\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
     let diff = system('git diff ' . file )
-    new
+    botright new
     setlocal noswapfile  
     setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
     silent put=diff
@@ -729,7 +729,7 @@ fun! s:showFromStashBuffer()
   let line = getline('.')
   let stashname = matchstr(line,'^\S*\(:\)\@=')
   let output = system( 'git stash show -v ' . stashname )
-  new
+  botright new
   setlocal noswapfile nobuflisted nowrap cursorline nonumber fdc=0
   setlocal buftype=nofile bufhidden=wipe
   silent put=output
