@@ -180,7 +180,7 @@ fun! s:initGitCommitBuffer()
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
 
-  nmap <silent><buffer> s  :cal g:git_skip_commit()<CR>
+  nmap <silent><buffer> s  :cal g:gitSkipCommit()<CR>
   autocmd BufUnload <buffer> :cal g:gitDoCommit()
 
   setfiletype gitcommit
@@ -251,7 +251,7 @@ fun! s:filter_message_op(msgfile)
   cal writefile(lines,a:msgfile)
 endf
 
-fun! g:git_skip_commit()
+fun! g:gitSkipCommit()
   let file = expand('%')
   cal delete(file)
   bw!
