@@ -172,62 +172,6 @@ fun! s:initGitStashBuffer()
   cal hypergit#buffer#init()
 endf
 
-" Commit Buffers 
-fun! s:initGitCommitBuffer()
-  setlocal nu
-  setlocal nohidden
-
-  syntax match GitAction '^\![AD] .*'
-  hi link GitAction Function
-
-  nmap <silent><buffer> s  :cal g:gitSkipCommit()<CR>
-  autocmd BufUnload <buffer> :cal g:gitDoCommit()
-
-  setfiletype gitcommit
-endf
-
-fun! s:initGitCommitSingleBuffer(...)
-  if a:0 == 0
-    let target = expand('%')
-  elseif a:0 == 1
-    let target = a:1
-  endif
-
-  let msgfile = tempname()
-  cal hypergit#buffer#init('new',msgfile)
-  cal s:initGitCommitBuffer()
-
-  " XXX: make sure target exists, and it's in git commit list.
-  let b:commit_target = target
-  cal hypergit#commit#render_single(target)
-
-  cal g:Help.reg("Git: commit " . target ," s - (skip)",1)
-  cal cursor(2,1)
-  startinsert
-endf
-
-fun! s:initGitCommitAllBuffer()
-  let msgfile = tempname()
-  cal hypergit#buffer#init('new',msgfile)
-  cal s:initGitCommitBuffer()
-  cal hypergit#commit#render()
-
-  cal g:Help.reg("Git: commit --all"," s - (skip)",1)
-  cal cursor(2,1)
-  startinsert
-endf
-
-fun! s:initGitCommitAmendBuffer()
-  let msgfile = tempname()
-  cal hypergit#buffer#init('new',msgfile)
-  cal s:initGitCommitBuffer()
-  cal hypergit#commit#render_amend()
-
-  cal g:Help.reg("Git: commit --amend"," s - (skip)",1)
-  cal cursor(2,1)
-  startinsert
-endf
-
 fun! s:filterMessage(msgfile)
   if ! filereadable(a:msgfile)
     return
@@ -310,7 +254,7 @@ fun! s:initGitMenuBuffer(bufn)
 
   let m = g:MenuBuffer.create({ 'rootLabel': 'Git' , 'buf_nr': bufnr('.') })
 
-  if strlen(g:findDotGit()) > 0
+  if strlen(FindDotGit()) > 0
     if strlen(target_file) > 0
       let m_fs = g:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
       cal m_fs.createChild({ 
@@ -432,8 +376,6 @@ fun! s:initGitMenuBuffer(bufn)
     cal m.addItem( menu_remotes )
     " }}}
 
-
-
   else
     cal m.createChild({ 'label': 'Create Repository Here' ,'exe': '!git init' , 'refresh':1 })
   endif
@@ -470,6 +412,8 @@ fun! s:initGitMenuBuffer(bufn)
   " reset cursor position
   cal cursor(2,1)
 endf
+
+
 
 " Menu Buffer Toggle:
 "   this buffer toggle function find a git menu buffer of current buffer.  if
@@ -550,134 +494,6 @@ fun! GitRemoteBranchCompletion(lead,cmd,pos)
   return names
 endf
 " }}}
-
-fun! s:diffFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '^#\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    let diff = system('git diff ' . file )
-    botright new
-    setlocal noswapfile  
-    setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
-    silent put=diff
-    normal ggdd
-    setfiletype git
-    exec 'file Diff-' . file
-    nmap <buffer> L  <C-w>q
-    exec 'nmap <script> <leader>ci    :cal <SID>initGitCommitSingleBuffer("'.file.'")<CR>'
-    setlocal nomodifiable
-  else
-    redraw
-    echo "No avaliable"
-  endif
-endf
-
-fun! s:commitFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '^#\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    cal s:initGitCommitSingleBuffer(file)
-  else
-    redraw
-    echo "No avaliable"
-  endif
-endf
-
-fun! s:splitFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '^#\s\+\(modified\|new file\):'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    silent exec 'split ' . file
-  else
-    redraw
-    echo "No avaliable"
-  endif
-endf
-
-fun! s:tabeFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '^#\s\+\(modified\|new file\):'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    silent exec 'tabe ' . file
-  else
-    redraw
-    echo "No avaliable"
-  endif
-endf
-
-fun! s:deleteFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '^#\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    redraw
-    echo system('git rm -vf ' . file)
-    cal s:GitStatusRefresh()
-  else
-    redraw
-    echo "No avaliable"
-  endif
-endf
-
-fun! s:resetFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '^#\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    echo system('git checkout ' . file)
-    cal s:GitStatusRefresh()
-  elseif line =~ '^#\s\+new file:'
-    let file = matchstr(line,'\(new file:\s\+\)\@<=\S*$')
-    echo system('git reset -- ' . file)
-    cal s:GitStatusRefresh()
-  else
-    redraw
-    echo "No avaliable"
-  endif
-endf
-
-" FIXME: update help message
-fun! s:GitStatusRefresh()
-  setlocal modifiable
-  1,$delete _
-  cal g:Help.reg("Git Status",
-    \" L - Diff\n" .
-    \" C - Commit\n" .
-    \" D - Delete\n" .
-    \" E - Edit\n" .
-    \" T - Edit in NewTab\n" .
-    \" R - Revert/Reset  \n"
-    \,1)
-  let status = system('git status -uno')
-  put=status
-  normal ggdd
-  setlocal nomodifiable
-endf
-
-fun! s:GitStatus()
-  tabnew
-  setlocal noswapfile  
-  setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
-  let status = system('git status -uno')
-  put=status
-  normal ggdd
-  setfiletype git-status
-  silent file GitStatus
-  nmap <script><buffer> L  :cal <SID>diffFileFromStatusLine()<CR>
-  nmap <script><buffer> C  :cal <SID>commitFileFromStatusLine()<CR>
-  nmap <script><buffer> D  :cal <SID>deleteFileFromStatusLine()<CR>
-  nmap <script><buffer> E  :cal <SID>splitFileFromStatusLine()<CR>
-  nmap <script><buffer> T  :cal <SID>tabeFileFromStatusLine()<CR>
-  nmap <script><buffer> R  :cal <SID>resetFileFromStatusLine()<CR>
-
-  cal g:Help.reg("Git Status",
-    \" L - Diff\n" .
-    \" C - Commit\n" .
-    \" D - Delete\n" .
-    \" E - Edit\n" .
-    \" T - Edit in NewTab\n" .
-    \" R - Revert/Reset  \n"
-    \,1)
-  setlocal nomodifiable
-endf
 
 " Git rebase helper {{{
 "   git rebase --interactive
@@ -774,8 +590,6 @@ fun! s:GitStashBuffer()
 endf
 " }}}
 
-
-
 cal s:defopt('g:hypergitUntrackMode' , 'no' )
 cal s:defopt('g:git_bin','git')
 cal s:defopt('g:gitbuffer_default_position','topleft')
@@ -787,12 +601,11 @@ cal s:defopt('g:hypergitBackgroundCommit',0)
 
 com! -complete=file -nargs=?        GitAdd    :cal s:GitAdd(<f-args>)
 com! -complete=file -nargs=?        GitRm     :cal s:GitRm(<f-args>)
-com! -complete=file -nargs=?        GitCommit :cal s:initGitCommitSingleBuffer(<f-args>)
-com! -complete=file -nargs=?        GitStatus :cal s:GitStatus()
-com! -complete=file -nargs=?        GitStash  :cal s:GitStashBuffer()
+com! -complete=file -nargs=?        GitCommit :cal GitCommitSingleBuffer(<f-args>)
 
-com! GitCommitAll    :cal s:initGitCommitAllBuffer()
-com! GitCommitAmend  :cal s:initGitCommitAmendBuffer()
+com! GitCommitAll    :cal GitCommitAllBuffer()
+com! GitCommitAmend  :cal GitCommitAmendBuffer()
+
 com! ToggleGitMenu   :cal s:GitMenuBufferToggle()
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
