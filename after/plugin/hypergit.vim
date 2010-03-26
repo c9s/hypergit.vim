@@ -228,7 +228,7 @@ fun! s:initGitCommitAmendBuffer()
   startinsert
 endf
 
-fun! s:filter_message_op(msgfile)
+fun! s:filterMessage(msgfile)
   if ! filereadable(a:msgfile)
     return
   endif
@@ -263,7 +263,7 @@ fun! g:gitDoCommit()
     echo "Skipped"
     return
   endif
-  cal s:filter_message_op(file)
+  cal s:filterMessage(file)
 
   echohl GitMsg 
   echo "Committing..."
