@@ -438,6 +438,7 @@ fun! s:initGitMenuBuffer(bufn)
     cal m.createChild({ 'label': 'Create Repository Here' ,'exe': '!git init' , 'refresh':1 })
   endif
 
+  " Global Items
   cal m.createChild({ 
     \'label': 'Edit Git Config',
     \'close': 0,
