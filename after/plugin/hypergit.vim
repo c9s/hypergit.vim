@@ -495,45 +495,6 @@ fun! GitRemoteBranchCompletion(lead,cmd,pos)
 endf
 " }}}
 
-" Git rebase helper {{{
-"   git rebase --interactive
-"
-"   L   - view commit log
-"   p   - pick
-"   e   - edit
-"   s   - squash
-"   r   - reword
-"   D   - delete
-"
-"       Cornelius <cornelius.howl@gmail.com>
-fun! RebaseLog()
-  let line = getline('.')
-  let hash = matchstr(line,'\(^\w\+\s\)\@<=\w*')
-  vnew
-  setlocal noswapfile  
-  setlocal nobuflisted nowrap cursorline nonumber fdc=0
-  setlocal buftype=nofile 
-  setlocal bufhidden=wipe
-  "let output = system(printf('git show -p %s', hash ))
-  let output = system(printf('git log -p %s^1..%s', hash,hash ))
-  silent put=output
-  silent normal ggdd
-  setlocal nomodifiable
-  setfiletype git
-  nmap <silent><buffer> L <C-w>q
-endf
-fun! RebaseAction(name)
-  exec 's/^\w\+/'.a:name.'/'
-endf
-fun! s:initGitRebase()
-  nmap <silent><buffer> L :cal RebaseLog()<CR>
-  nmap <silent><buffer> p :cal RebaseAction('pick')<CR>
-  nmap <silent><buffer> s :cal RebaseAction('squash')<CR>
-  nmap <silent><buffer> e :cal RebaseAction('edit')<CR>
-  nmap <silent><buffer> r :cal RebaseAction('reword')<CR>
-  nmap <silent><buffer> D dd
-endf
-" }}}
 " Stash {{{
 fun! s:showFromStashBuffer()
   let line = getline('.')
@@ -617,10 +578,6 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal 
 
 com! GitConfig   :tabe ~/.gitconfig
 
-aug GitRebase
-  au!
-  autocmd filetype gitrebase :cal s:initGitRebase()
-aug END
 
 if g:hypergitDefaultMapping
   nmap <silent> <leader>ci   :GitCommit<CR>
