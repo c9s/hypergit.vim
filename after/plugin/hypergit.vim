@@ -269,11 +269,21 @@ fun! g:gitDoCommit()
   echo "Committing..."
   if exists('b:commit_target')
     echo "Target: " . b:commit_target
-    echo system( printf('%s commit --cleanup=strip -F %s %s', g:git_bin , file, b:commit_target ) )
+    let cmd = printf('%s commit --cleanup=strip -F %s %s', g:git_bin , file, b:commit_target )
+    if g:hypergitBackgroundCommit
+      cal system(cmd)
+    else
+      echo system(cmd)
+    endif
   elseif exists('b:commit_amend')
     echo system('%s commit --cleanup=strip --amend -F %s' , g:git_bin , file )
   else
-    echo system( printf('%s commit --cleanup=strip -a -F %s', g:git_bin , file ) )
+    let cmd = printf('%s commit --cleanup=strip -a -F %s', g:git_bin , file )
+    if g:hypergitBackgroundCommit
+      cal system(cmd)
+    else
+      echo system(cmd)
+    endif
   endif
   echo "Done"
   echohl None
@@ -767,6 +777,7 @@ cal s:defopt('g:hypergitBufferHeight' , 15 )
 cal s:defopt('g:hypergitBufferWidth' ,35 )
 cal s:defopt('g:hypergitCAbbr',1)
 cal s:defopt('g:hypergitDefaultMapping',1)
+cal s:defopt('g:hypergitBackgroundCommit',0)
 
 com! -complete=file -nargs=?        GitAdd    :cal s:GitAdd(<f-args>)
 com! -complete=file -nargs=?        GitRm     :cal s:GitRm(<f-args>)
