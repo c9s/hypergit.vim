@@ -287,21 +287,6 @@ fun! DrawGitMenuHelp()
   cal g:Help.redraw()
 endf
 
-fun! s:findDotGit()
-  let path = getcwd()
-  let parts = split(path,'/')
-  let paths = []
-  for i in range(1,len(parts))
-    cal add(paths,  '/'.join(parts,'/'))
-    cal remove(parts,-1)
-  endfor
-  for p in paths 
-    if isdirectory(p . '/.git')
-      return p
-    endif
-  endfor
-  return ""
-endf
 
 fun! s:initGitMenuBuffer(bufn)
   let target_file = expand('%')
@@ -315,7 +300,7 @@ fun! s:initGitMenuBuffer(bufn)
 
   let m = g:MenuBuffer.create({ 'rootLabel': 'Git' , 'buf_nr': bufnr('.') })
 
-  if strlen(s:findDotGit()) > 0
+  if strlen(g:findDotGit()) > 0
     if strlen(target_file) > 0
       let m_fs = g:MenuItem.create({ 'label': "File Specific" , 'expanded': 1 })
       cal m_fs.createChild({ 
