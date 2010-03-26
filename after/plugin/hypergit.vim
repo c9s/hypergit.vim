@@ -159,15 +159,6 @@ endf
 
 " }}}
 
-fun! s:initGitStatusBuffer()
-  cal hypergit#buffer#init('GitCommit')
-endf
-
-fun! s:initGitBranchBuffer()
-  cal hypergit#buffer#init()
-
-endf
-
 fun! s:initGitLogBuffer()
   cal hypergit#buffer#init()
 endf
@@ -190,7 +181,7 @@ fun! s:initGitCommitBuffer()
   hi link GitAction Function
 
   nmap <silent><buffer> s  :cal g:git_skip_commit()<CR>
-  autocmd BufUnload <buffer> :cal g:git_do_commit()
+  autocmd BufUnload <buffer> :cal g:gitDoCommit()
 
   setfiletype gitcommit
 endf
@@ -266,7 +257,7 @@ fun! g:git_skip_commit()
   bw!
 endf
 
-fun! g:git_do_commit()
+fun! g:gitDoCommit()
   let file = expand('%')
   if ! filereadable(file) 
     echo "Skipped"
