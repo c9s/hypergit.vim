@@ -184,6 +184,8 @@ endf
 " Commit Buffers 
 fun! s:initGitCommitBuffer()
   setlocal nu
+  setlocal nohidden
+
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
 
