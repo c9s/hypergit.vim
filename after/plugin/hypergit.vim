@@ -454,7 +454,7 @@ fun! s:GitStashBuffer()
     \,1)
   setlocal nomodifiable
 endf
-com! -nargs=?        GitStash :cal s:GitStash()
+com! -nargs=?        GitStash :cal s:GitStashBuffer()
 " }}}
 
 cal s:defopt('g:hypergitUntrackMode' , 'no' )
