@@ -331,11 +331,15 @@ fun! s:initGitMenuBuffer(bufn)
       \'close': 0,
       \'exe': 'GitCommitAll' })
 
-
+    " extended features
+    " =================
     if executable('git-snapshot')
       let s = m.createChild({'label': 'Snapshot'})
       cal s.createChild( {'label': 'Snapshot', 'exe': '!git snapshot'})
       cal s.createChild( {'label': 'Check Log', 'exe': '!git log refs/snapshots/HEAD -p'})
+    endif
+    if executable('github-import')
+      cal m.createChild({'label': 'Import to Github' , 'exe': '!github-import'})
     endif
 
     cal m.createChild({ 'label': 'Clone ...' , 'exe': '!git clone ' , 'inputs':[
@@ -359,6 +363,7 @@ fun! s:initGitMenuBuffer(bufn)
             \ ] })
 
     cal m.createChild({ 'label': 'Show' , 'exe': '!clear & git show' } )
+
 
 
     let push_menu = m.createChild({ 'label': 'Push' , 'expanded': 1 })
