@@ -485,6 +485,7 @@ com! -complete=customlist,GitRemoteNameCompletion -nargs=1 GitRemoteRename :cal 
 com! GitConfig   :tabe ~/.gitconfig
 
 
+
 if g:hypergitDefaultMapping
   nmap <silent> <leader>ci   :GitCommit<CR>
   nmap <silent> <leader>ca   :GitCommitAll<CR>
@@ -503,4 +504,11 @@ if g:hypergitCAbbr
     cabbr   gmadd      GitRemoteAdd
     cabbr   gmdel      GitRemoteDel
     cabbr   gmrename   GitRemoteRename
+endif
+
+if executable('git-snapshot')
+  com! GitSnapshot   :!git snapshot
+  com! GitSnapshotLog :!git log refs/snapshots/HEAD -p
+  cabbr gss  GitSnapshot
+  cabbr gsl  GitSnapshotLog
 endif
