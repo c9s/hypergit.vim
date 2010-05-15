@@ -28,11 +28,10 @@ endf
 " echo s:promptRemote()
 
 fun! s:getRemoteName()
-  let remotes =  split(s:listRemote())
+  let remotes =  split(GitListRemote('','',''))
   if len( remotes ) == 1
     return remotes[0]
   else
-    "  remotes
     return s:promptRemote()
   endif
 endf
