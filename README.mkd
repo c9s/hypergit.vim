@@ -47,6 +47,7 @@ Default Key Mappings
     <leader>ci   commit current file changes
     <leader>ca   commit all changes
     <leader>ga   add file to git repository
+    <leader>gb   branch manager buffer
     <leader>gs   status manager buffer
     <leader>gh   stash manager buffer
 
