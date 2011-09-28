@@ -5,7 +5,7 @@ HyperGit Vim Plugin
 Screenshot
 ===========
 
-![Screen shot](http://cloud.github.com/downloads/c9s/hypergit.vim/Screen_shot_2010-02-01_at_2.51.53_AM.png)
+![ScreenShot](http://github.com/c9s/hypergit.vim/raw/master/screenshot.png)
 
 Features
 ========
