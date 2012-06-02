@@ -58,7 +58,7 @@ RECORD_FILE=.record
 PWD=`pwd`
 README_FILES=`ls -1 | grep -i readme`
 WGET_OPT=-c -nv
-CURL_OPT=
+CURL_OPT=-l
 RECORD_SCRIPT=.mkrecord
 TAR=tar czvf
 
@@ -142,9 +142,9 @@ fetch_github = \
 		; fi	 							    \
 		; echo " => $(5)"						\
 		; if [[ ! -z `which curl` ]] ; then                        	    \
-			curl $(CURL_OPT) http://github.com/$(1)/$(2)/raw/$(3)/$(4) -o $(5)      \
+			curl $(CURL_OPT) https://raw.github.com/$(1)/$(2)/$(3)/$(4) -o $(5)      \
 		; elif [[ ! -z `which wget` ]] ; then                               \
-			wget $(WGET_OPT) http://github.com/$(1)/$(2)/raw/$(3)/$(4) -O $(5)  \
+			wget $(WGET_OPT) https://raw.github.com/$(1)/$(2)/$(3)/$(4) -O $(5)  \
 		; fi									\
 		; echo $(5) >> .bundlefiles
 
