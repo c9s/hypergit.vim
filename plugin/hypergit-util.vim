@@ -66,8 +66,8 @@ fun! s:initGitCommitBuffer()
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
 
-  nmap <silent><buffer> s  :cal g:gitSkipCommit()<CR>
-  autocmd BufUnload <buffer> :cal g:gitDoCommit()
+  nmap <silent><buffer> s  :cal g:GitSkipCommit()<CR>
+  autocmd BufUnload <buffer> :cal g:GitDoCommit()
 
   setfiletype gitcommit
 endf
@@ -83,12 +83,12 @@ fun! s:filterMessage(msgfile)
   for l in lines
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
-      cal system( g:git_command . ' add ' . file )
+      cal system( g:GitCommand . ' add ' . file )
       echohl GitMsg | echo file . ' added' | echohl None
       let lines[ idx ] = ''
     elseif l =~ '^\!D\s\+'
       let file = s:trim_message_op(l)
-      cal system( g:git_command . ' rm ' . file )   " XXX: detect failure
+      cal system( g:GitCommand . ' rm ' . file )   " XXX: detect failure
       echohl GitMsg | echo file . ' deleted' | echohl None
       let lines[ idx ] = ''
     endif
@@ -98,13 +98,13 @@ fun! s:filterMessage(msgfile)
 endf
 
 
-fun! g:gitSkipCommit()
+fun! g:GitSkipCommit()
   let file = expand('%')
   cal delete(file)
   bw!
 endf
 
-fun! g:gitDoCommit()
+fun! g:GitDoCommit()
   let file = expand('%')
   if ! filereadable(file) 
     echo "Skipped"
@@ -116,16 +116,16 @@ fun! g:gitDoCommit()
   echo "Committing..."
   if exists('b:commit_target')
     echo "Target: " . b:commit_target
-    let cmd = printf('%s commit --cleanup=strip -F %s %s', g:git_bin , file, b:commit_target )
+    let cmd = printf('%s commit --cleanup=strip -F %s %s', g:GitBin , file, b:commit_target )
     if g:hypergitBackgroundCommit
       cal system(cmd)
     else
       echo system(cmd)
     endif
   elseif exists('b:commit_amend')
-    echo system('%s commit --cleanup=strip --amend -F %s' , g:git_bin , file )
+    echo system('%s commit --cleanup=strip --amend -F %s' , g:GitBin , file )
   else
-    let cmd = printf('%s commit --cleanup=strip -a -F %s', g:git_bin , file )
+    let cmd = printf('%s commit --cleanup=strip -a -F %s', g:GitBin , file )
     if g:hypergitBackgroundCommit
       cal system(cmd)
     else

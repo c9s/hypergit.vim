@@ -7,9 +7,9 @@ fun! hypergit#buffer#init(...)
   endif
 
   if a:0 == 2
-    exec g:gitbuffer_default_position . ' ' . size . a:1 . ' ' . a:2
+    exec g:GitBufferDefaultPosition . ' ' . size . a:1 . ' ' . a:2
   elseif a:0 == 1
-    exec g:gitbuffer_default_position . ' ' . size . a:1 
+    exec g:GitBufferDefaultPosition . ' ' . size . a:1 
     setlocal buftype=nofile 
   endif
   setlocal noswapfile  

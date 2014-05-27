@@ -72,9 +72,9 @@ fun! s:GitLog(...)
     let til = a:2
   endif
   if strlen(since) > 1 && strlen(til) > 1
-    exec printf('! clear & %s log %s..%s',g:git_bin,since,til)
+    exec printf('! clear & %s log %s..%s',g:GitBin,since,til)
   elseif strlen(since) > 1 
-    exec printf('! clear & %s log %s..HEAD',g:git_bin,since)
+    exec printf('! clear & %s log %s..HEAD',g:GitBin,since)
   else
     echo "..."
   endif
@@ -107,7 +107,7 @@ fun! s:GitPush(...)
     let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
   endif
   let branch = input('Branch:', GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
-  exec printf('! clear & %s push %s %s',g:git_bin,remote,branch)
+  exec printf('! clear & %s push %s %s',g:GitBin,remote,branch)
 endf
 
 fun! s:GitPull(...)
@@ -117,7 +117,7 @@ fun! s:GitPull(...)
     let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
   endif
   let branch = input('Branch:', GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
-  exec printf('! clear & %s pull %s %s',g:git_bin,remote,branch)
+  exec printf('! clear & %s pull %s %s',g:GitBin,remote,branch)
 endf
 
 fun! s:RemoteAdd(...)
@@ -458,8 +458,8 @@ com! -nargs=?        GitStash :cal s:GitStashBuffer()
 " }}}
 
 cal s:defopt('g:hypergitUntrackMode' , 'no' )
-cal s:defopt('g:git_bin','git')
-cal s:defopt('g:gitbuffer_default_position','topleft')
+cal s:defopt('g:GitBin','git')
+cal s:defopt('g:GitBufferDefaultPosition','topleft')
 cal s:defopt('g:hypergitBufferHeight' , 15 )
 cal s:defopt('g:hypergitBufferWidth' ,35 )
 cal s:defopt('g:hypergitCAbbr',1)
