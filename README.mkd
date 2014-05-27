@@ -2,6 +2,8 @@
 HyperGit Vim Plugin
 ===================
 
+This git plugin provides many awesome features so that you don't need to type commands anymore..
+
 Screenshot
 ===========
 
@@ -12,7 +14,7 @@ Features
 
 * Git Actions in TreeMenu 
 * Commit Buffer
-* Rebase (interactive) Helper. when `git rebase -i [branch]`
+* Rebase (interactive) Helper. When using `git rebase -i [branch]`, it's automatically enabled.
 
 Tested Platforms
 ================
