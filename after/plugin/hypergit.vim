@@ -7,14 +7,14 @@
 " Web:    http://oulixe.us/
 " Version: 2.1
 
-if exists('g:loaded_hypergit')
+if exists('g:HyperGitLoaded')
   "finish
 elseif v:version < 702
   echoerr 'Ahaha. your vim seems too old , please do upgrade. i found your vim is ' . v:version . '.'
   finish
 endif
 
-let g:loaded_hypergit = 1
+let g:HyperGitLoaded = 1
 
 fun! s:defopt(name,val)
   if !exists(a:name)
