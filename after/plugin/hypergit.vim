@@ -457,14 +457,14 @@ endf
 com! -nargs=?        GitStash :cal s:GitStashBuffer()
 " }}}
 
-cal s:defopt('g:hypergitUntrackMode' , 'no' )
+cal s:defopt('g:HyperGitUntrackMode' , 'no' )
 cal s:defopt('g:GitBin','git')
 cal s:defopt('g:GitBufferDefaultPosition','topleft')
-cal s:defopt('g:hypergitBufferHeight' , 15 )
-cal s:defopt('g:hypergitBufferWidth' ,35 )
-cal s:defopt('g:hypergitCAbbr',1)
-cal s:defopt('g:hypergitDefaultMapping',1)
-cal s:defopt('g:hypergitBackgroundCommit',0)
+cal s:defopt('g:HyperGitBufferHeight' , 15 )
+cal s:defopt('g:HyperGitBufferWidth' ,35 )
+cal s:defopt('g:HyperGitCAbbr',1)
+cal s:defopt('g:HyperGitDefaultMapping',1)
+cal s:defopt('g:HyperGitBackgroundCommit',0)
 
 com! -complete=file -nargs=?        GitAdd    :cal s:GitAdd(<f-args>)
 com! -complete=file -nargs=?        GitRm     :cal s:GitRm(<f-args>)
@@ -486,7 +486,7 @@ com! GitConfig   :tabe ~/.gitconfig
 
 
 
-if g:hypergitDefaultMapping
+if g:HyperGitDefaultMapping
   nmap <silent> <leader>ci   :GitCommit<CR>
   nmap <silent> <leader>ca   :GitCommitAll<CR>
   nmap <silent> <leader>ga   :GitAdd<CR>
@@ -497,7 +497,7 @@ if g:hypergitDefaultMapping
   nmap <silent> <leader>gh   :GitStash<CR>
 endif
 
-if g:hypergitCAbbr
+if g:HyperGitCAbbr
     cabbr   glog       GitLog
     cabbr   gpush      GitPush
     cabbr   gpull      GitPull

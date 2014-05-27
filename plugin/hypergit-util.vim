@@ -117,7 +117,7 @@ fun! g:GitDoCommit()
   if exists('b:commit_target')
     echo "Target: " . b:commit_target
     let cmd = printf('%s commit --cleanup=strip -F %s %s', g:GitBin , file, b:commit_target )
-    if g:hypergitBackgroundCommit
+    if g:HyperGitBackgroundCommit
       cal system(cmd)
     else
       echo system(cmd)
@@ -126,7 +126,7 @@ fun! g:GitDoCommit()
     echo system('%s commit --cleanup=strip --amend -F %s' , g:GitBin , file )
   else
     let cmd = printf('%s commit --cleanup=strip -a -F %s', g:GitBin , file )
-    if g:hypergitBackgroundCommit
+    if g:HyperGitBackgroundCommit
       cal system(cmd)
     else
       echo system(cmd)

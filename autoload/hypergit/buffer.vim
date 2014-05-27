@@ -1,9 +1,9 @@
 
 fun! hypergit#buffer#init(...)
   if a:1  =~ '^v'
-    let size = g:hypergitBufferWidth
+    let size = g:HyperGitBufferWidth
   else
-    let size = g:hypergitBufferHeight
+    let size = g:HyperGitBufferHeight
   endif
 
   if a:0 == 2
