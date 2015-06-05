@@ -35,6 +35,8 @@ fun! GitCommitSingleBuffer(...)
   let b:commit_target = target
   cal hypergit#commit#render_single(target)
 
+  autocmd BufWinLeave <buffer> GitStatusUpdate
+
   cal g:Help.reg("Git: commit " . target ," s - (skip)",1)
   cal cursor(2,1)
   startinsert
