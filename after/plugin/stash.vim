@@ -1,6 +1,6 @@
 
 " Stash {{{
-fun! s:showFromStashBuffer()
+fun! s:GitStashShowFromBuffer()
   let line = getline('.')
   let stashname = matchstr(line,'^\S*\(:\)\@=')
   let output = system( 'git stash show -v ' . stashname )
@@ -13,14 +13,14 @@ fun! s:showFromStashBuffer()
   setlocal nomodifiable
 endf
 
-fun! s:dropFromStashBuffer()
+fun! s:GitStashDropFromBuffer()
   let stashname = matchstr( getline('.') ,'^\S*\(:\)\@=')
   echo system( 'git stash drop ' . stashname )
   bw
-  cal s:GitStashBuffer()
+  cal s:GitStashBufferOpen()
 endf
 
-fun! s:applyFromStashBuffer()
+fun! s:GitStashApplyFromBuffer()
   let stashname = matchstr( getline('.') ,'^\S*\(:\)\@=')
   let output = system( 'git stash apply ' . stashname )
   new
@@ -32,7 +32,7 @@ fun! s:applyFromStashBuffer()
   setlocal nomodifiable
 endf
 
-fun! s:GitStashBuffer()
+fun! s:GitStashBufferOpen()
   tabnew
   setlocal noswapfile nobuflisted nowrap cursorline nonumber 
   setlocal fdc=0 buftype=nofile bufhidden=wipe
@@ -42,9 +42,9 @@ fun! s:GitStashBuffer()
   setfiletype git-stash
   silent file GitStashList
 
-  nmap <script><buffer> S  :cal <SID>showFromStashBuffer()<CR>
-  nmap <script><buffer> D  :cal <SID>dropFromStashBuffer()<CR>
-  nmap <script><buffer> A  :cal <SID>applyFromStashBuffer()<CR>
+  nmap <script><buffer> S  :cal <SID>GitStashShowFromBuffer()<CR>
+  nmap <script><buffer> D  :cal <SID>GitStashDropFromBuffer()<CR>
+  nmap <script><buffer> A  :cal <SID>GitStashApplyFromBuffer()<CR>
 
   cal g:Help.reg("Git Stash",
     \" S - Show\n" .
@@ -53,5 +53,5 @@ fun! s:GitStashBuffer()
     \,1)
   setlocal nomodifiable
 endf
-com! -nargs=?        GitStash :cal s:GitStashBuffer()
+com! -nargs=?        GitStash :cal s:GitStashBufferOpen()
 " }}}

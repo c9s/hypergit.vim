@@ -71,7 +71,7 @@ fun! s:initGitRemoteBuffer()
   cal hypergit#buffer#init()
 endf
 
-fun! s:initGitStashBuffer()
+fun! s:initGitStashBufferOpen()
   cal hypergit#buffer#init()
 endf
 
