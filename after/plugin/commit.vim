@@ -6,9 +6,7 @@ fun! GitCommitSingleBuffer(...)
     let target = a:1
   endif
 
-  let msgfile = tempname()
-  cal hypergit#buffer#init('new',msgfile)
-  cal s:GitCommitBufferInit()
+  call g:GitCommitBufferOpen()
 
   " XXX: make sure target exists, and it's in git commit list.
   let b:commit_target = target
@@ -22,28 +20,31 @@ fun! GitCommitSingleBuffer(...)
 endf
 
 fun! GitCommitAllBuffer()
-  let msgfile = tempname()
-  cal hypergit#buffer#init('new',msgfile)
-  cal s:GitCommitBufferInit()
-  cal hypergit#commit#render()
+  call g:GitCommitBufferOpen()
+  call hypergit#commit#render()
 
-  cal g:Help.reg("Git: commit --all"," s - (skip)",1)
-  cal cursor(2,1)
+  call g:Help.reg("Git: commit --all"," s - (skip)",1)
+  call cursor(2,1)
   startinsert
 endf
 
 fun! GitCommitAmendBuffer()
-  let msgfile = tempname()
-  cal hypergit#buffer#init('new',msgfile)
-  cal s:GitCommitBufferInit()
-  cal hypergit#commit#render_amend()
+  call g:GitCommitBufferOpen()
+  call hypergit#commit#render_amend()
 
-  cal g:Help.reg("Git: commit --amend"," s - (skip)",1)
-  cal cursor(2,1)
+  call g:Help.reg("Git: commit --amend"," s - (skip)",1)
+  call cursor(2,1)
   startinsert
 endf
 
-fun! s:GitCommitBufferInit()
+fun! g:GitCommitBufferOpen()
+  let msgfile = tempname()
+  call hypergit#buffer#init('new',msgfile)
+  call g:GitCommitBufferInit()
+  return msgfile
+endf
+
+fun! g:GitCommitBufferInit()
   setlocal nu
   setlocal nohidden
 
