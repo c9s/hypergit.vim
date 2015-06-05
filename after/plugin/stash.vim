@@ -32,7 +32,7 @@ fun! s:GitStashApplyFromBuffer()
   setlocal nomodifiable
 endf
 
-fun! s:GitStashBufferOpen()
+fun! g:GitStashBufferOpen()
   tabnew
   setlocal noswapfile nobuflisted nowrap cursorline nonumber 
   setlocal fdc=0 buftype=nofile bufhidden=wipe
@@ -53,5 +53,5 @@ fun! s:GitStashBufferOpen()
     \,1)
   setlocal nomodifiable
 endf
-com! -nargs=?        GitStash :cal s:GitStashBufferOpen()
+com! -nargs=?        GitStash :cal g:GitStashBufferOpen()
 " }}}
