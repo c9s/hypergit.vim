@@ -84,7 +84,9 @@ fun! g:GitCommit()
     else
       let output = system(cmd)
       if v:shell_error
-        echo output
+        echoerr output
+      else
+        echon "Committed!"
       endif
     endif
   endif
