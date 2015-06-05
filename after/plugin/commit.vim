@@ -63,7 +63,7 @@ fun! g:GitCommit()
     echo "Skipped"
     return
   endif
-  cal s:filterMessage(file)
+  cal s:filterCommitMessage(file)
 
   echohl GitMsg 
   echo "Committing..."
@@ -86,6 +86,29 @@ fun! g:GitCommit()
     endif
   endif
   echohl None
+endf
+
+fun! s:filterCommitMessage(msgfile)
+  if ! filereadable(a:msgfile)
+    return
+  endif
+  let lines = readfile(a:msgfile)
+  let idx = 0
+  for l in lines
+    if l =~ '^\!A\s\+'
+      let file = s:trim_message_op(l)
+      cal system( g:GitCommand . ' add ' . file )
+      echohl GitMsg | echo file . ' added' | echohl None
+      let lines[ idx ] = ''
+    elseif l =~ '^\!D\s\+'
+      let file = s:trim_message_op(l)
+      cal system( g:GitCommand . ' rm ' . file )   " XXX: detect failure
+      echohl GitMsg | echo file . ' deleted' | echohl None
+      let lines[ idx ] = ''
+    endif
+    let idx += 1
+  endfor
+  cal writefile(lines,a:msgfile)
 endf
 
 " }}}
