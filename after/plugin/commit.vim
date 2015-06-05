@@ -52,9 +52,40 @@ fun! g:GitCommitBufferInit()
   hi link GitAction Function
 
   nmap <silent><buffer> s  :cal g:GitSkipCommit()<CR>
-  autocmd BufUnload <buffer> :cal g:GitDoCommit()
+  autocmd BufUnload <buffer> :cal g:GitCommit()
 
   setfiletype gitcommit
+endf
+
+fun! g:GitCommit()
+  let file = expand('%')
+  if ! filereadable(file) 
+    echo "Skipped"
+    return
+  endif
+  cal s:filterMessage(file)
+
+  echohl GitMsg 
+  echo "Committing..."
+  if exists('b:commit_target')
+    echo "Target: " . b:commit_target
+    let cmd = printf('%s commit --cleanup=strip -F %s %s', g:GitBin , file, b:commit_target )
+    if g:HyperGitBackgroundCommit
+      cal system(cmd)
+    else
+      echo system(cmd)
+    endif
+  elseif exists('b:commit_amend')
+    echo system('%s commit --cleanup=strip --amend -F %s' , g:GitBin , file )
+  else
+    let cmd = printf('%s commit --cleanup=strip -a -F %s', g:GitBin , file )
+    if g:HyperGitBackgroundCommit
+      call system(cmd)
+    else
+      echo system(cmd)
+    endif
+  endif
+  echohl None
 endf
 
 " }}}
