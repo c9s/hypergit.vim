@@ -1,4 +1,8 @@
 
+fun! g:GitLogPromptByBranch()
+  let branch = input("Branch:","master")
+  exec printf('! clear & %s log %s..%s', g:GitBin, branch)
+endf
 
 fun! g:GitLogPromptByRange()
   let since = input("Since:","")
@@ -33,5 +37,5 @@ fun! g:GitLog(...)
     exec printf('! clear & %s log',g:GitBin)
   endif
 endf
-
-com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal g:GitLog(<f-args>)
+com! -complete=customlist,GitRevCompletion        -nargs=? GitLogByBranch      :cal g:GitLogPromptByBranch(<f-args>)
+com! -complete=customlist,GitRevCompletion        -nargs=? GitLog              :cal g:GitLog(<f-args>)
