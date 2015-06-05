@@ -82,7 +82,10 @@ fun! g:GitCommit()
     if g:HyperGitBackgroundCommit
       call system(cmd)
     else
-      echo system(cmd)
+      let output = system(cmd)
+      if v:shell_error
+        echo output
+      endif
     endif
   endif
   echohl None
