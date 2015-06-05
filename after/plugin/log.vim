@@ -1,11 +1,26 @@
 
-fun! s:GitLog(...)
+
+fun! g:GitLogPromptByRange()
+  let since = input("Since:","")
+  let til = input("Til:","")
+  if strlen(since) > 1 && strlen(til) > 1
+    exec printf('! clear & %s log %s..%s',g:GitBin,since,til)
+  elseif strlen(since) > 1 
+    exec printf('! clear & %s log %s..HEAD',g:GitBin,since)
+  endif
+endf
+
+fun! g:GitLog(...)
+
+  " TODO: check array
   if a:0 == 1
     let [since,til] = split(a:1)
   elseif a:0 == 0
-    "let commit = input("Commit:","",'customlist,GitRemoteNameCompletion')
-    let since = input("Since:","")
-    let til = input("Til:","")
+    " let commit = input("Commit:","",'customlist,GitRemoteNameCompletion')
+    " let since = input("Since:","")
+    " let til = input("Til:","")
+    let since = ""
+    let til = ""
   elseif a:0 == 2
     let since = a:1
     let til = a:2
@@ -15,8 +30,8 @@ fun! s:GitLog(...)
   elseif strlen(since) > 1 
     exec printf('! clear & %s log %s..HEAD',g:GitBin,since)
   else
-    echo "..."
+    exec printf('! clear & %s log',g:GitBin)
   endif
 endf
 
-com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal s:GitLog(<f-args>)
+com! -complete=customlist,GitRevCompletion        -nargs=? GitLog      :cal g:GitLog(<f-args>)
