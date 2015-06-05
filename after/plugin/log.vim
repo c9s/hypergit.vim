@@ -1,7 +1,13 @@
 
 fun! g:GitLogPromptByBranch()
   let branch = input("Branch:","master")
-  exec printf('! clear & %s log %s..%s', g:GitBin, branch)
+  exec printf('! clear & %s log %s', g:GitBin, branch)
+endf
+
+fun! g:GitLogPromptBetweenBranch()
+  let from = input("From:","master")
+  let to = input("To:","master")
+  exec printf('! clear & %s log %s..%s', g:GitBin, from, to)
 endf
 
 fun! g:GitLogPromptByRange()
@@ -37,5 +43,5 @@ fun! g:GitLog(...)
     exec printf('! clear & %s log',g:GitBin)
   endif
 endf
-com! -complete=customlist,GitRevCompletion        -nargs=? GitLogByBranch      :cal g:GitLogPromptByBranch(<f-args>)
+com! -nargs=0 GitLogPromptByBranch      :cal g:GitLogPromptByBranch()
 com! -complete=customlist,GitRevCompletion        -nargs=? GitLog              :cal g:GitLog(<f-args>)
