@@ -66,7 +66,7 @@ fun! g:GitCommit()
   cal s:filterCommitMessage(file)
 
   echohl GitMsg 
-  echo "Committing..."
+  echon "Committing..."
   if exists('b:commit_target')
     echo "Target: " . b:commit_target
     let cmd = printf('%s commit --cleanup=strip -F %s %s', g:GitBin , file, b:commit_target )
