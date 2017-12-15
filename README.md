@@ -1,5 +1,4 @@
-
-HyperGit Vim Plugin
+hypergit.vim
 ===================
 
 This git plugin provides many awesome features so that you don't need to type commands anymore..
@@ -7,10 +6,10 @@ This git plugin provides many awesome features so that you don't need to type co
 Screenshot
 ===========
 
-![ScreenShot](http://github.com/c9s/hypergit.vim/raw/master/screenshot.png)
+![ScreenShot](https://github.com/c9s/hypergit.vim/raw/master/screenshot.png)
 
 Features
-========
+===========
 
 * Git Actions in TreeMenu 
 * Commit Buffer
@@ -23,27 +22,32 @@ Tested Platforms
 * Mac OS X
 
 Installation
-============
+=============
+
 Via rakefile:
 
     $ git clone git://github.com/c9s/hypergit.vim
     $ cd hypergit.vim
     $ make install
 
-To install hypergit via Vimana from github:
+Vundle:
 
-    $ vimana i git:git://github.com/c9s/hypergit.vim -n hypergit.vim
+```vim
+Plugin 'c9s/helper.vim'
+Plugin 'c9s/hypergit.vim'
+```
 
-To install hypergit via Vimana from www.vim.org:
+Be sure to have helper.vim before hypergit.vim.
 
-    $ vimana i hypergit.vim
+Configuration
+=================
 
 Add Git Menu key mapping to your ~/.vimrc:
 
     nmap <leader>G   :ToggleGitMenu<CR>
 
 Default Key Mappings
-============
+====================
 
     <leader>G    toggle hypergit menu
     <leader>ci   commit current file changes
@@ -69,4 +73,3 @@ Commands
 *:GitPush*
 
 *:GitPull*
-
