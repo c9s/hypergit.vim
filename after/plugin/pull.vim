@@ -1,4 +1,3 @@
-
 fun! s:GitPullHEAD()
   cal hypergit#buffer#bottomright(10)
   cal hypergit#buffer#init_nofile()

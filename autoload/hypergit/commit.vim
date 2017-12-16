@@ -16,9 +16,9 @@ fun! hypergit#commit#render()
 endf
 
 fun! hypergit#commit#render_single(target)
-  let status = split(system('git status -u'. g:HyperGitUntrackMode . ' ' . a:target),"\n")
-  cal filter(status, 'v:val =~ "^#"')
-  cal append(1,  status )
+  let lines = split(system('git status ' . a:target),"\n")
+  cal map(lines, '"# " . v:val')
+  cal append(line('$'),  lines)
 endf
 
 fun! hypergit#commit#render_amend()
