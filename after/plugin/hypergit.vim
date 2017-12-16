@@ -91,8 +91,9 @@ if g:HyperGitDefaultMapping
   nmap <silent> <leader>ca   :GitCommitAll<CR>
   nmap <silent> <leader>ga   :GitAdd<CR>
   nmap <silent> <leader>G    :ToggleGitMenu<CR>
-  nmap <silent> <leader>gp   :GitPush<CR>
-  nmap <silent> <leader>gl   :GitPull<CR>
+  nmap <silent> <leader>gp   :GitPushHEAD<CR>
+  nmap <silent> <leader>gP   :GitPush<CR>
+  nmap <silent> <leader>gL   :GitPull<CR>
   nmap <silent> <leader>gs   :GitStatus<CR>
   nmap <silent> <leader>gh   :GitStash<CR>
 endif

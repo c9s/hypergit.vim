@@ -1,3 +1,14 @@
+fun! hypergit#buffer#bottomright(...)
+  let height = a:1
+  if a:0 == 2
+    exec 'botright ' . height . 'new ' . a:2
+  elseif a:0 == 1
+    exec 'botright ' . height . 'new'
+    setlocal buftype=nofile 
+  endif
+  setlocal noswapfile  
+  setlocal nobuflisted nowrap cursorline nonumber fdc=0
+endf
 
 fun! hypergit#buffer#init(...)
   if a:1  =~ '^v'

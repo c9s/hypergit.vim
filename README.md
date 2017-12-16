@@ -34,6 +34,7 @@ Vundle:
 
 ```vim
 Plugin 'c9s/helper.vim'
+Plugin 'c9s/treemenu.vim'
 Plugin 'c9s/hypergit.vim'
 ```
 
