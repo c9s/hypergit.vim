@@ -1,11 +1,6 @@
 fun! s:GitPushHEAD()
   cal hypergit#buffer#bottomright(10)
-  setlocal nu
-  setlocal nohidden
-  setlocal bufhidden=wipe
-  setlocal noswapfile
-  setlocal wrap
-  setlocal nocursorline
+  cal hypergit#buffer#init_nofile()
   setfiletype gitconsole
 
   let remote = GitDefaultRemoteName()

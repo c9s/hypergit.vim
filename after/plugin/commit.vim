@@ -23,6 +23,8 @@ fun! GitCommitAllBuffer()
   call g:GitCommitBufferOpen()
   call hypergit#commit#render()
 
+  call hypergit#commit#render_status()
+
   call g:Help.reg("Git: commit --all"," s - (skip)",1)
   call cursor(2,1)
   startinsert

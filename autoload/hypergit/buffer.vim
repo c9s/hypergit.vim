@@ -1,3 +1,4 @@
+
 fun! hypergit#buffer#bottomright(...)
   let height = a:1
   if a:0 == 2
@@ -8,6 +9,10 @@ fun! hypergit#buffer#bottomright(...)
   endif
   setlocal noswapfile  
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
+endf
+
+fun! hypergit#buffer#init_nofile()
+  setlocal buftype=nofile nobuflisted cursorline nonumber fdc=0 nohidden nocursorline noswapfile
 endf
 
 fun! hypergit#buffer#init(...)
