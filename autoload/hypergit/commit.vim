@@ -1,8 +1,3 @@
-
-fun! hypergit#commit#init_syntax()
-
-endf
-
 fun! hypergit#commit#render_status(...)
   let lines = split(system('git status ' . join(a:000, ' ')),"\n")
   cal map(lines, '"# " . v:val')
@@ -26,14 +21,4 @@ fun! hypergit#commit#render_amend()
     let lines = readfile('.git/COMMIT_EDITMSG')
     cal append(0,  lines )
   endif
-endf
-
-
-
-fun! hypergit#commit#commit()
-
-endf
-
-fun! hypergit#commit#skip()
-
 endf
