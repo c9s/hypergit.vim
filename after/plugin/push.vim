@@ -3,7 +3,6 @@ fun! s:GitPushHEAD()
   setlocal nu
   setlocal nohidden
   setlocal bufhidden=wipe
-  setlocal bufhidden=hide
   setlocal noswapfile
   setlocal wrap
   setlocal nocursorline
