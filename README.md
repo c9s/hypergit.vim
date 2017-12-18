@@ -24,13 +24,7 @@ Tested Platforms
 Installation
 =============
 
-Via rakefile:
-
-    $ git clone git://github.com/c9s/hypergit.vim
-    $ cd hypergit.vim
-    $ make install
-
-Vundle:
+Via Vundle:
 
 ```vim
 Plugin 'c9s/helper.vim'
@@ -53,6 +47,7 @@ Default Key Mappings
     <leader>G    toggle hypergit menu
     <leader>ci   commit current file changes
     <leader>ca   commit all changes
+
     <leader>ga   add file to git repository
     <leader>gb   branch manager buffer
     <leader>gs   status manager buffer
