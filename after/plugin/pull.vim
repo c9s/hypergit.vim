@@ -1,3 +1,25 @@
+fun! s:GitFetch(...)
+  if len(a:000) > 0
+    let remote = a:000
+  else
+    let remotes = hypergit#remote#get_remote_names()
+    if len(remotes) == 0
+    elseif len(remotes) == 1
+      let remote = remotes[0]
+    elseif len(remotes) > 1
+      let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
+    endif
+  endif
+
+  cal hypergit#buffer#bottomright(10)
+  cal hypergit#buffer#init_nofile()
+  setfiletype gitconsole
+  let out = system("git fetch --verbose " . remote)
+  put=out
+  setlocal nomodifiable
+endf
+com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitFetch     :cal s:GitFetch(<f-args>)
+
 fun! s:GitPullHEAD()
   cal hypergit#buffer#bottomright(10)
   cal hypergit#buffer#init_nofile()
