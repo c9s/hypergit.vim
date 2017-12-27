@@ -1,13 +1,5 @@
 " define GitStatus command.
 " vim:fdm=marker:
-fun! s:GitBranchListRefresh()
-  setlocal modifiable
-  1,$delete _
-  let list = system('git branch')
-  put=list
-  normal ggdd
-  setlocal nomodifiable
-endf
 
 fun! s:getSelectedBranchName()
   let br = substitute( getline('.') , '^\*\?\s*' , '' , 'g')
@@ -59,19 +51,43 @@ fun! s:branchDelete(force)
 endf
 
 fun! s:branchCheckout()
-  let br = s:getSelectedBranchName()
-  let cmd = 'git checkout ' . br
-  cal hypergit#run(cmd)
+  let branch = s:getSelectedBranchName()
+  let cmd = 'git checkout ' . branch
+  let nr = bufnr('%')
+  cal hypergit#shell#run(cmd)
+
+  let wids = win_findbuf(nr)
+  cal win_gotoid(wids[0])
   cal s:GitBranchListRefresh()
+endf
+
+fun! s:render()
+  setlocal modifiable
+  0,$delete _
+  let branch = system('git branch -a | grep -v HEAD')
+  put=branch
+  normal ggdd
+  cal g:Help.reg("Git Branch",
+    \" P - Push\n" .
+    \" L - Pull\n" .
+    \" D - Delete\n" .
+    \" R - Rename\n" .
+    \" C - Checkout\n" 
+    \,1)
+  setlocal nomodifiable
+endf
+
+fun! s:GitBranchListRefresh()
+  cal s:render()
 endf
 
 fun! s:GitBranchList()
   tabnew
   setlocal noswapfile  
   setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
-  let branch = system('git branch -a | grep -v HEAD')
-  put=branch
-  normal ggdd
+
+  cal s:render()
+
   setfiletype git-branch
   silent file GitBranch
 "   nmap <script><buffer> L  :cal <SID>diffFileFromStatusLine()<CR>
@@ -87,13 +103,6 @@ fun! s:GitBranchList()
   syn match Comment +^#.*+ 
   syn match CurrentBranch +^\*.*+
   hi link CurrentBranch Function
-  cal g:Help.reg("Git Branch",
-    \" P - Push\n" .
-    \" L - Pull\n" .
-    \" D - Delete\n" .
-    \" R - Rename\n" .
-    \" C - Checkout\n" 
-    \,1)
   setlocal nomodifiable
 endf
 com! GitBranch :cal s:GitBranchList()
