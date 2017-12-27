@@ -1,7 +1,7 @@
 
 fun hypergit#shell#run(cmd)
   if has("terminal")
-    exec "terminal ++close ++rows=10 " . a:cmd
+    exec "terminal ++rows=10 " . a:cmd
   else
     cal hypergit#buffer#bottomright(10)
     cal hypergit#buffer#init_nofile()
