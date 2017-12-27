@@ -4,7 +4,7 @@
 fun! s:GitPushHEAD()
   let remote = GitDefaultRemoteName()
   let cmd = printf('%s push -u %s %s', g:GitBin, remote, 'HEAD')
-  cal hypergit#run(cmd)
+  cal hypergit#shell#run(cmd)
 endf
 com! -nargs=? GitPushHEAD :cal s:GitPushHEAD()
 " test code
