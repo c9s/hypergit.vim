@@ -1,25 +1,10 @@
+
+
+
 fun! s:GitPushHEAD()
   let remote = GitDefaultRemoteName()
   let cmd = printf('%s push -u %s %s', g:GitBin, remote, 'HEAD')
-
-  if has("terminal")
-    exec "terminal ++close ++rows=10 " . cmd
-  else
-    cal hypergit#buffer#bottomright(10)
-    cal hypergit#buffer#init_nofile()
-    setfiletype gitconsole
-
-    " record the output in the buffer.
-    cal setline(1, "$ " . cmd)
-    cal setline(2, "==============================")
-
-    echomsg "Running " . cmd . " ..."
-    silent let out = system(cmd)
-    let lines = split(out, "\n")
-    cal append(line('$'),  lines)
-    setlocal nomodifiable
-  endif
-
+  cal hypergit#run(cmd)
 endf
 com! -nargs=? GitPushHEAD :cal s:GitPushHEAD()
 " test code

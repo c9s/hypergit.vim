@@ -60,7 +60,8 @@ endf
 
 fun! s:branchCheckout()
   let br = s:getSelectedBranchName()
-  exec '!git checkout ' . br
+  let cmd = 'git checkout ' . br
+  cal hypergit#run(cmd)
 endf
 
 fun! s:GitBranchList()
