@@ -1,7 +1,9 @@
 
-fun hypergit#shell#run(cmd)
+fun! hypergit#shell#run(cmd)
   if has("terminal")
+    let winid = win_getid(winnr())
     exec "terminal ++rows=10 " . a:cmd
+    cal win_gotoid(winid)
   else
     cal hypergit#buffer#bottomright(10)
     cal hypergit#buffer#init_nofile()

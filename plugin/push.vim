@@ -1,6 +1,3 @@
-
-
-
 fun! s:GitPushHEAD()
   let remote = GitDefaultRemoteName()
   let cmd = printf('%s push -u %s %s', g:GitBin, remote, 'HEAD')
@@ -18,7 +15,8 @@ fun! s:GitPush(...)
     let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
   endif
   let branch = input('Branch:', GitCurrentBranch() ,'customlist,GitLocalBranchCompletion')
-  exec printf('! clear & %s push %s %s',g:GitBin,remote,branch)
+  let cmd = printf('%s push %s %s',g:GitBin,remote,branch)
+  cal hypergit#shell#run(cmd)
 endf
 
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitPush     :cal s:GitPush(<f-args>)
