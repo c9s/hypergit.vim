@@ -15,7 +15,7 @@ fun! s:diffFileFromStatusLine()
     setfiletype git
     exec 'file Diff-' . file
     nmap <buffer> L  <C-w>q
-    exec 'nmap <leader>ci    :cal GitCommitSingleBuffer("'.file.'")<CR>'
+    exec 'nmap <leader>ci    :cal GitCommitSingleFileBuffer("'.file.'")<CR>'
     setlocal nomodifiable
   else
     redraw
@@ -27,7 +27,7 @@ fun! s:commitFileFromStatusLine()
   let line = getline('.')
   if line =~ '\s\+modified:'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    cal GitCommitSingleBuffer(file)
+    cal GitCommitSingleFileBuffer(file)
   else
     redraw
     echo "No avaliable"

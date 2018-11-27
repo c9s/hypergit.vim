@@ -1,5 +1,5 @@
 " Commit Buffers {{{
-fun! GitCommitSingleBuffer(...)
+fun! GitCommitSingleFileBuffer(...)
   if a:0 == 0
     let target = expand('%')
   elseif a:0 == 1
@@ -119,6 +119,6 @@ endf
 
 " }}}
 
-com! -complete=file -nargs=?        GitCommit :cal GitCommitSingleBuffer(<f-args>)
+com! -complete=file -nargs=?        GitCommit :cal GitCommitSingleFileBuffer(<f-args>)
 com! GitCommitAll    :cal GitCommitAllBuffer()
 com! GitCommitAmend  :cal GitCommitAmendBuffer()
