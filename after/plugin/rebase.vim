@@ -1,4 +1,3 @@
-
 " vim:fdm=marker:
 " Git rebase helper {{{
 "   git rebase --interactive
@@ -14,31 +13,35 @@
 fun! s:RebaseLog()
   let line = getline('.')
   let hash = matchstr(line,'\(^\w\+\s\)\@<=\w*')
-  vnew
-  setlocal noswapfile  
+  botright vnew
+  setlocal noswapfile
   setlocal nobuflisted nowrap cursorline nonumber fdc=0
-  setlocal buftype=nofile 
+  setlocal buftype=nofile
   setlocal bufhidden=wipe
   "let output = system(printf('git show -p %s', hash ))
   let output = system(printf('git log -p %s^1..%s', hash,hash ))
+  silent 0,$delete
   silent put=output
-  silent normal ggdd
   setlocal nomodifiable
   setfiletype git
-  nmap <silent><buffer> L <C-w>q
+  nmap <silent><buffer> q <C-w>q
+  nmap <silent><buffer> Q <C-w>q
 endf
+
 fun! s:RebaseAction(name)
   exec 's/^\w\+/'.a:name.'/'
 endf
+
 fun! s:initGitRebase()
-  nmap <script><silent><buffer> L :cal <SID>RebaseLog()<CR>
-  nmap <script><silent><buffer> p :cal <SID>RebaseAction('pick')<CR>
-  nmap <script><silent><buffer> f :cal <SID>RebaseAction('fixup')<CR>
-  nmap <script><silent><buffer> s :cal <SID>RebaseAction('squash')<CR>
-  nmap <script><silent><buffer> e :cal <SID>RebaseAction('edit')<CR>
-  nmap <script><silent><buffer> r :cal <SID>RebaseAction('reword')<CR>
-  nmap <script><silent><buffer> ? :cal <SID>showHelp()<CR>
-  nmap <script><silent><buffer> D dd
+  nnoremap <script><silent><buffer> L :cal <SID>RebaseLog()<CR>
+  nnoremap <script><silent><buffer> p :cal <SID>RebaseAction('pick')<CR>
+  nnoremap <script><silent><buffer> f :cal <SID>RebaseAction('fixup')<CR>
+  nnoremap <script><silent><buffer> s :cal <SID>RebaseAction('squash')<CR>
+  nnoremap <script><silent><buffer> e :cal <SID>RebaseAction('edit')<CR>
+  nnoremap <script><silent><buffer> r :cal <SID>RebaseAction('reword')<CR>
+  nnoremap <script><silent><buffer> ? :cal <SID>showHelp()<CR>
+  nnoremap <script><silent><buffer> D dd
+  setlocal cursorline
 endf
 fun! s:showHelp()
   redraw
