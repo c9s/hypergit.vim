@@ -1,14 +1,13 @@
-
 " define GitStatus command.
 " vim:fdm=marker:
 
-fun! s:diffFileFromStatusLine()
+fun! s:viewDiffFileFromStatusLine()
   let line = getline('.')
   if line =~ '^\s\+\(modified\|new file\):'
     let file = matchstr(line,'\(modified:\s\+\|new file:\s\+\)\@<=\S*$')
     let diff = system('git diff ' . file )
     botright new
-    setlocal noswapfile  
+    setlocal noswapfile
     setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
     silent put=diff
     normal ggdd
@@ -23,6 +22,23 @@ fun! s:diffFileFromStatusLine()
   endif
 endf
 
+fun! s:addFileFromStatusLine()
+  let line = getline('.')
+  if line =~ '\s\+modified:'
+    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+    call hypergit#shell#run('git add -v ' . file)
+    call s:GitStatusUpdate()
+  else
+    redraw
+    echo "No avaliable"
+  endif
+endf
+
+fun! s:commitStashFromStatusLine()
+  cal GitCommitStashedBuffer()
+  " call s:GitStatusUpdate()
+endf
+
 fun! s:commitFileFromStatusLine()
   let line = getline('.')
   if line =~ '\s\+modified:'
@@ -34,7 +50,7 @@ fun! s:commitFileFromStatusLine()
   endif
 endf
 
-fun! s:splitFileFromStatusLine()
+fun! s:viewFileFromStatusLine()
   let line = getline('.')
   if line =~ '\s\+\(modified\|new file\):'
     let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
@@ -93,32 +109,37 @@ fun! s:GitStatusUpdate()
     \" L - Diff\n" .
     \" C - Commit\n" .
     \" D - Delete\n" .
+    \" A - Add\n" .
     \" E - Edit\n" .
     \" T - Edit in NewTab\n" .
     \" R - Revert/Reset  \n"
     \,1)
   let status = system('git status -uno')
+  0,$d
   put=status
-  normal ggdd
+  normal 0gg
   setlocal nomodifiable
 endf
 
 fun! s:GitStatus()
   tabnew
-  setlocal noswapfile  
+  setlocal noswapfile
   setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
   let status = system('git status -uno')
   put=status
   normal ggdd
   setfiletype git-status
   silent file GitStatus
-  nmap <script><buffer> L  :cal <SID>diffFileFromStatusLine()<CR>
-  nmap <script><buffer> C  :cal <SID>commitFileFromStatusLine()<CR>
-  nmap <script><buffer> D  :cal <SID>deleteFileFromStatusLine()<CR>
-  nmap <script><buffer> E  :cal <SID>splitFileFromStatusLine()<CR>
-  nmap <script><buffer> T  :cal <SID>tabeFileFromStatusLine()<CR>
-  nmap <script><buffer> R  :cal <SID>resetFileFromStatusLine()<CR>
-  nmap <script><buffer> U  :cal <SID>GitStatusUpdate()<CR>
+  nnoremap <script><buffer> v  :cal <SID>viewDiffFileFromStatusLine()<CR>
+  nnoremap <script><buffer> c  :cal <SID>commitFileFromStatusLine()<CR>
+  nnoremap <script><buffer> C  :cal <SID>commitStashFromStatusLine()<CR>
+  nnoremap <script><buffer> a  :cal <SID>addFileFromStatusLine()<CR>
+
+  nnoremap <script><buffer> D  :cal <SID>deleteFileFromStatusLine()<CR>
+  nnoremap <script><buffer> E  :cal <SID>viewFileFromStatusLine()<CR>
+  nnoremap <script><buffer> T  :cal <SID>tabeFileFromStatusLine()<CR>
+  nnoremap <script><buffer> R  :cal <SID>resetFileFromStatusLine()<CR>
+  nnoremap <script><buffer> u  :cal <SID>GitStatusUpdate()<CR>
 
   cal g:Help.reg("Git Status",
     \" L - Diff\n" .

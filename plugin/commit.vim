@@ -5,17 +5,23 @@ fun! GitCommitSingleFileBuffer(...)
   elseif a:0 == 1
     let target = a:1
   endif
-
   call g:GitCommitBufferOpen()
 
-  " XXX: make sure target exists, and it's in git commit list.
   let b:commit_target = target
   cal hypergit#commit#render_single(target)
 
-  autocmd BufWinLeave <buffer> GitStatusUpdate
-
   cal g:Help.reg("Git: commit " . target ," s - (skip)",1)
   cal cursor(2,1)
+  startinsert
+endf
+
+fun! GitCommitStashedBuffer()
+  call g:GitCommitBufferOpen()
+  call hypergit#commit#render()
+  call hypergit#commit#render_status()
+  let b:commit_stashed = 1
+  call g:Help.reg("Git: commit"," s - (skip)",1)
+  call cursor(2,1)
   startinsert
 endf
 
@@ -66,19 +72,20 @@ fun! g:GitCommit()
   endif
   cal s:filterCommitMessage(file)
 
-  echohl GitMsg
-  if exists('b:commit_target')
-    echo "Target: " . b:commit_target
-    let cmd = printf('%s commit --cleanup=strip -F %s %s', g:GitBin , file, b:commit_target )
+  " commit the stashed files
+  if exists('b:commit_stashed')
+    let cmd = printf('%s commit --cleanup=strip --file %s', g:GitBin , file)
+    cal hypergit#shell#run(cmd)
+  elseif exists('b:commit_target')
+    let cmd = printf('%s commit --cleanup=strip --file %s %s', g:GitBin , file, b:commit_target )
     cal hypergit#shell#run(cmd)
   elseif exists('b:commit_amend')
-    let cmd = printf('%s commit --cleanup=strip --amend -F %s' , g:GitBin , file )
+    let cmd = printf('%s commit --cleanup=strip --amend --file %s' , g:GitBin , file )
     cal hypergit#shell#run(cmd)
   else
-    let cmd = printf('%s commit --cleanup=strip -a -F %s', g:GitBin , file )
+    let cmd = printf('%s commit --cleanup=strip -a --file %s', g:GitBin , file )
     cal hypergit#shell#run(cmd)
   endif
-  echohl None
 endf
 
 fun! s:filterCommitMessage(msgfile)
@@ -106,6 +113,8 @@ endf
 
 " }}}
 
-com! -complete=file -nargs=?        GitCommit :cal GitCommitSingleFileBuffer(<f-args>)
-com! GitCommitAll    :cal GitCommitAllBuffer()
-com! GitCommitAmend  :cal GitCommitAmendBuffer()
+com! -complete=file -nargs=?  GitCommit :cal GitCommitSingleFileBuffer(<f-args>)
+com! GitCommit         :cal GitCommitSingleFileBuffer()
+com! GitCommitStashed  :cal GitCommitStashedBuffer()
+com! GitCommitAll      :cal GitCommitAllBuffer()
+com! GitCommitAmend    :cal GitCommitAmendBuffer()
