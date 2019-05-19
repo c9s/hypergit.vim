@@ -11,8 +11,12 @@ fun! GitCommitSingleFileBuffer(...)
   cal hypergit#commit#render_single(target)
 
   cal g:Help.reg("Git: commit " . target ," s - (skip)",1)
-  cal cursor(2,1)
-  startinsert
+
+  " move to the latest colume
+  cal cursor(2,78)
+
+  " ! is included to behave like A
+  startinsert!
 endf
 
 fun! GitCommitStashedBuffer()
@@ -22,7 +26,7 @@ fun! GitCommitStashedBuffer()
   let b:commit_stashed = 1
   call g:Help.reg("Git: commit"," s - (skip)",1)
   call cursor(2,1)
-  startinsert
+  startinsert!
 endf
 
 fun! GitCommitAllBuffer()
@@ -31,7 +35,7 @@ fun! GitCommitAllBuffer()
   call hypergit#commit#render_status()
   call g:Help.reg("Git: commit --all"," s - (skip)",1)
   call cursor(2,1)
-  startinsert
+  startinsert!
 endf
 
 fun! GitCommitAmendBuffer()
@@ -40,7 +44,7 @@ fun! GitCommitAmendBuffer()
 
   call g:Help.reg("Git: commit --amend"," s - (skip)",1)
   call cursor(2,1)
-  startinsert
+  startinsert!
 endf
 
 fun! g:GitCommitBufferOpen()

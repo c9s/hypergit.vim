@@ -11,6 +11,11 @@ fun! hypergit#commit#render()
 endf
 
 fun! hypergit#commit#render_single(target)
+  " let statusLines = split(system('git status --short --untracked-files=no'), "\n")
+  let prefix = fnamemodify(a:target, ":h")
+  let prefix = substitute(prefix, '^pkg/' , '' , '') . ": "
+  cal append(line(1),  prefix)
+
   let lines = split(system('git status ' . a:target),"\n")
   cal map(lines, '"# " . v:val')
   cal append(line('$'),  lines)
