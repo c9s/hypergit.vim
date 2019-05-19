@@ -4,14 +4,53 @@ fun! hypergit#commit#render_status(...)
   cal append(line('$'),  lines)
 endf
 
+fun! s:cleanup_status_path(key, val)
+  let filepath = substitute(a:val, '^\s*[AM]\s*' , '' , '')
+  let prefix = fnamemodify(filepath, ":h")
+  return prefix
+endf
+
+fun! s:split_path(key, val)
+  return split(a:val, "/")
+endf
+
+
 fun! hypergit#commit#render()
+  let lines = split(system('git status --short --untracked-files=no'), "\n")
+
+  " clean up
+  cal map(lines, function('s:cleanup_status_path'))
+
+  let compslist = sort(lines)
+  cal map(compslist, function('s:split_path'))
+
+  if len(compslist) > 0
+    let common = []
+    let idx = 0
+    for a in compslist[0]
+      for comps in compslist
+        if get(comps, idx, "NONE") == a
+          call add(common, a)
+          let idx = idx + 1
+        else
+          break
+        endif
+      endfor
+    endfor
+    if len(common) > 0
+      let prefix = join(common, "/")
+      let prefix = substitute(prefix, '^pkg/' , '' , '') . ": "
+      cal append(line(1),  prefix)
+    endif
+
+  endif
+
   let status = split(system('git status -u' . g:HyperGitUntrackMode ),"\n")
   cal filter(status, 'v:val =~ "^#"')
   cal append(1,  status )
 endf
 
 fun! hypergit#commit#render_single(target)
-  " let statusLines = split(system('git status --short --untracked-files=no'), "\n")
   let prefix = fnamemodify(a:target, ":h")
   let prefix = substitute(prefix, '^pkg/' , '' , '') . ": "
   cal append(line(1),  prefix)
