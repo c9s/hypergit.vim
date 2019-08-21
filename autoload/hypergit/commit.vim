@@ -5,9 +5,16 @@ fun! hypergit#commit#render_status(...)
 endf
 
 fun! s:cleanup_status_path(key, val)
-  let filepath = substitute(a:val, '^\s*[AMD]\s*' , '' , '')
-  let prefix = fnamemodify(filepath, ":h")
-  return prefix
+  return substitute(a:val, '^\s*[AMD]\s*' , '' , '')
+endf
+
+" s:dirname returns the dirname
+fun! s:dirname(key, val)
+  let a = fnamemodify(a:val, ":h")
+  if a == '.'
+    return a:val
+  endif
+  return a
 endf
 
 fun! s:split_path(key, val)
@@ -19,10 +26,19 @@ fun! hypergit#commit#render()
   let lines = split(system('git status --short --untracked-files=no'), "\n")
 
   " clean up
-  cal map(lines, function('s:cleanup_status_path'))
+  call map(lines, function('s:cleanup_status_path'))
+  call map(lines, function('s:dirname'))
+  call filter(lines, 'v:val != "."')
 
   let compslist = sort(lines)
-  cal map(compslist, function('s:split_path'))
+
+  " split the paths and store them in the array, e.g.,
+  " [
+  "   ["a","b"],
+  "   ["foo","bar"],
+  "   ["Jenkinsfile"],
+  " ]
+  call map(compslist, function('s:split_path'))
 
   if len(compslist) > 0
     let common = []
@@ -42,7 +58,6 @@ fun! hypergit#commit#render()
       let prefix = substitute(prefix, '^pkg/' , '' , '') . ": "
       cal append(line(1),  prefix)
     endif
-
   endif
 
   let status = split(system('git status -u' . g:HyperGitUntrackMode ),"\n")
@@ -52,6 +67,10 @@ endf
 
 fun! hypergit#commit#render_single(target)
   let prefix = fnamemodify(a:target, ":h")
+  if prefix == "."
+    let prefix = a:target
+  endif
+
   let prefix = substitute(prefix, '^pkg/' , '' , '') . ": "
   cal append(line(1),  prefix)
 
