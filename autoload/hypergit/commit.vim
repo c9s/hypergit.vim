@@ -5,7 +5,7 @@ fun! hypergit#commit#render_status(...)
 endf
 
 fun! s:cleanup_status_path(key, val)
-  let filepath = substitute(a:val, '^\s*[AM]\s*' , '' , '')
+  let filepath = substitute(a:val, '^\s*[AMD]\s*' , '' , '')
   let prefix = fnamemodify(filepath, ":h")
   return prefix
 endf
