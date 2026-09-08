@@ -79,17 +79,17 @@ fun! g:GitCommit()
   " commit the stashed files
   if exists('b:commit_stashed')
     let cmd = printf('%s commit --cleanup=strip --file %s', g:GitBin , file)
-    cal hypergit#shell#run(cmd)
   elseif exists('b:commit_target')
     let cmd = printf('%s commit --cleanup=strip --file %s %s', g:GitBin , file, b:commit_target )
-    cal hypergit#shell#run(cmd)
   elseif exists('b:commit_amend')
     let cmd = printf('%s commit --cleanup=strip --amend --file %s' , g:GitBin , file )
-    cal hypergit#shell#run(cmd)
   else
     let cmd = printf('%s commit --cleanup=strip -a --file %s', g:GitBin , file )
-    cal hypergit#shell#run(cmd)
   endif
+
+  " We are called from BufUnload, where vim forbids opening/splitting a window
+  " (E1159). Defer the command so it runs once the buffer is really gone.
+  cal timer_start(0, { -> hypergit#shell#run(cmd) })
 endf
 
 fun! s:filterCommitMessage(msgfile)
@@ -101,12 +101,12 @@ fun! s:filterCommitMessage(msgfile)
   for l in lines
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
-      cal system( g:GitCommand . ' add ' . file )
+      cal system( g:GitBin . ' add ' . file )
       echohl GitMsg | echo file . ' added' | echohl None
       let lines[ idx ] = ''
     elseif l =~ '^\!D\s\+'
       let file = s:trim_message_op(l)
-      cal system( g:GitCommand . ' rm ' . file )   " XXX: detect failure
+      cal system( g:GitBin . ' rm ' . file )   " XXX: detect failure
       echohl GitMsg | echo file . ' deleted' | echohl None
       let lines[ idx ] = ''
     endif
