@@ -24,7 +24,9 @@ fun! g:GitLog(...)
 
   " TODO: check array
   if a:0 == 1
-    let [since,til] = split(a:1)
+    let parts = split(a:1)
+    let since = get(parts, 0, "")
+    let til   = get(parts, 1, "")
   elseif a:0 == 0
     " let commit = input("Commit:","",'customlist,GitRemoteNameCompletion')
     " let since = input("Since:","")

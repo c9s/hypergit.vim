@@ -42,9 +42,9 @@ fun! g:GitStashBufferOpen()
   setfiletype git-stash
   silent file GitStashList
 
-  nmap <script><buffer> S  :cal <SID>GitStashShowFromBuffer()<CR>
-  nmap <script><buffer> D  :cal <SID>GitStashDropFromBuffer()<CR>
-  nmap <script><buffer> A  :cal <SID>GitStashApplyFromBuffer()<CR>
+  nnoremap <script><buffer> S  :cal <SID>GitStashShowFromBuffer()<CR>
+  nnoremap <script><buffer> D  :cal <SID>GitStashDropFromBuffer()<CR>
+  nnoremap <script><buffer> A  :cal <SID>GitStashApplyFromBuffer()<CR>
 
   cal g:Help.reg("Git Stash",
     \" S - Show\n" .

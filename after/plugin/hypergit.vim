@@ -45,8 +45,15 @@ endf
 
 " Git API {{{
 fun! GitCurrentBranch()
-   let name = split(system("git branch | grep '^*' | cut -c3-"))
-   return name[0]
+  let name = substitute(system(g:GitBin . ' symbolic-ref --quiet --short HEAD'), '\n', '', 'g')
+  if v:shell_error || strlen(name) == 0
+    " detached HEAD: fall back to the commit we are sitting on
+    let name = substitute(system(g:GitBin . ' rev-parse --short HEAD'), '\n', '', 'g')
+    if v:shell_error
+      return ''
+    endif
+  endif
+  return name
 endf
 
 fun! GitDefaultBranchName()
@@ -62,18 +69,6 @@ fun! GitDefaultRemoteName()
   endif
 endf
 " }}}
-
-fun! s:initGitLogBuffer()
-  cal hypergit#buffer#init()
-endf
-
-fun! s:initGitRemoteBuffer()
-  cal hypergit#buffer#init()
-endf
-
-fun! s:initGitStashBufferOpen()
-  cal hypergit#buffer#init()
-endf
 
 cal s:defopt('g:HyperGitUntrackMode' , 'no' )
 cal s:defopt('g:GitBin','git')

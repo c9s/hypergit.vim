@@ -38,6 +38,16 @@ Load order matters and is the main organizing principle:
 
 `GitCommitSingleFileBuffer` / `GitCommitAllBuffer` / `…AmendBuffer` open a buffer on a `tempname()` file, mark it with a buffer-local flag (`b:commit_target`, `b:commit_stashed`, `b:commit_amend`), and render the message body via `hypergit#commit#render*`. The actual commit fires from an `autocmd BufUnload` → `g:GitCommit()`, which picks the `git commit` variant from those flags — so *closing the buffer commits*; `s` (`g:GitSkipCommit`) deletes the temp file to abort.
 
-Before committing, `s:filterCommitMessage()` scans the message for `!A <file>` / `!D <file>` action lines and runs `git add` / `git rm` on them. Note those two lines call the undefined `g:GitCommand` rather than `g:GitBin` — a latent bug; use `g:GitBin` if you touch them.
+Two constraints come out of that `BufUnload` trigger, and both were once violated here:
+
+- The autocmd may run with *another buffer already current*, so `g:GitCommit()` takes the message file and the commit flags from `<afile>` / `getbufvar(<abuf>, …)`, never from `%` / `b:`.
+- Vim (since 8.2) refuses to open or split a window while a buffer is closing (`E1159`), so the git command is dispatched from a zero-delay `timer_start()` rather than called inline.
+
+Before committing, `s:filterCommitMessage()` scans the message for `!A <file>` / `!D <file>` action lines and runs `git add` / `git rm` on them.
 
 `hypergit#commit#render()` prefills a commit-message prefix by taking the common leading path components of the changed files (`git status --short`), stripping a leading `pkg/`, and appending `": "` — the `pkg/` stripping is Go-layout-specific and lives in both `render()` and `render_single()`.
+
+### Two traps when touching this plugin
+
+- `hypergit#shell#run()` builds a *shell* command string, so paths in it are `shellescape()`d. It runs that string through `term_start([&shell, &shellcmdflag, cmd])` — never `exec 'terminal ' . cmd`, which tokenizes the line itself and would swallow the quotes.
+- The manager buffers parse `git status` porcelain text. git dropped the leading `#` from those lines in 1.8, so `after/plugin/status.vim` matches both shapes through the single helper `s:fileFromStatusLine()`; add new status actions on top of it rather than writing another ad-hoc `matchstr`.

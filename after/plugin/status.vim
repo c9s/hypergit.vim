@@ -1,11 +1,23 @@
 " define GitStatus command.
 " vim:fdm=marker:
 
+" s:fileFromStatusLine extracts the path from the `git status` line under the
+" cursor. git used to prefix these lines with `#`; it stopped doing so in 1.8,
+" and both shapes are accepted here.
+fun! s:fileFromStatusLine()
+  return matchstr(getline('.'),
+    \ '^\s*\%(#\s*\)\?\%(modified\|new file\|deleted\):\s\+\zs.\{-}\s*$')
+endf
+
+fun! s:noFileUnderCursor()
+  redraw
+  echo "No avaliable"
+endf
+
 fun! s:viewDiffFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '^\s\+\(modified\|new file\):'
-    let file = matchstr(line,'\(modified:\s\+\|new file:\s\+\)\@<=\S*$')
-    let diff = system('git diff ' . file )
+  let file = s:fileFromStatusLine()
+  if strlen(file) > 0
+    let diff = system(g:GitBin . ' diff -- ' . shellescape(file))
     botright new
     setlocal noswapfile
     setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
@@ -17,20 +29,17 @@ fun! s:viewDiffFileFromStatusLine()
     exec 'nmap <leader>ci    :cal GitCommitSingleFileBuffer("'.file.'")<CR>'
     setlocal nomodifiable
   else
-    redraw
-    echo "No avaliable"
+    cal s:noFileUnderCursor()
   endif
 endf
 
 fun! s:addFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    call hypergit#shell#run('git add -v ' . file)
+  let file = s:fileFromStatusLine()
+  if strlen(file) > 0
+    call hypergit#shell#run(g:GitBin . ' add -v -- ' . shellescape(file))
     call s:GitStatusUpdate()
   else
-    redraw
-    echo "No avaliable"
+    cal s:noFileUnderCursor()
   endif
 endf
 
@@ -40,84 +49,79 @@ fun! s:commitStashFromStatusLine()
 endf
 
 fun! s:commitFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+  let file = s:fileFromStatusLine()
+  if strlen(file) > 0
     cal GitCommitSingleFileBuffer(file)
   else
-    redraw
-    echo "No avaliable"
+    cal s:noFileUnderCursor()
   endif
 endf
 
 fun! s:viewFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '\s\+\(modified\|new file\):'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    silent exec 'split ' . file
+  let file = s:fileFromStatusLine()
+  if strlen(file) > 0
+    silent exec 'split ' . fnameescape(file)
   else
-    redraw
-    echo "No avaliable"
+    cal s:noFileUnderCursor()
   endif
 endf
 
 fun! s:tabeFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '\s\+\(modified\|new file\):'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    silent exec 'tabe ' . file
+  let file = s:fileFromStatusLine()
+  if strlen(file) > 0
+    silent exec 'tabe ' . fnameescape(file)
   else
-    redraw
-    echo "No avaliable"
+    cal s:noFileUnderCursor()
   endif
 endf
 
 fun! s:deleteFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
+  let file = s:fileFromStatusLine()
+  if strlen(file) > 0
     redraw
-    echo system('git rm -vf ' . file)
+    echo system(g:GitBin . ' rm -vf -- ' . shellescape(file))
     cal s:GitStatusUpdate()
   else
-    redraw
-    echo "No avaliable"
+    cal s:noFileUnderCursor()
   endif
 endf
 
 fun! s:resetFileFromStatusLine()
-  let line = getline('.')
-  if line =~ '\s\+modified:'
-    let file = matchstr(line,'\(modified:\s\+\)\@<=\S*$')
-    echo system('git checkout ' . file)
-    cal s:GitStatusUpdate()
-  elseif line =~ '^#\s\+new file:'
-    let file = matchstr(line,'\(new file:\s\+\)\@<=\S*$')
-    echo system('git reset -- ' . file)
-    cal s:GitStatusUpdate()
-  else
-    redraw
-    echo "No avaliable"
+  let file = s:fileFromStatusLine()
+  if strlen(file) == 0
+    cal s:noFileUnderCursor()
+    return
   endif
+  if getline('.') =~ 'new file:'
+    echo system(g:GitBin . ' reset -q -- ' . shellescape(file))
+  else
+    echo system(g:GitBin . ' checkout -- ' . shellescape(file))
+  endif
+  cal s:GitStatusUpdate()
 endf
 
-" FIXME: update help message
+fun! s:statusHelp()
+  return
+    \ " v - Diff\n" .
+    \ " c - Commit file\n" .
+    \ " C - Commit staged changes\n" .
+    \ " a - Add\n" .
+    \ " D - Delete\n" .
+    \ " E - Edit\n" .
+    \ " T - Edit in NewTab\n" .
+    \ " R - Revert/Reset\n" .
+    \ " u - Update\n"
+endf
+
 fun! s:GitStatusUpdate()
   setlocal modifiable
-  1,$delete _
-  cal g:Help.reg("Git Status",
-    \" L - Diff\n" .
-    \" C - Commit\n" .
-    \" D - Delete\n" .
-    \" A - Add\n" .
-    \" E - Edit\n" .
-    \" T - Edit in NewTab\n" .
-    \" R - Revert/Reset  \n"
-    \,1)
-  let status = system('git status -uno')
-  0,$d
-  put=status
-  normal 0gg
+  silent 0,$delete _
+  let status = system(g:GitBin . ' status -uno')
+  silent put=status
+  silent normal! ggdd
+  " Help.reg prepends its header, so it has to run after the buffer is filled
+  cal g:Help.reg("Git Status", s:statusHelp(), 1)
+  normal! gg
   setlocal nomodifiable
 endf
 
@@ -125,9 +129,9 @@ fun! s:GitStatus()
   tabnew
   setlocal noswapfile
   setlocal nobuflisted nowrap cursorline nonumber fdc=0 buftype=nofile bufhidden=wipe
-  let status = system('git status -uno')
+  let status = system(g:GitBin . ' status -uno')
   put=status
-  normal ggdd
+  normal! ggdd
   setfiletype git-status
   silent file GitStatus
   nnoremap <script><buffer> v  :cal <SID>viewDiffFileFromStatusLine()<CR>
@@ -141,14 +145,7 @@ fun! s:GitStatus()
   nnoremap <script><buffer> R  :cal <SID>resetFileFromStatusLine()<CR>
   nnoremap <script><buffer> u  :cal <SID>GitStatusUpdate()<CR>
 
-  cal g:Help.reg("Git Status",
-    \" L - Diff\n" .
-    \" C - Commit\n" .
-    \" D - Delete\n" .
-    \" E - Edit\n" .
-    \" T - Edit in NewTab\n" .
-    \" R - Revert/Reset  \n"
-    \,1)
+  cal g:Help.reg("Git Status", s:statusHelp(), 1)
   setlocal nomodifiable
 endf
 com! -complete=file -nargs=?        GitStatus :cal <SID>GitStatus()

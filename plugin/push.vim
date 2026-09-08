@@ -1,5 +1,10 @@
 fun! s:GitPushHEAD()
   let remote = GitDefaultRemoteName()
+  if strlen(remote) == 0
+    redraw
+    echohl WarningMsg | echo "No remote to push to." | echohl None
+    return
+  endif
   let cmd = printf('%s push -u %s %s', g:GitBin, remote, 'HEAD')
   cal hypergit#shell#run(cmd)
 endf

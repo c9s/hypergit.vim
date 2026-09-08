@@ -57,6 +57,9 @@ fun! s:branchCheckout()
   cal hypergit#shell#run(cmd)
 
   let wids = win_findbuf(nr)
+  if len(wids) == 0
+    return
+  endif
   cal win_gotoid(wids[0])
   cal s:GitBranchListRefresh()
 endf

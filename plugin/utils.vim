@@ -10,7 +10,8 @@ fun! FindDotGit()
     cal remove(parts,-1)
   endfor
   for p in paths 
-    if isdirectory(p . '/.git')
+    " a linked worktree or a submodule has a .git *file* pointing at the repo
+    if isdirectory(p . '/.git') || filereadable(p . '/.git')
       return p
     endif
   endfor

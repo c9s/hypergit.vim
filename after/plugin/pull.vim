@@ -1,12 +1,15 @@
 fun! s:GitFetch(...)
-  if len(a:000) > 0
-    let remote = a:000
+  if a:0 > 0
+    let remote = join(a:000, ' ')
   else
     let remotes = hypergit#remote#get_remote_names()
     if len(remotes) == 0
+      redraw
+      echohl WarningMsg | echo "No remote to fetch from." | echohl None
+      return
     elseif len(remotes) == 1
       let remote = remotes[0]
-    elseif len(remotes) > 1
+    else
       let remote = input("Remote:",GitDefaultRemoteName(),'customlist,GitRemoteNameCompletion')
     endif
   endif
@@ -14,18 +17,24 @@ fun! s:GitFetch(...)
   cal hypergit#buffer#bottomright(10)
   cal hypergit#buffer#init_nofile()
   setfiletype gitconsole
-  let out = system("git fetch --verbose " . remote)
+  let out = system(printf('%s fetch --verbose %s', g:GitBin, remote))
   put=out
   setlocal nomodifiable
 endf
 com! -complete=customlist,GitRemoteNameCompletion -nargs=? GitFetch     :cal s:GitFetch(<f-args>)
 
 fun! s:GitPullHEAD()
+  let remote = GitDefaultRemoteName()
+  if strlen(remote) == 0
+    redraw
+    echohl WarningMsg | echo "No remote to pull from." | echohl None
+    return
+  endif
+
   cal hypergit#buffer#bottomright(10)
   cal hypergit#buffer#init_nofile()
   setfiletype gitconsole
 
-  let remote = GitDefaultRemoteName()
   let cmd = printf('%s pull --rebase %s %s', g:GitBin, remote, 'HEAD')
   cal setline(1, "$ " . cmd)
   cal setline(2, "==============================")
