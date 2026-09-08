@@ -40,6 +40,7 @@ endf
 
 fun! GitCommitAmendBuffer()
   call g:GitCommitBufferOpen()
+  let b:commit_amend = 1
   call hypergit#commit#render_amend()
 
   call g:Help.reg("Git: commit --amend"," s - (skip)",1)
@@ -61,7 +62,7 @@ fun! g:GitCommitBufferInit()
   syntax match GitAction '^\![AD] .*'
   hi link GitAction Function
 
-  nmap <silent><buffer> s  :cal g:GitSkipCommit()<CR>
+  nnoremap <silent><buffer> s  :cal g:GitSkipCommit()<CR>
   autocmd BufUnload <buffer> :cal g:GitCommit()
 
   setfiletype gitcommit
@@ -69,27 +70,48 @@ endf
 
 
 fun! g:GitCommit()
-  let file = expand('%')
+  " We run from BufUnload, where vim may already have made another buffer the
+  " current one, so the message file and the commit flags must be taken from
+  " the buffer that is going away (<afile>/<abuf>) and not from '%'/b:.
+  " Reading '%' here used to pick up the previously edited file, which made
+  " `s` (skip) commit that file's contents as the commit message.
+  let bufnr = str2nr(expand('<abuf>'))
+  let file  = expand('<afile>')
+  if bufnr == 0
+    let bufnr = bufnr('%')
+  endif
+  if strlen(file) == 0
+    let file = expand('%')
+  endif
+
   if ! filereadable(file)
     echo "Skipped"
     return
   endif
   cal s:filterCommitMessage(file)
 
+  let target = getbufvar(bufnr, 'commit_target', '')
+
   " commit the stashed files
-  if exists('b:commit_stashed')
-    let cmd = printf('%s commit --cleanup=strip --file %s', g:GitBin , file)
-  elseif exists('b:commit_target')
-    let cmd = printf('%s commit --cleanup=strip --file %s %s', g:GitBin , file, b:commit_target )
-  elseif exists('b:commit_amend')
-    let cmd = printf('%s commit --cleanup=strip --amend --file %s' , g:GitBin , file )
+  if getbufvar(bufnr, 'commit_stashed', 0)
+    let cmd = printf('%s commit --cleanup=strip --file %s', g:GitBin , shellescape(file))
+  elseif strlen(target) > 0
+    let cmd = printf('%s commit --cleanup=strip --file %s -- %s', g:GitBin , shellescape(file), shellescape(target))
+  elseif getbufvar(bufnr, 'commit_amend', 0)
+    let cmd = printf('%s commit --cleanup=strip --amend --file %s' , g:GitBin , shellescape(file))
   else
-    let cmd = printf('%s commit --cleanup=strip -a --file %s', g:GitBin , file )
+    let cmd = printf('%s commit --cleanup=strip -a --file %s', g:GitBin , shellescape(file))
   endif
 
   " We are called from BufUnload, where vim forbids opening/splitting a window
   " (E1159). Defer the command so it runs once the buffer is really gone.
   cal timer_start(0, { -> hypergit#shell#run(cmd) })
+endf
+
+" s:trim_message_op strips the leading action operator ("!A " / "!D ") from a
+" commit message line and returns the file name it refers to.
+fun! s:trim_message_op(line)
+  return substitute(a:line, '^\!\a\s\+', '', '')
 endf
 
 fun! s:filterCommitMessage(msgfile)
@@ -101,12 +123,12 @@ fun! s:filterCommitMessage(msgfile)
   for l in lines
     if l =~ '^\!A\s\+'
       let file = s:trim_message_op(l)
-      cal system( g:GitBin . ' add ' . file )
+      cal system( g:GitBin . ' add ' . shellescape(file) )
       echohl GitMsg | echo file . ' added' | echohl None
       let lines[ idx ] = ''
     elseif l =~ '^\!D\s\+'
       let file = s:trim_message_op(l)
-      cal system( g:GitBin . ' rm ' . file )   " XXX: detect failure
+      cal system( g:GitBin . ' rm ' . shellescape(file) )   " XXX: detect failure
       echohl GitMsg | echo file . ' deleted' | echohl None
       let lines[ idx ] = ''
     endif
@@ -117,8 +139,10 @@ endf
 
 " }}}
 
+" NOTE: -nargs=? already covers the no-argument case (GitCommitSingleFileBuffer
+" then falls back to the current buffer). A second, argument-less :GitCommit
+" definition used to follow this one and silently won, breaking `:GitCommit <file>`.
 com! -complete=file -nargs=?  GitCommit :cal GitCommitSingleFileBuffer(<f-args>)
-com! GitCommit         :cal GitCommitSingleFileBuffer()
 com! GitCommitStashed  :cal GitCommitStashedBuffer()
 com! GitCommitAll      :cal GitCommitAllBuffer()
 com! GitCommitAmend    :cal GitCommitAmendBuffer()

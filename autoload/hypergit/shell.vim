@@ -2,7 +2,11 @@
 fun! hypergit#shell#run(cmd)
   if has("terminal")
     let winid = win_getid(winnr())
-    exec "terminal ++close ++norestore  ++rows=10 " . a:cmd
+    " Hand the command to the shell as one argument: :terminal splits its own
+    " command line and knows nothing about shell quoting, so an `exec
+    " 'terminal ' . cmd` mangles any quoted path in it.
+    cal term_start([&shell, &shellcmdflag, a:cmd],
+      \ { 'term_finish': 'close', 'norestore': 1, 'term_rows': 10 })
     cal win_gotoid(winid)
   else
     cal hypergit#buffer#bottomright(10)

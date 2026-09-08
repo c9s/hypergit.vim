@@ -22,6 +22,24 @@ fun! s:split_path(key, val)
 endf
 
 
+" s:common_prefix takes a list of split paths and returns the components that
+" all of them share, e.g. [["pkg","a"],["pkg","b"]] -> ["pkg"]. Returns an
+" empty list when the paths have nothing in common.
+fun! s:common_prefix(compslist)
+  let common = a:compslist[0]
+  for comps in a:compslist[1:]
+    let n = 0
+    while n < len(common) && n < len(comps) && common[n] ==# comps[n]
+      let n += 1
+    endwhile
+    let common = n > 0 ? common[0 : n - 1] : []
+    if len(common) == 0
+      break
+    endif
+  endfor
+  return common
+endf
+
 fun! hypergit#commit#render()
   let lines = split(system('git status --short --untracked-files=no'), "\n")
 
@@ -41,22 +59,11 @@ fun! hypergit#commit#render()
   call map(compslist, function('s:split_path'))
 
   if len(compslist) > 0
-    let common = []
-    let idx = 0
-    for a in compslist[0]
-      for comps in compslist
-        if get(comps, idx, "NONE") == a
-          call add(common, a)
-          let idx = idx + 1
-        else
-          break
-        endif
-      endfor
-    endfor
+    let common = s:common_prefix(compslist)
     if len(common) > 0
       let prefix = join(common, "/")
       let prefix = substitute(prefix, '^pkg/' , '' , '') . ": "
-      cal append(line(1),  prefix)
+      cal append(0,  prefix)
     endif
   endif
 
@@ -72,7 +79,7 @@ fun! hypergit#commit#render_single(target)
   endif
 
   let prefix = substitute(prefix, '^pkg/' , '' , '') . ": "
-  cal append(line(1),  prefix)
+  cal append(0,  prefix)
 
   let lines = split(system('git status ' . a:target),"\n")
   cal map(lines, '"# " . v:val')
@@ -80,10 +87,19 @@ fun! hypergit#commit#render_single(target)
 endf
 
 fun! hypergit#commit#render_amend()
-  if filereadable('.git/COMMIT_EDITMSG')
-    let lines = readfile('.git/COMMIT_EDITMSG')
-    cal append(0,  lines )
+  " Ask git for the message of HEAD instead of reading .git/COMMIT_EDITMSG:
+  " that path is wrong whenever we are not at the top of the work tree (and in
+  " submodules and linked worktrees .git is a file, not a directory), and it is
+  " stale whenever the last commit was not made from this editor.
+  let out = system(g:GitBin . ' log -1 --format=%B')
+  if v:shell_error
+    return
   endif
+  let lines = split(out, "\n")
+  while len(lines) > 0 && lines[-1] =~ '^\s*$'
+    cal remove(lines, -1)
+  endwhile
+  cal append(0,  lines )
 endf
 
 " Some keyword completion for commit message editing...
